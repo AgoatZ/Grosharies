@@ -1,7 +1,7 @@
 const userType = {
-    Admin = "admin",
-    User = "user",
-    Unsigned = "unsigned"
+    ADMIN: "admin",
+    USER: "user",
+    UNSIGNED: "unsigned"
 };
 
 module.exports = userType;

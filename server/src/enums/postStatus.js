@@ -1,7 +1,7 @@
 const status = {
-    StillThere = "still there",
-    Collected = "collected",
-    PartiallyCollected = "partially collected"
+    STILL_THERE : "still there",
+    COLLECTED : "collected",
+    PARTIALLY_COLLECTED : "partially collected"
 };
 
 module.exports = status;

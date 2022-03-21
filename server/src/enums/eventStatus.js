@@ -1,7 +1,7 @@
 const status = {
-    Future = "future",
-    Ongoing = "ongoing",
-    Finished = "finished"
+    FUTURE : "future",
+    ONGOING : "ongoing",
+    FINISHED : "finished"
 };
 
 module.exports = status;

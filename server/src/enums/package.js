@@ -1,13 +1,13 @@
 const package = {
-    Can = "can",
-    PlasticBox = "plastic box",
-    PlasticBottle = "plastic bottle",
-    GlassBox = "glass box",
-    GlassBottle = "glass bottle",
-    PaperBox = "paper box",
-    PaperBag = "paper bag",
-    PlasticBag = "plastic bag",
-    Aluminium = "aluminium"
+    CAN : "can",
+    PLASTIC_BOX : "plastic box",
+    PLASTIC_BOTTLE : "plastic bottle",
+    GLASS_BOX : "glass box",
+    GLASS_BOTTLE : "glass bottle",
+    PAPER_BOX : "paper box",
+    PAPER_BAG : "paper bag",
+    PLASTIC_BAG : "plastic bag",
+    ALUMINIUM : "aluminium"
 };
 
 module.exports = package;

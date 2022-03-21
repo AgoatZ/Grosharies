@@ -13,8 +13,8 @@ const event = new mongoose.Schema({
   status: { enum: status, required: true },
   tags: [String],
   description: String,
-  images: [String],
-  videos: [String],
+  images: [{ type: String, default: [] }],
+  videos: [{ type: String, default: [] }],
   observers: [String],
   repliers: [{
     userId: String,
