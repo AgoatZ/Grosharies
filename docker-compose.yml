@@ -1,0 +1,28 @@
+version: '3'
+services:
+  mongo:
+    container_name: MongoDB
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+  node:
+    container_name: Server
+    image: node
+    restart: always
+    build: ./server
+    ports:
+      - 80:5000
+    volumes:
+      - ./:/code
+  frontend:
+    container_name: Client
+    image: react
+    build: ./client
+    volumes:
+      - ./:/code
+    ports:
+      - 3000:3000
+volumes:
+ mongodb:
