@@ -1,6 +1,5 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const { MongoKerberosError } = require('mongodb');
 const Post = require('../models/post');
 const router = express.Router();
 
@@ -28,9 +27,9 @@ router.delete('/delete/:id', (req, res) => {
 });
 
 router.post('/update/:id', (req, res) => {
-  const { done } = req.body;
+  const updatedDetails = req.body;
 
-  Post.findByIdAndUpdate(req.params.id, { done })
+  Post.findByIdAndUpdate(req.params.id, updatedDetails)
     .then(post => res.status(200).json(post))
     .catch(err => res.status(500).json(err));
 });

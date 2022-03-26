@@ -1,36 +1,36 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const User = require('../models/user');
+const Grocery = require('../models/grocery');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  User.find({})
-    .then(users => res.status(200).json(users))
+  Grocery.find({})
+    .then(groceries => res.status(200).json(groceries))
     .catch(err => res.status(500).json({ error: err }));
 });
 
 router.post('/add', (req, res) => {
-  const userDetails = req.body;
-  const newUser = new User(userDetails);
+  const groceryDetails = req.body;
+  const newGrocery = new Grocery(groceryDetails);
 
-  newUser.save()
-    .then(user => res.status(200).json(user))
+  newGrocery.save()
+    .then(grocery => res.status(200).json(grocery))
     .catch(err => res.status(500).json(err));
 });
 
 router.delete('/delete/:id', (req, res) => {
   const id = req.params.id;
 
-  User.findByIdAndDelete(id)
-    .then(user => res.status(200).json(user))
+  Grocery.findByIdAndDelete(id)
+    .then(grocery => res.status(200).json(grocery))
     .catch(err => res.status(500).json(err));
 });
 
 router.post('/update/:id', (req, res) => {
   const updatedDetails = req.body;
 
-  User.findByIdAndUpdate(req.params.id, updatedDetails)
-    .then(user => res.status(200).json(user))
+  Grocery.findByIdAndUpdate(req.params.id, updatedDetails)
+    .then(grocery => res.status(200).json(grocery))
     .catch(err => res.status(500).json(err));
 });
 
