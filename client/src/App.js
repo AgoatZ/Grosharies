@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
-
+import Layout from './components/layout/Layout';
 import TasksList from './components/TaskList';
 
 const App = () => {
@@ -31,22 +31,25 @@ const App = () => {
   };
 
   return (
-    <div className="App">
-      <h1>My Tasks</h1>
+    <Layout>
+      <div className="App">
+        
+        <h1>My Tasks</h1>
 
-      <TasksList tasks={tasks} updateTasks={getTasks} />
+        <TasksList tasks={tasks} updateTasks={getTasks} />
 
-      <form onSubmit={clickAddTask}>
-        <input
-          type="text"
-          size="30"
-          placeholder="New Task"
-          value={newTaskTitle}
-          onChange={event => setNewTaskTitle(event.target.value)}
-        />
-        <input className="btn-primary" type="submit" value="Add" />
-      </form>
-    </div>
+        <form onSubmit={clickAddTask}>
+          <input
+            type="text"
+            size="30"
+            placeholder="New Task"
+            value={newTaskTitle}
+            onChange={event => setNewTaskTitle(event.target.value)}
+          />
+          <input className="btn-primary" type="submit" value="Add" />
+        </form>
+      </div>
+    </Layout>
   );
 };
 
