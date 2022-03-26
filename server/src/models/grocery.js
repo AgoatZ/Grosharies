@@ -5,7 +5,7 @@ const grocery = new mongoose.Schema({
   name: { type: String, required: true },
   amount: { type: Number, required: true },
   scale: { type: String, required: true }, //SHOULD BE ENUM
-  package: { enum: package, required: true },
+  package: { type: String, enum: package, required: true },
   category: { type: String, required: true} //SHOULD BE A MODEL
 });
 

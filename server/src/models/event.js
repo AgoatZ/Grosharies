@@ -10,7 +10,7 @@ const event = new mongoose.Schema({
     from: Date,
     until: Date
 }],
-  status: { enum: status, required: true },
+  status: { type: String, enum: status, required: true },
   tags: [String],
   description: String,
   images: [{ type: String, default: [] }],

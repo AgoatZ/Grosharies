@@ -1,3 +1,5 @@
+const { MongoDBNamespace } = require('mongodb');
+const { AggregateGroupByReducers } = require('redis');
 const mongoose = require('../db');
 const userType = require("../enums/userType");
 
@@ -6,7 +8,7 @@ const user = new mongoose.Schema({
   lastName: { type: String, required: true },
   emailAddress: { type: String, required: true },
   phone: { type: String, required: true },
-  accountType: { enum: userType, required: true },
+  accountType: { type: String, enum: userType, required: true , default: userType.USER},
   rank: { type: Number, default: 0 },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   profileImage: String,

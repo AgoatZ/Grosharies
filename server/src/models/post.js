@@ -1,5 +1,6 @@
 const mongoose = require('../db');
 const status = require('../enums/postStatus');
+const Grocery = require('./grocery');
 
 const post = new mongoose.Schema({
   headline: { type: String, required: true },
@@ -10,9 +11,9 @@ const post = new mongoose.Schema({
     from: Date,
     until: Date
 }],
-  status: { enum: status, required: true },
+  status: { type: String, enum: status, required: true },
   tags: [String], //TAG IS ALSO A MODEL, FUNCTIONS SIMILAR TO A CATEGORY
-  content: [{ type: Grocery, required: true }],
+  content: [{ type: Grocery.schema, required: true , default: []}],
   description: String,
   images: [{ type: String, default: [] }],
   videos: [{ type: String, default: [] }],
