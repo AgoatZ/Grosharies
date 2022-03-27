@@ -1,14 +1,14 @@
 import React from "react";
-import Header from "../header/Header";
-import Footer from "../footer/Footer";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
+import "./Layout.css";
 
 const Layout = (props) => {
     return (
-        <div style={{ height: '100%' }}>
+        <div className="layout">
           <Header />
-          <div>{props.children}</div> 
-          {/* <Body /> */}
-          <footer className="footer" style={{bottom: 0, width: '100%', position: "fixed"}}><Footer /></footer>
+          <div>{props.children}</div>
+          <Footer />
         </div>
       );
 };

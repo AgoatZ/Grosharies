@@ -4,7 +4,7 @@ import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, 
 const pages = ['Home', 'Groceries'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-const appBarStyle = { backgroundColor: 'rgb(58, 173, 135)' };
+const appBarStyle = { backgroundColor: 'rgb(58, 173, 135)', position: 'fixed', zIndex: 2 };
 const logoStyle = { mr: 2, display: { xs: 'none', md: 'flex' } };
 const profileStyle = { flexGrow: 1, display: { xs: 'flex', md: 'none' } };
 const menuStyle = { display: { xs: 'block', md: 'none' } };

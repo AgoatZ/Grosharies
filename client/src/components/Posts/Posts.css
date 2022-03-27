@@ -1,0 +1,13 @@
+ul {
+  margin: 10em auto;
+  border: black solid 1px;
+  border-radius: 10px;
+  max-width: 60%;
+  list-style-type: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+li {
+  margin: 2em 1em;
+}

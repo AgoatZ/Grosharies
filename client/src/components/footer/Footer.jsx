@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppBar, Box, Toolbar, Typography, Menu, Container, Button, MenuItem } from '@mui/material';
+import './Footer.css';
 
 const pages = ['About'];
 
@@ -17,49 +18,51 @@ const Footer = () => {
   };
 
   return (
-    <AppBar position="static" sx={appBarStyle}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
+    <footer>
+      <AppBar position="static" sx={appBarStyle}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
 
-          <Box sx={profileStyle}>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={true}
-              sx={menuStyle}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleClick}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          
-          <Box sx={pagesStyle}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleClick}
-                sx={pageButtonStyle}
+            <Box sx={profileStyle}>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+                open={true}
+                sx={menuStyle}
               >
-                {page}
-              </Button>
-            ))}
-          </Box>
+                {pages.map((page) => (
+                  <MenuItem key={page} onClick={handleClick}>
+                    <Typography textAlign="center">{page}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+            
+            <Box sx={pagesStyle}>
+              {pages.map((page) => (
+                <Button
+                  key={page}
+                  onClick={handleClick}
+                  sx={pageButtonStyle}
+                >
+                  {page}
+                </Button>
+              ))}
+            </Box>
 
-        </Toolbar>
-      </Container>
-    </AppBar>
+          </Toolbar>
+        </Container>
+      </AppBar>
+    </footer>
   );
 };
 export default Footer;

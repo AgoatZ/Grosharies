@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
-import Layout from './components/layout/Layout';
+import Posts from './components/Posts/Posts';
+import Layout from './components/Layout/Layout';
 import TasksList from './components/TaskList';
 
 const App = () => {
@@ -32,11 +33,13 @@ const App = () => {
 
   return (
     <Layout>
-      <div className="App">
+      <Posts posts={[1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5]} />
+      {/* <div className="App">
         
         <h1>My Tasks</h1>
-
         <TasksList tasks={tasks} updateTasks={getTasks} />
+
+        
 
         <form onSubmit={clickAddTask}>
           <input
@@ -48,7 +51,7 @@ const App = () => {
           />
           <input className="btn-primary" type="submit" value="Add" />
         </form>
-      </div>
+      </div> */}
     </Layout>
   );
 };
