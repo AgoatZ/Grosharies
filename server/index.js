@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const routeTasks = require('./src/routes/tasks');
-const routeUsers = require('./src/routes/users');
+const routeUsers = require('./src/user/user.routes');
 const routePosts = require('./src/routes/posts');
 const routeGroceries = require('./src/routes/groceries');
 const routeEvents = require('./src/routes/events');
