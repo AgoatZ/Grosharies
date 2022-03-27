@@ -6,7 +6,7 @@ const app = express();
 
 const routeTasks = require('./src/routes/tasks');
 const routeUsers = require('./src/user/user.routes');
-const routePosts = require('./src/routes/posts');
+const routePosts = require('./src/post/post.routes');
 const routeGroceries = require('./src/routes/groceries');
 const routeEvents = require('./src/routes/events');
 const routeCategories = require('./src/routes/categories');
