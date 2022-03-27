@@ -1,3 +1,13 @@
+.img {
+  width: 100%;
+  text-align: center;
+  margin: 10em 0 0 0;
+}
+
+img {
+  background: white;
+}
+
 .App {
   max-width: 600px;
   margin: auto;
