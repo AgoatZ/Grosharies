@@ -4,13 +4,13 @@ import Footer from "../Footer/Footer";
 import "./Layout.scss";
 
 const Layout = (props) => {
-    return (
-        <div className="layout">
-          <Header />
-          <div>{props.children}</div>
-          <Footer />
-        </div>
-      );
+  return (
+      <div className="layout">
+        <Header />
+        <div>{props.children}</div>
+        <Footer />
+      </div>
+    );
 };
 
 export default Layout;

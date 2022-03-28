@@ -2,12 +2,15 @@
   margin: 5em auto;
   border: black solid 1px;
   border-radius: 10px;
-  max-width: 60%;
+  max-width: 55%;
   list-style-type: none;
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 0 2em;
+  padding-bottom: 2em;
 }
 
 .post {
-  margin: 2em 1em;
+  margin-top: 2em;
 }
