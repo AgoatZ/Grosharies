@@ -1,4 +1,4 @@
-ul {
+.postsList {
   margin: 5em auto;
   border: black solid 1px;
   border-radius: 10px;
@@ -8,6 +8,6 @@ ul {
   flex-wrap: wrap;
 }
 
-li {
+.post {
   margin: 2em 1em;
 }

@@ -34,7 +34,7 @@ const App = () => {
   return (
     <Layout>
       <div className='img'>
-        <img src={'assets/a.png'} height='300px' width='300px' />
+        <img src={'assets/grosharies.png'} height='300px' width='300px' />
       </div>
       <Posts posts={[1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5]} />
       {/* <div className="App">

@@ -31,7 +31,7 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" sx={appBarStyle}>
+    <AppBar sx={appBarStyle}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -92,7 +92,7 @@ const Header = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/assets/ohad.png" />
+                <Avatar alt="No Account" src="/assets/ohad.png" />
               </IconButton>
             </Tooltip>
             <Menu

@@ -4,7 +4,7 @@ import "./Posts.scss";
 const Posts = (props) => {
     const posts = props.posts.map(post => {
         return (
-            <li>
+            <li className="post">
                 <Post />
                 {/* <Post id={post.id} ... /> */}
             </li>
@@ -12,7 +12,7 @@ const Posts = (props) => {
     });
 
     return (
-        <ul>{posts}</ul>
+        <ul className="postsList">{posts}</ul>
     );
   }
   
