@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, Box, Toolbar, Typography, Menu, Container, Button, MenuItem } from '@mui/material';
-import './Footer.css';
+import './Footer.scss';
 
 const pages = ['About'];
 

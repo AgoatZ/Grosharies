@@ -1,5 +1,5 @@
 import Post from "../Post/Post";
-import "./Posts.css";
+import "./Posts.scss";
 
 const Posts = (props) => {
     const posts = props.posts.map(post => {

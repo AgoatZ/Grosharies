@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './App.css';
+import './App.scss';
 import Posts from './components/Posts/Posts';
 import Layout from './components/Layout/Layout';
 import TasksList from './components/TaskList';
