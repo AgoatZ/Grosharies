@@ -10,7 +10,7 @@ const Post = (props) => {
           height="140"
           image="/assets/default-post.svg"
           alt="green iguana"
-        />
+        /> 
         <CardContent>
           <Typography gutterBottom variant="h5" component="div" sx={{ textAlign: 'center' }}>
             {props.title}

@@ -13,6 +13,6 @@ const Posts = (props) => {
     return (
         <ul className="postsList">{posts}</ul>
     );
-  }
+  } 
   
   export default Posts;
