@@ -40,7 +40,7 @@ const Header = () => {
             component="div"
             sx={logoStyle}
           >
-            LOGO
+            {<img src={'assets/logo_name_black.png'} height='30px' width='100px' />}
           </Typography>
 
           <Box sx={profileStyle}>

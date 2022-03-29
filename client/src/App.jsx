@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.scss';
-import Posts from './components/Posts/Posts';
-import Layout from './components/Layout/Layout';
+import Posts from './components/posts/Posts';
+import Layout from './components/layout/Layout';
 import axios from 'axios';
 // import TasksList from './components/TaskList';
 
@@ -48,7 +48,7 @@ const App = () => {
   return (
     <Layout>
       <div className='img'>
-        <img src={'assets/grosharies.png'} height='300px' width='300px' />
+        <img src={'assets/logo.png'} height='300px' width='300px' />
       </div>
       <Posts posts={posts} />
       {/* <div className="App">
