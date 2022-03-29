@@ -24,7 +24,7 @@ app.use('/api/categories', routeCategories, (req, res) => res.sendStatus(401));
 app.use('/api/tags', routeTags, (req, res) => res.sendStatus(401));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/build/index.html'));
+  res.sendFile(path.join(__dirname + '/../client/build/index.html'));
 });
 
 const port = process.env.PORT || 5000;
