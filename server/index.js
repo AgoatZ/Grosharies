@@ -7,10 +7,10 @@ const app = express();
 const routeTasks = require('./src/routes/tasks');
 const routeUsers = require('./src/user/user.routes');
 const routePosts = require('./src/post/post.routes');
-const routeGroceries = require('./src/routes/groceries');
-const routeEvents = require('./src/routes/events');
-const routeCategories = require('./src/routes/categories');
-const routeTags = require('./src/routes/tags');
+const routeGroceries = require('./src/grocery/grocery.routes');
+const routeEvents = require('./src/event/event.routes');
+const routeCategories = require('./src/category/category.routes');
+const routeTags = require('./src/tag/tag.routes');
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());

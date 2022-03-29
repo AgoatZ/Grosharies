@@ -1,7 +1,7 @@
 const mongoose = require('../db');
 const package = require('../enums/package');
 const scale = require('../enums/scale');
-const Category = require('../models/category');
+const Category = require('../category/category.model');
 
 const grocery = new mongoose.Schema({
   name: { type: String, required: true },

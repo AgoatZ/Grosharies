@@ -13,6 +13,16 @@ getUsers = async function (query, page, limit) {
     }
 };
 
+getUserById = async function (userId) {
+    try {
+        var user = await User.findById(userId)
+        return user;
+    } catch (e) {
+        // Log Errors
+        throw Error('Error while Retrieving user')
+    }
+};
+
 addUser = async function (userDetails) {
     try {
         var user = new User(userDetails);
@@ -45,6 +55,7 @@ updateUser = async function (userId, userDetails) {
 
 module.exports = {
     getUsers,
+    getUserById,
     addUser,
     deleteUser,
     updateUser

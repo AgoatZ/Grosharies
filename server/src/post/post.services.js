@@ -13,6 +13,16 @@ getPosts = async function (query, page, limit) {
     }
 };
 
+getPostById = async function (postId) {
+    try {
+        var post = await Post.findById(postId)
+        return post;
+    } catch (e) {
+        // Log Errors
+        throw Error('Error while Retrieving post')
+    }
+};
+
 addPost = async function (postDetails) {
     try {
         var post = new Post(postDetails);
@@ -45,6 +55,7 @@ updatePost = async function (postId, postDetails) {
 
 module.exports = {
     getPosts,
+    getPostById,
     addPost,
     deletePost,
     updatePost
