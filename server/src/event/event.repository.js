@@ -1,14 +1,14 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const Repository = require('./event.repository');
+const Event = require('./event.model');
 const router = express.Router();
 
-getEvents = async function (query, page, limit) {
+getEvents = async function (query) {
     try {
-        const event = await Repository.getEvents(query);
+        const event = await Event.find(query);
         return event;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Paginating Events');
     }
@@ -16,7 +16,7 @@ getEvents = async function (query, page, limit) {
 
 getEventById = async function (eventId) {
     try {
-        const event = await Repository.getEventById(eventId);
+        const event = await Event.findById(eventId);
         return event;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -27,8 +27,8 @@ getEventById = async function (eventId) {
 
 addEvent = async function (eventDetails) {
     try {
-        const event = await Repository.addEvent(eventDetails);
-        return event;
+        const event = new Event(eventDetails);
+        return await event.save();
     } catch (e) {
         console.log('repository error: ' + e.message);
 
@@ -38,7 +38,7 @@ addEvent = async function (eventDetails) {
 
 deleteEvent = async function (eventId) {
     try {
-        const deletedEvent = await Repository.deleteEvent(eventId);
+        const deletedEvent = await Event.findByIdAndDelete(eventId);
         return deletedEvent;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -49,7 +49,7 @@ deleteEvent = async function (eventId) {
 
 updateEvent = async function (eventId, eventDetails) {
     try {
-        const oldEvent = await Repository.updateEvent(eventId, eventDetails);
+        const oldEvent = await Event.findByIdAndUpdate(eventId, eventDetails);
         return oldEvent;
     } catch (e) {
         console.log('repository error: ' + e.message);

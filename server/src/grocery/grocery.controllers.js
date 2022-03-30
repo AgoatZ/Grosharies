@@ -1,12 +1,12 @@
-var GroceryService = require('./grocery.services');  
+const GroceryService = require('./grocery.services');  
 
 getGroceries = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
-    var page = req.params.page ? req.params.page : 1;
-    var limit = req.params.limit ? req.params.limit : 10;
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        var groceries = await GroceryService.getGroceries({}, page, limit)
+        const groceries = await GroceryService.getGroceries({}, page, limit)
         return res.status(200).json({ status: 200, data: groceries, message: "Succesfully Groceries Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -18,7 +18,7 @@ getGroceries = async function (req, res, next) {
 getGroceryById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        var grocery = await GroceryService.getGroceryById(req.params.id)
+        const grocery = await GroceryService.getGroceryById(req.params.id)
         return res.status(200).json({ status: 200, data: grocery, message: "Succesfully Grocery Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -31,7 +31,7 @@ addGrocery = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        var grocery = await GroceryService.addGrocery(req.body);
+        const grocery = await GroceryService.addGrocery(req.body);
         return res.status(200).json({ status: 200, data: grocery, message: "Succesfully Grocery Added" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -42,7 +42,7 @@ addGrocery = async function (req, res, next) {
 
 deleteGrocery = async function (req, res, next) {
     try {
-        var grocery = await GroceryService.deleteGrocery(req.params.id);
+        const grocery = await GroceryService.deleteGrocery(req.params.id);
         return res.status(200).json({ status: 200, data: grocery, message: "Succesfully grocery Deleted" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -55,7 +55,7 @@ updateGrocery = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        var oldGrocery = await GroceryService.updateGrocery(req.params.id, req.body);
+        const oldGrocery = await GroceryService.updateGrocery(req.params.id, req.body);
         return res.status(200).json({ status: 200, data: oldGrocery, message: "Succesfully Grocery Updated" });
     } catch (e) {
         console.log('controller error: ' + e.message);

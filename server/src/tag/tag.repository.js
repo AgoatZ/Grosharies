@@ -1,14 +1,14 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const Repository = require('./tag.repository');
+const Tag = require('./tag.model');
 const router = express.Router();
 
-getTags = async function (query, page, limit) {
+getTags = async function (query) {
     try {
-        const tags = await Repository.getTags(query);
+        const tags = await Tag.find(query);
         return tags;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Paginating Tags');
     }
@@ -16,10 +16,10 @@ getTags = async function (query, page, limit) {
 
 getTagById = async function (tagId) {
     try {
-        const tag = await Repository.getTagById(tagId);
+        const tag = await Tag.findById(tagId);
         return tag;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Retrieving Tag');
     }
@@ -27,10 +27,10 @@ getTagById = async function (tagId) {
 
 addTag = async function (tagDetails) {
     try {
-        const tag = await Repository.addTag(tagDetails);
-        return tag;
+        const tag = new Tag(tagDetails);
+        return await tag.save();
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Adding Tag');
     }
@@ -38,10 +38,10 @@ addTag = async function (tagDetails) {
 
 deleteTag = async function (tagId) {
     try {
-        const deletedTag = await Repository.deleteTag(tagId);
+        const deletedTag = await Tag.findByIdAndDelete(tagId);
         return deletedTag;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Deleting Tag');
     }
@@ -49,10 +49,10 @@ deleteTag = async function (tagId) {
 
 updateTag = async function (tagId, tagDetails) {
     try {
-        const oldTag = await Repository.updateTag(tagId, tagDetails);
+        const oldTag = await Tag.findByIdAndUpdate(tagId, tagDetails);
         return oldTag;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Updating Tag');
     }

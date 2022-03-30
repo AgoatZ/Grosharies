@@ -5,7 +5,7 @@ const router = express.Router();
 
 getUsers = async function (query, page, limit) {
     try {
-        var users = await Repository.getUsers(query);
+        const users = await Repository.getUsers(query);
         return users;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -16,7 +16,7 @@ getUsers = async function (query, page, limit) {
 
 getUserById = async function (userId) {
     try {
-        var user = await Repository.getUserById(userId)
+        const user = await Repository.getUserById(userId)
         return user;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -27,7 +27,7 @@ getUserById = async function (userId) {
 
 addUser = async function (userDetails) {
     try {
-        var user = await Repository.addUser(userDetails);
+        const user = await Repository.addUser(userDetails);
         return user;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -38,7 +38,7 @@ addUser = async function (userDetails) {
 
 deleteUser = async function (userId) {
     try {
-        var deletedUser = await Repository.deleteUser(userId);
+        const deletedUser = await Repository.deleteUser(userId);
         return deletedUser;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -49,7 +49,7 @@ deleteUser = async function (userId) {
 
 updateUser = async function (userId, userDetails) {
     try {
-        var oldUser = await Repository.updateUser(userId, userDetails);
+        const oldUser = await Repository.updateUser(userId, userDetails);
         return oldUser;
     } catch (e) {
         console.log('service error: ' + e.message);

@@ -5,7 +5,7 @@ const router = express.Router();
 
 getGroceries = async function (query) {
     try {
-        var groceries = await Grocery.find(query);
+        const groceries = await Grocery.find(query);
         return groceries;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -16,7 +16,7 @@ getGroceries = async function (query) {
 
 getGroceryById = async function (groceryId) {
     try {
-        var grocery = await Grocery.findById(groceryId);
+        const grocery = await Grocery.findById(groceryId);
         return grocery;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -27,7 +27,7 @@ getGroceryById = async function (groceryId) {
 
 addGrocery = async function (groceryDetails) {
     try {
-        var grocery = new Grocery(groceryDetails);
+        const grocery = new Grocery(groceryDetails);
         return await grocery.save();
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -38,7 +38,7 @@ addGrocery = async function (groceryDetails) {
 
 deleteGrocery = async function (groceryId) {
     try {
-        var deletedGrocery = await Grocery.findByIdAndDelete(groceryId);
+        const deletedGrocery = await Grocery.findByIdAndDelete(groceryId);
         return deletedGrocery;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -49,7 +49,7 @@ deleteGrocery = async function (groceryId) {
 
 updateGrocery = async function (groceryId, groceryDetails) {
     try {
-        var oldGrocery = await Grocery.findByIdAndUpdate(groceryId, groceryDetails);
+        const oldGrocery = await Grocery.findByIdAndUpdate(groceryId, groceryDetails);
         return oldGrocery;
     } catch (e) {
         console.log('repository error: ' + e.message);
