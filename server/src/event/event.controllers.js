@@ -7,9 +7,9 @@ getEvents = async function (req, res, next) {
     var limit = req.params.limit ? req.params.limit : 10;
     try {
         var events = await EventService.getEvents({}, page, limit)
-        return res.status(200).json({ status: 200, data: events, message: "Succesfully Events Retrieved" });
+        return res.status(200).json({ events: events, message: "Succesfully Events Retrieved" });
     } catch (e) {
-        return res.status(400).json({ status: 400, message: e.message });
+        return res.status(400).json({ message: e.message });
     }
 };
 
@@ -17,9 +17,9 @@ getEventById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         var event = await EventService.getEventById(req.params.id)
-        return res.status(200).json({ status: 200, data: event, message: "Succesfully Event Retrieved" });
+        return res.status(200).json({ event: event, message: "Succesfully Event Retrieved" });
     } catch (e) {
-        return res.status(400).json({ status: 400, message: e.message });
+        return res.status(400).json({ message: e.message });
     }
 };
 
@@ -28,18 +28,18 @@ addEvent = async function (req, res, next) {
 
     try {
         var event = await EventService.addEvent(req.body);
-        return res.status(200).json({ status: 200, data: event, message: "Succesfully Event Added" });
+        return res.status(200).json({ event: event, message: "Succesfully Event Added" });
     } catch (e) {
-        return res.status(400).json({ status: 400, message: e.message });
+        return res.status(400).json({ message: e.message });
     }
 };
 
 deleteEvent = async function (req, res, next) {
     try {
         var event = await EventService.deleteEvent(req.params.id);
-        return res.status(200).json({ status: 200, data: event, message: "Succesfully Events Deleted" });
+        return res.status(200).json({ event: event, message: "Succesfully Events Deleted" });
     } catch (e) {
-        return res.status(400).json({ status: 400, message: e.message });
+        return res.status(400).json({ message: e.message });
     }
 }
 
@@ -48,9 +48,9 @@ updateEvent = async function (req, res, next) {
 
     try {
         var oldEvent = await EventService.updateEvent(req.params.id, req.body);
-        return res.status(200).json({ status: 200, data: oldEvent, message: "Succesfully Event Updated" });
+        return res.status(200).json({ oldEvent: oldEvent, message: "Succesfully Event Updated" });
     } catch (e) {
-        return res.status(400).json({ status: 400, message: e.message });
+        return res.status(400).json({ message: e.message });
     }
 };
 
