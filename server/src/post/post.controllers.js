@@ -1,14 +1,16 @@
-var PostService = require('./post.services');  
+const PostService = require('./post.services');  
 
 getPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
-    var page = req.params.page ? req.params.page : 1;
-    var limit = req.params.limit ? req.params.limit : 10;
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        var posts = await PostService.getPosts({}, page, limit)
-        return res.status(200).json({ status: 200, data: posts, message: "Succesfully Posts Retrieved" });
+        const posts = await PostService.getPosts({}, page, limit)
+        return res.status(200).json({ status: 200, posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
@@ -16,9 +18,11 @@ getPosts = async function (req, res, next) {
 getPostById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        var post = await PostService.getPostById(req.params.id)
+        const post = await PostService.getPostById(req.params.id)
         return res.status(200).json({ status: 200, data: post, message: "Succesfully Post Retrieved" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
@@ -27,18 +31,22 @@ addPost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        var post = await PostService.addPost(req.body);
+        const post = await PostService.addPost(req.body);
         return res.status(200).json({ status: 200, data: post, message: "Succesfully Posts Added" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
 
 deletePost = async function (req, res, next) {
     try {
-        var post = await PostService.deletePost(req.params.id);
+        const post = await PostService.deletePost(req.params.id);
         return res.status(200).json({ status: 200, data: post, message: "Succesfully Posts Deleted" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 }
@@ -47,9 +55,11 @@ updatePost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        var oldPost = await PostService.updatePost(req.params.id, req.body);
+        const oldPost = await PostService.updatePost(req.params.id, req.body);
         return res.status(200).json({ status: 200, data: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };

@@ -1,14 +1,14 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const Repository = require('./grocery.repository');
+const Grocery = require('./grocery.model');
 const router = express.Router();
 
-getGroceries = async function (query, page, limit) {
+getGroceries = async function (query) {
     try {
-        var groceries = await Repository.getGroceries(query);
+        var groceries = await Grocery.find(query);
         return groceries;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Paginating Groceries');
     }
@@ -16,10 +16,10 @@ getGroceries = async function (query, page, limit) {
 
 getGroceryById = async function (groceryId) {
     try {
-        var grocery = await Repository.getGroceryById(groceryId);
+        var grocery = await Grocery.findById(groceryId);
         return grocery;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Retrieving Grocery');
     }
@@ -27,10 +27,10 @@ getGroceryById = async function (groceryId) {
 
 addGrocery = async function (groceryDetails) {
     try {
-        var grocery = await Repository.addGrocery(groceryDetails);
-        return grocery;
+        var grocery = new Grocery(groceryDetails);
+        return await grocery.save();
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Adding Grocery');
     }
@@ -38,10 +38,10 @@ addGrocery = async function (groceryDetails) {
 
 deleteGrocery = async function (groceryId) {
     try {
-        var deletedGrocery = await Repository.deleteGrocery(groceryId);
+        var deletedGrocery = await Grocery.findByIdAndDelete(groceryId);
         return deletedGrocery;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Deleting Grocery');
     }
@@ -49,10 +49,10 @@ deleteGrocery = async function (groceryId) {
 
 updateGrocery = async function (groceryId, groceryDetails) {
     try {
-        var oldGrocery = await Repository.updateGrocery(groceryId, groceryDetails);
+        var oldGrocery = await Grocery.findByIdAndUpdate(groceryId, groceryDetails);
         return oldGrocery;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
         throw Error('Error while Updating Grocery');
     }

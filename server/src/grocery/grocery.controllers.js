@@ -9,6 +9,8 @@ getGroceries = async function (req, res, next) {
         var groceries = await GroceryService.getGroceries({}, page, limit)
         return res.status(200).json({ status: 200, data: groceries, message: "Succesfully Groceries Retrieved" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
@@ -19,6 +21,8 @@ getGroceryById = async function (req, res, next) {
         var grocery = await GroceryService.getGroceryById(req.params.id)
         return res.status(200).json({ status: 200, data: grocery, message: "Succesfully Grocery Retrieved" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
@@ -30,6 +34,8 @@ addGrocery = async function (req, res, next) {
         var grocery = await GroceryService.addGrocery(req.body);
         return res.status(200).json({ status: 200, data: grocery, message: "Succesfully Grocery Added" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
@@ -39,6 +45,8 @@ deleteGrocery = async function (req, res, next) {
         var grocery = await GroceryService.deleteGrocery(req.params.id);
         return res.status(200).json({ status: 200, data: grocery, message: "Succesfully grocery Deleted" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 }
@@ -50,6 +58,8 @@ updateGrocery = async function (req, res, next) {
         var oldGrocery = await GroceryService.updateGrocery(req.params.id, req.body);
         return res.status(200).json({ status: 200, data: oldGrocery, message: "Succesfully Grocery Updated" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };

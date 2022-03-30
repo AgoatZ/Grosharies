@@ -9,6 +9,8 @@ getUsers = async function (req, res, next) {
         var users = await UserService.getUsers({}, page, limit)
         return res.status(200).json({ status: 200, data: users, message: "Succesfully Users Retrieved" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
@@ -20,6 +22,8 @@ getUserById = async function (req, res, next) {
         var user = await UserService.getUserById(req.params.id)
         return res.status(200).json({ status: 200, data: user, message: "Succesfully user Retrieved" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
@@ -31,6 +35,8 @@ addUser = async function (req, res, next) {
         var user = await UserService.addUser(req.body);
         return res.status(200).json({ status: 200, data: user, message: "Succesfully User Added" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };
@@ -40,6 +46,8 @@ deleteUser = async function (req, res, next) {
         var user = await UserService.deleteUser(req.params.id);
         return res.status(200).json({ status: 200, data: user, message: "Succesfully User Deleted" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 }
@@ -51,6 +59,8 @@ updateUser = async function (req, res, next) {
         var oldUser = await UserService.updateUser(req.params.id, req.body);
         return res.status(200).json({ status: 200, data: oldUser, message: "Succesfully User Updated" });
     } catch (e) {
+        console.log('controller error: ' + e.message);
+
         return res.status(400).json({ status: 400, message: e.message });
     }
 };

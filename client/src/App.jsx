@@ -39,9 +39,9 @@ const App = () => {
   }, []);
 
   const loadPosts = () => {
-    axios.get('/api/posts/').then(posts => {
-      console.log('data = ' + JSON.stringify(posts.data) + ", status = " + posts.status);
-      setPosts(posts.data);
+    axios.get('/api/posts/').then(result => {
+      console.log('data = ' + JSON.stringify(result.data) + ", status = " + result.status);
+      setPosts(result.data.posts);
     });
   };
 
