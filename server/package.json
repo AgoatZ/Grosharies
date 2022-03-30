@@ -4,7 +4,7 @@
   "description": "GroSharies Project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --detectOpenHandles --forceExit",
     "start": "node index.js",
     "start:prod": "node index.js",
     "build": "cd ../client && npm install && npm run build"
@@ -18,6 +18,8 @@
     "password-generator": "^2.2.0"
   },
   "devDependencies": {
-    "prettier": "^1.18.2"
+    "jest": "^27.5.1",
+    "prettier": "^1.18.2",
+    "supertest": "^6.2.2"
   }
 }
