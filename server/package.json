@@ -2,11 +2,11 @@
   "name": "grosharies",
   "version": "0.2.0",
   "description": "GroSharies Project",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "jest --detectOpenHandles --forceExit",
-    "start": "node index.js",
-    "start:prod": "node index.js",
+    "start": "node app.js",
+    "start:prod": "node app.js",
     "build": "cd ../client && npm install && npm run build"
   },
   "author": "Best Team in the World",
