@@ -15,6 +15,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-with-firefox": "set \"BROWSER=none\" && start firefox localhost:3000 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test"
   },

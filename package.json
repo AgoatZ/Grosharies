@@ -10,7 +10,11 @@
       "start:server": "cd server && npm start",
       "start:client": "cd client && npm start",
       "start:prod": "npm run start:server",
-      "build": "cd client && npm install && npm run build"
+      "build": "cd client && npm install && npm run build",
+      "start:nobrowser": "npm run start:server | npm run start:client-no-browser",
+      "start:client-no-browser": "cd client && npm run start-no-browser",
+      "start:firefox": "npm run start:server | npm run start:client-with-firefox",
+      "start:client-with-firefox": "cd client && npm run start-with-firefox"
     },
     "author": "Best Team in the World",
     "license": "MIT"
