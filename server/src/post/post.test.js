@@ -18,7 +18,7 @@ const pickUpDates = {
 beforeAll(done=>{
     Post.remove({ 'headline' : headline }, (err)=>{});
     for(i=0; i<5; i++) {
-        Post.remove({'headline' : headline + i})
+        Post.remove({'headline' : headline +''+ i}, (err)=>{})
     }
     Post.remove({ 'headline' : headline + 'update' }, (err)=>{
         done();
@@ -28,7 +28,7 @@ beforeAll(done=>{
 afterAll(done=>{
     Post.remove({ 'headline' : headline }, (err)=>{});
     for(i=0; i<5; i++) {
-        Post.remove({'headline' : headline + i})
+        Post.remove({'headline' : headline +''+ i}, (err)=>{})
     }
     Post.remove({ 'headline' : headline + 'update' }, (err)=>{
         mongoosse.connection.close();

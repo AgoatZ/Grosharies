@@ -16,7 +16,7 @@ const happeningDates = {
 beforeAll(done=>{
     Event.remove({ 'headline' : headline }, (err)=>{});
     for(i=0; i<5; i++) {
-        Event.remove({'headline' : headline + i})
+        Event.remove({'headline' : headline +''+ i}, (err)=>{})
     }
     Event.remove({ 'headline' : headline + 'update' }, (err)=>{
         done();
@@ -26,7 +26,7 @@ beforeAll(done=>{
 afterAll(done=>{
     Event.remove({ 'headline' : headline }, (err)=>{});
     for(i=0; i<5; i++) {
-        Event.remove({'headline' : headline + i})
+        Event.remove({'headline' : headline +''+ i}, (err)=>{})
     }
     Event.remove({ 'headline' : headline + 'update' }, (err)=>{
         mongoosse.connection.close();
