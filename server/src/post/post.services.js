@@ -25,6 +25,39 @@ getPostById = async function (postId) {
     }
 };
 
+getPostsByUser = async function (userId) {
+    try {
+        const posts = await Repository.getPostsByUser(userId);
+        return posts;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
+getPostsByCategory = async function (categoryId) {
+    try {
+        const posts = await Repository.getPostsByCategory(categoryId);
+        return posts;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
+getPostsByTag = async function (tagId) {
+    try {
+        const posts = await Repository.getPostsByTag(tagId);
+        return posts;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
 addPost = async function (postDetails) {
     try {
         const post = await Repository.addPost(postDetails);
@@ -63,6 +96,9 @@ updatePost = async function (postId, postDetails) {
 module.exports = {
     getPosts,
     getPostById,
+    getPostsByUser,
+    getPostsByCategory,
+    getPostsByTag,
     addPost,
     deletePost,
     updatePost

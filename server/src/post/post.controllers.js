@@ -27,6 +27,42 @@ getPostById = async function (req, res, next) {
     }
 };
 
+getPostsByUser = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PostService.getPostsByUser(req.params.id);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+getPostsByCategory = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PostService.getPostsByCategory(req.params.id);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+getPostsByTag = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PostService.getPostsByTag(req.params.id);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 addPost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
@@ -67,6 +103,9 @@ updatePost = async function (req, res, next) {
 module.exports = {
     getPosts,
     getPostById,
+    getPostsByUser,
+    getPostsByCategory,
+    getPostsByTag,
     addPost,
     deletePost,
     updatePost

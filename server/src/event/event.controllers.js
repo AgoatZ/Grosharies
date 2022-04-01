@@ -23,6 +23,31 @@ getEventById = async function (req, res, next) {
     }
 };
 
+getEventsByUser = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const events = await EventService.getEventsByUser(req.params.id);
+        return res.status(200).json({ events: events, message: "Succesfully Events Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+getEventsByTag = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const events = await EventService.getEventsByTag(req.params.id);
+        return res.status(200).json({ events: events, message: "Succesfully Events Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+
 addEvent = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
@@ -57,6 +82,8 @@ updateEvent = async function (req, res, next) {
 module.exports = {
     getEvents,
     getEventById,
+    getEventsByUser,
+    getEventsByTag,
     addEvent,
     deleteEvent,
     updateEvent

@@ -7,6 +7,12 @@ router.get('/', PostController.getPosts);
 
 router.get('/:id', PostController.getPostById);
 
+router.get('/user=:id', PostController.getPostsByUser);
+
+router.get('/category=:id', PostController.getPostsByCategory);
+
+router.get('/tag=:id', PostController.getPostsByTag);
+
 router.post('/', PostController.addPost);
 
 router.delete('/:id', PostController.deletePost);

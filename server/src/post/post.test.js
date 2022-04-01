@@ -4,6 +4,8 @@ const mongoosse = require('../db');
 const { response } = require('.././../index');
 const Post = require('./post.model');
 const Status = require('../enums/postStatus');
+const Scale = require('../enums/scale');
+const Packing = require('../enums/packing');
 
 const headline = 'Test Post';
 const userId = '62449a58c487bf4f38fbca59';
@@ -15,6 +17,9 @@ const pickUpDates = {
 
 beforeAll(done=>{
     Post.remove({ 'headline' : headline }, (err)=>{});
+    for(i=0; i<5; i++) {
+        Post.remove({'headline' : headline + i})
+    }
     Post.remove({ 'headline' : headline + 'update' }, (err)=>{
         done();
     });
@@ -22,6 +27,9 @@ beforeAll(done=>{
 
 afterAll(done=>{
     Post.remove({ 'headline' : headline }, (err)=>{});
+    for(i=0; i<5; i++) {
+        Post.remove({'headline' : headline + i})
+    }
     Post.remove({ 'headline' : headline + 'update' }, (err)=>{
         mongoosse.connection.close();
         done();
@@ -62,7 +70,7 @@ describe('Testing Post API',()=>{
 
         const response3 = await request(app).get('/api/posts');
         const posts = response3.body.posts;
-        expect(posts.length).toEqual(2);
+        expect(posts.length).toBeGreaterThanOrEqual(1);
 
         const response4 = await request(app).post('/api/posts/' + newPost._id)
         .send({
@@ -84,4 +92,47 @@ describe('Testing Post API',()=>{
         expect(updatedPost.status).toEqual(Status.PARTIALLY_COLLECTED);
     });
 
+    test('get posts by user, category and tag test', async ()=> {
+    for(i=0; i<5; i++) {
+    const response = await request(app).post('/api/posts').send({
+            "headline": headline + i,
+            "userId": userId,
+            "address": address,
+            "pickUpDates": pickUpDates,
+            "status": Status.COLLECTED,
+            "tags": "623ef26d9945413bb822b12a",
+            "content": [
+                {
+                    "name": "Tomato",
+                    "amount": 9,
+                    "scale": Scale.UNIT,
+                    "packing": Packing.PAPER_BAG,
+                    "category": "62471b06d433f84670e0c6e4"
+                },
+                {
+                    "name": "Melon",
+                    "amount": 5,
+                    "scale": Scale.KILOGRAM,
+                    "packing": Packing.PAPER_BOX,
+                    "category": "623eed4e4a8a7d3c88258479"
+                }
+            ]
+        });
+    }
+    expect(response.statusCode).toEqual(200);
+    const response2 = await request(app).get('/api/posts/?user=' + userId);
+    expect(response2.statusCode).toEqual(200);
+    const postsByUser = response2.body.posts;
+    expect(postsByUser.length).toBeGreaterThanOrEqual(5);
+
+    const response3 = await request(app).get('/api/posts/?category=' + "623eed4e4a8a7d3c88258479");
+    expect(response3.statusCode).toEqual(200);
+    const postsByCategory = response3.body.posts;
+    expect(postsByCategory.length).toBeGreaterThanOrEqual(5);   
+    
+    const response4 = await request(app).get('/api/posts/?tag=' + "623ef26d9945413bb822b12a");
+    expect(response4.statusCode).toEqual(200);
+    const postsByTag = response4.body.posts;
+    expect(postsByTag.length).toBeGreaterThanOrEqual(5);
+});
 });

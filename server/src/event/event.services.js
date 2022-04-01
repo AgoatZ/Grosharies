@@ -25,6 +25,28 @@ getEventById = async function (eventId) {
     }
 };
 
+getEventsByUser = async function (userId) {
+    try {
+        const events = await Repository.getEventsByUser(userId);
+        return events;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
+getEventsByTag = async function (tagId) {
+    try {
+        const events = await Repository.getEventsByTag(tagId);
+        return events;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
 addEvent = async function (eventDetails) {
     try {
         const event = await Repository.addEvent(eventDetails);
@@ -61,6 +83,8 @@ updateEvent = async function (eventId, eventDetails) {
 module.exports = {
     getEvents,
     getEventById,
+    getEventsByUser,
+    getEventsByTag,
     addEvent,
     deleteEvent,
     updateEvent

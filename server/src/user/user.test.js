@@ -54,7 +54,7 @@ describe('Testing User API',()=>{
 
         const response3 = await request(app).get('/api/users');
         const users = response3.body.users;
-        expect(users.length).toEqual(2);
+        expect(users.length).toBeGreaterThanOrEqual(2);
 
         const response4 = await request(app).post('/api/users/' + newUser._id)
         .send({

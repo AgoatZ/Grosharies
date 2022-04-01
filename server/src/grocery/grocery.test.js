@@ -54,7 +54,7 @@ describe('Testing Grocery API',()=>{
 
         const response3 = await request(app).get('/api/groceries');
         const groceries = response3.body.groceries;
-        expect(groceries.length).toEqual(1);
+        expect(groceries.length).toBeGreaterThanOrEqual(1);
 
         const response4 = await request(app).post('/api/groceries/' + newGrocery._id)
         .send({

@@ -7,6 +7,10 @@ router.get('/', EventController.getEvents);
 
 router.get('/:id', EventController.getEventById);
 
+router.get('/user=:id', EventController.getEventsByUser);
+
+router.get('/tag=:id', EventController.getEventsByTag);
+
 router.post('/', EventController.addEvent);
 
 router.delete('/:id', EventController.deleteEvent);

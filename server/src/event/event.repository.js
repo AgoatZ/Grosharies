@@ -25,6 +25,28 @@ getEventById = async function (eventId) {
     }
 };
 
+getEventsByUser = async function (userId) {
+    try {
+        const events = await Event.find({ 'userId': userId });
+        return events;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
+getEventsByTag = async function (tagId) {
+    try {
+        const events = await Event.find({ 'tags': tagId });
+        return events;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
 addEvent = async function (eventDetails) {
     try {
         const event = new Event(eventDetails);
@@ -61,6 +83,8 @@ updateEvent = async function (eventId, eventDetails) {
 module.exports = {
     getEvents,
     getEventById,
+    getEventsByUser,
+    getEventsByTag,
     addEvent,
     deleteEvent,
     updateEvent

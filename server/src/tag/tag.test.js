@@ -39,7 +39,7 @@ describe('Testing Tag API',()=>{
 
         const response3 = await request(app).get('/api/tags');
         const tags = response3.body.tags;
-        expect(tags.length).toEqual(1);
+        expect(tags.length).toBeGreaterThanOrEqual(1);
 
         const response4 = await request(app).post('/api/tags/' + newTag._id)
         .send({

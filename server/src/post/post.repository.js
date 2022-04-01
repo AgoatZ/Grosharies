@@ -25,6 +25,40 @@ getPostById = async function (postId) {
     }
 };
 
+getPostsByUser = async function (userId) {
+    try {
+        const posts = await Post.find({ 'userId': userId });
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
+getPostsByCategory = async function (categoryId) {
+    try {
+        const posts = await Post.find({ 'content': { 'category': categoryId }});
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
+getPostsByTag = async function (tagId) {
+    try {
+        const posts = await Post.find({ 'tags': tagId });
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
+
 addPost = async function (postDetails) {
     try {
         const post = new Post(postDetails);
@@ -61,6 +95,9 @@ updatePost = async function (postId, postDetails) {
 module.exports = {
     getPosts,
     getPostById,
+    getPostsByUser,
+    getPostsByCategory,
+    getPostsByTag,
     addPost,
     deletePost,
     updatePost
