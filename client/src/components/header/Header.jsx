@@ -1,15 +1,17 @@
 import React from 'react';
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const pages = ['Home', 'Groceries'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-const appBarStyle = { backgroundColor: 'rgb(58, 173, 135)', position: 'fixed', zIndex: 2 };
+const appBarStyle = { zIndex: 2 };
 const logoStyle = { mr: 2, display: { xs: 'none', md: 'flex' } };
 const profileStyle = { flexGrow: 1, display: { xs: 'flex', md: 'none' } };
 const menuStyle = { display: { xs: 'block', md: 'none' } };
 const pagesStyle = { flexGrow: 1, display: { xs: 'none', md: 'flex' } };
 const pageButtonStyle = { my: 2, color: 'white', display: 'block' };
+
 
 const Header = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -31,43 +33,38 @@ const Header = () => {
   };
 
   return (
-    <AppBar sx={appBarStyle}>
+    <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+
           <Typography
             variant="h6"
             noWrap
             component="div"
-            sx={logoStyle}
+            sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
           >
-            {<img src={'assets/logo_name_black.png'} height='30px' width='100px' />}
+            <img src={'assets/logo_name_white.png'} height='30px' width='100px' />
           </Typography>
 
-          <Box sx={profileStyle}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
               color="inherit"
             >
+              <MenuIcon sx={{color: 'white'}}/>
             </IconButton>
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left', }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
-              sx={menuStyle}
+              sx={{ display: { xs: 'block', md: 'none' }, }}
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
@@ -76,13 +73,22 @@ const Header = () => {
               ))}
             </Menu>
           </Box>
-          
-          <Box sx={pagesStyle}>
+
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
+          >
+            <img src={'assets/logo_name_white.png'} height='30px' width='100px' />
+          </Typography>
+
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
-                sx={pageButtonStyle}
+                sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
               </Button>
@@ -99,15 +105,9 @@ const Header = () => {
               sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right', }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
@@ -118,9 +118,11 @@ const Header = () => {
               ))}
             </Menu>
           </Box>
+
         </Toolbar>
       </Container>
     </AppBar>
   );
 };
+
 export default Header;
