@@ -56,8 +56,6 @@ const App = () => {
         <h1>My Tasks</h1>
         <TasksList tasks={tasks} updateTasks={getTasks} />
 
-        
-
         <form onSubmit={clickAddTask}>
           <input
             type="text"
