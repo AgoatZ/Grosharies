@@ -15,3 +15,9 @@
 .post {
   margin-top: 2em;
 }
+
+@media screen and (max-width: 1091px) {
+  .postsList {
+    max-width: 40%;
+  }
+}
