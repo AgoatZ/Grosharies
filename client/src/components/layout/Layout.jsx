@@ -6,22 +6,31 @@ import "./Layout.scss";
 import PhoneLayout from "./PhoneLayout";
 
 const Layout = (props) => {
-  const [screenSize, setScreenSize] = useState(window.screenX);
-  useEffect(() => {
-    const handler = () => { console.log('-----------------------'); setScreenSize(window.screenX); }
-    window.matchMedia("(max-width: 1000px)").addEventListener('change', handler);
-  }, []);
+
+  const [isPhoneSize, setIsPhoneSize] = useState(false);
+  
+  function handler(){ 
+    setIsPhoneSize(!isPhoneSize);
+  }
+  
+  window.matchMedia("(max-width: 1000px)").addEventListener('change', handler);
+  const phoneLayout = <PhoneLayout>
+    <div>{props.children}</div>
+  </PhoneLayout>;
+
+  const layout = 
+  <>
+  <Header />
+    <div>{props.children}</div>
+  <Footer />
+  </>;
 
   return (
     <div className="layout">
-      {(screenSize > 1000)} ? (
-      <Header />
-      <div>{props.children}</div>
-      <Footer />
-    ):
-      <PhoneLayout>
-        <div>{props.children}</div>
-      </PhoneLayout>
+      {
+      (!isPhoneSize) ? layout:phoneLayout
+      }
+    
     </div>
     );
 };
