@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation } from "react-router-dom";
 import { Typography } from '@mui/material';
-import { PostPhotoL } from '../../common/PostPhoto';
 
 const Post = () => {
     //Get post data from passed state
