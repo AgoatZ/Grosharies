@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from "react-router-dom";
 import { Button, CardActionArea, CardActions, Card, CardContent, CardMedia, Typography } from '@mui/material';
 
 const cardStyle = {
@@ -8,26 +9,25 @@ const cardStyle = {
   textAlign: 'center'
 }
 
+const cardActionsStyle = {
+  display: { xs: 'none', sm: 'none', md: 'block', xl: 'block' }
+}
+
 const PostCard = (props) => {
+  let navigate = useNavigate();
+  const toPostPage = () => navigate("./post/" + props.id, { state: props });
+
   return (
-    <Card sx={cardStyle}>
-      <CardActionArea>
-        <CardMedia
-          component="img"
-          height="140"
-          image="/assets/default-post.svg"
-        />
+    <Card>
+      <CardActionArea sx={cardStyle} onClick={toPostPage} >
+        <CardMedia component="img" height="140" image="/assets/default-post.svg" />
         <CardContent>
-          <Typography gutterBottom variant="h5">
-            {props.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {props.description}
-          </Typography>
+          <Typography gutterBottom variant="h5">{props.title}</Typography>
+          <Typography variant="body2" color="text.secondary">{props.description}</Typography>
         </CardContent>
       </CardActionArea>
-      <CardActions>
-        <Button>
+      <CardActions sx={cardActionsStyle} >
+        <Button fullWidth variant="contained" onClick={toPostPage} >
           See More
         </Button>
       </CardActions>
