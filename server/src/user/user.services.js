@@ -10,7 +10,7 @@ getUsers = async function (query, page, limit) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error('Error while Paginating Users')
+        throw Error('Error while Paginating Users');
     }
 };
 
@@ -21,7 +21,7 @@ getUserById = async function (userId) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error('Error while Retrieving user')
+        throw Error('Error while Retrieving user');
     }
 };
 
@@ -32,7 +32,7 @@ addUser = async function (userDetails) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error('Error while Adding User')
+        throw Error('Error while Adding User');
     }
 };
 
@@ -54,7 +54,7 @@ updateUser = async function (userId, userDetails) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error('Error while Updating User')
+        throw Error('Error while Updating User');
     }
 };
 
@@ -64,4 +64,4 @@ module.exports = {
     addUser,
     deleteUser,
     updateUser
-}
+};

@@ -25,6 +25,17 @@ getUserById = async function (userId) {
     }
 };
 
+getUserByEmail = async function (userEmail) {
+    try {
+        const user = await User.findOne({ 'emailAddress': userEmail});
+        return user;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving user');
+    }
+};
+
 addUser = async function (userDetails) {
     try {
         const user = new User(userDetails);
@@ -61,6 +72,7 @@ updateUser = async function (userId, userDetails) {
 module.exports = {
     getUsers,
     getUserById,
+    getUserByEmail,
     addUser,
     deleteUser,
     updateUser
