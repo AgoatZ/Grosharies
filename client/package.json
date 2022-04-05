@@ -6,15 +6,19 @@
   "dependencies": {
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
-    "@mui/material": "^5.5.2",
+    "@mui/icons-material": "^5.5.1",
+    "@mui/material": "^5.5.3",
     "axios": "^0.26.1",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.0",
-    "sass": "^1.49.9"
+    "sass": "^1.49.11"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-no-browser": "set \"BROWSER=none\" && react-scripts start",
+    "start-with-firefox": "set \"BROWSER=none\" && start firefox localhost:3000 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test"
   },

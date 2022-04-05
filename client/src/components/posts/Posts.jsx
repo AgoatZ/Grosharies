@@ -1,19 +1,27 @@
-import Post from "../post/Post";
-import "./Posts.scss";
+import PostCard from "../post/PostCard";
+import { Grid, Container } from '@mui/material';
+
+const containerStyle = {
+    border: { md: 'solid lightgray 1px', xl: 'solid lightgray 1px' },
+    borderRadius: '10px',
+}
 
 const Posts = (props) => {
     const posts = props.posts.map(post => {
         return (
-            <li className="post">
-                <Post title={post.headline} description={post.description} />
-            </li>
+            <Grid item key={post._id}>
+                <PostCard id={post._id} title={post.headline} description={post.description} />
+            </Grid>
         );
     });
 
     return (
-        <ul className="postsList">{posts}</ul>
+        <Container>
+            <Grid container spacing={{ xs: 1, sm: 1, md: 2, lg: 2 }} justifyContent='center' sx={containerStyle}>
+                {posts}
+            </Grid>
+        </Container>
     );
-  } 
-  
-  export default Posts;
-  
+}
+
+export default Posts;
