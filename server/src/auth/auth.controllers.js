@@ -63,10 +63,8 @@ const login = async (req, res) => {
 };
 
 const logout = async (req,res) => {
-    res.status(400).send({
-        'ststus': 'fail',
-        'error': 'not implemented'
-    });
+    req.user = null;
+    res.redirect('./api/auth/login');
 };
 
 module.exports = {

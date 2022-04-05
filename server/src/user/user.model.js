@@ -1,5 +1,6 @@
 const mongoose = require('../db');
-const userType = require("../enums/userType");
+const userType = require('../enums/userType');
+const Grocery = require('../grocery/grocery.model');
 
 const user = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -11,9 +12,9 @@ const user = new mongoose.Schema({
   rank: { type: Number, default: 0 },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   profileImage: String,
-  collectedHistory: [String]
+  collectedHistory: [{ type: Grocery.schema, required: true , default: []}]
 });
 
-const User = mongoose.model('User', user);
+const User = mongoose.model('User', user, 'User');
 
 module.exports = User;

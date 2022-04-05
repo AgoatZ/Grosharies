@@ -6,6 +6,6 @@ const tag = new mongoose.Schema({
   events: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }]
 });
 
-const Tag = mongoose.model('Tag', tag);
+const Tag = mongoose.model('Tag', tag, 'Tag');
 
 module.exports = Tag;

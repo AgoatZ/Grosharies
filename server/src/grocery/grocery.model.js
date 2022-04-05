@@ -11,6 +11,6 @@ const grocery = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" , required: true}
 });
 
-const Grocery = mongoose.model('Grocery', grocery);
+const Grocery = mongoose.model('Grocery', grocery, 'Grocery');
 
 module.exports = Grocery;
