@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.scss';
-import Posts from './components/Posts/Posts';
+import Posts from './components/posts/Posts';
 import Layout from './components/layout/Layout';
 import axios from 'axios';
 // import TasksList from './components/TaskList';
