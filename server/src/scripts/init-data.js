@@ -7,12 +7,16 @@ const Tag = require('../tag/tag.model');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://127.0.0.1:27017/grosharies',{ useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('Database connected successfully!')).then(() => init())
+    .then(() => console.log('Database connected successfully!')).then(() => init()).finally(() => mongoose.disconnect().then(() => console.log('Database disconnected successfully!')))
     .catch(() => console.log('Unable to connect to database'));
 
 mongoose.set('useFindAndModify', false);
 
-const init = () => {
+const init = async () => {
+    let posts = [];
+    let events = [];
+    let tags = [];
+    let groceries = [];
     for(let i=0; i<10 ; i++) {
         let user = new User({
             "firstName": "Jacob" + i,
@@ -33,7 +37,7 @@ const init = () => {
             },
             "status": "collected"
         });
-        post = post.save();
+        posts[i] = post;
 
         let event = new Event({
             "headline": "An Event " + i,
@@ -45,18 +49,17 @@ const init = () => {
             },
             "status": "ongoing"
         });
-        event = event.save();
+        events[i] = event;
     });
         let tag = new Tag({
             "name": "General Tag " + i
         });
-        tag = tag.save();
+        tags[i] = tag;
 
         let category = new Category({
             "name": "General Category " + i
         });
         category.save().then(cat => {
-        console.log("cat:  "+cat);
         let grocery = new Grocery({
             "name": "Random Grocery " + i,
             "amount": i,
@@ -64,7 +67,11 @@ const init = () => {
             "packing": "can",
             "category": cat._id
         });
-        grocery = grocery.save();
+        groceries[i] = grocery;
     });
     }
+    for await(const g of groceries) {await g.save(); }
+    for await(const t of tags) {await t.save(); }
+    for await(const e of events) {await e.save(); }
+    for await(const p of posts) {await p.save(); }
 }
