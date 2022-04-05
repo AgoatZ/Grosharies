@@ -5,12 +5,12 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const routeTasks = require('./src/routes/tasks');
-const routeUsers = require('./src/routes/users');
-const routePosts = require('./src/routes/posts');
-const routeGroceries = require('./src/routes/groceries');
-const routeEvents = require('./src/routes/events');
-const routeCategories = require('./src/routes/categories');
-const routeTags = require('./src/routes/tags');
+const routeUsers = require('./src/user/user.routes');
+const routePosts = require('./src/post/post.routes');
+const routeGroceries = require('./src/grocery/grocery.routes');
+const routeEvents = require('./src/event/event.routes');
+const routeCategories = require('./src/category/category.routes');
+const routeTags = require('./src/tag/tag.routes');
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
@@ -27,7 +27,4 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/../client/build/index.html'));
 });
 
-const port = process.env.PORT || 5000;
-app.listen(port);
-
-console.log(`Server is running \nlistening on port ${port}...`);
+module.exports = app;

@@ -1,4 +1,4 @@
-const package = {
+const packing = {
     CAN : "can",
     PLASTIC_BOX : "plastic box",
     PLASTIC_BOTTLE : "plastic bottle",
@@ -10,4 +10,4 @@ const package = {
     ALUMINIUM : "aluminium"
 };
 
-module.exports = package;
+module.exports = packing;

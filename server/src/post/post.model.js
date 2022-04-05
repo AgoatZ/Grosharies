@@ -1,6 +1,6 @@
 const mongoose = require('../db');
 const status = require('../enums/postStatus');
-const Grocery = require('./grocery');
+const Grocery = require('../grocery/grocery.model');
 const reply = require('../enums/postReply');
 
 const post = new mongoose.Schema({

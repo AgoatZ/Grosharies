@@ -2,11 +2,11 @@
   "name": "grosharies",
   "version": "0.2.0",
   "description": "GroSharies Project",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "start:prod": "node index.js",
+    "test": "jest --detectOpenHandles --forceExit",
+    "start": "node app.js",
+    "start:prod": "node app.js",
     "build": "cd ../client && npm install && npm run build"
   },
   "author": "Best Team in the World",
@@ -18,6 +18,8 @@
     "password-generator": "^2.2.0"
   },
   "devDependencies": {
-    "prettier": "^1.18.2"
+    "jest": "^27.5.1",
+    "prettier": "^1.18.2",
+    "supertest": "^6.2.2"
   }
 }
