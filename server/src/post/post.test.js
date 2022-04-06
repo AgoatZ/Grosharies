@@ -38,8 +38,9 @@ afterAll(done=>{
 
 
 describe('Testing Post API',()=>{
+    let newPost;
 
-    test('add new post, get post by id, get all posts',async ()=>{
+    test('add new post test',async ()=>{
         const response = await request(app).post('/api/posts')
         .send({
                 "headline": headline,
@@ -49,30 +50,36 @@ describe('Testing Post API',()=>{
                 "status": Status.COLLECTED
         });
         expect(response.statusCode).toEqual(200);
-        const newPost = response.body.post;
+        newPost = response.body.post;
         expect(newPost.headline).toEqual(headline);
         expect(newPost.userId).toEqual(userId);
         expect(newPost.address).toEqual(address);
         expect(Date.parse(newPost.pickUpDates[0].from)).toEqual(Date.parse(pickUpDates.from));
         expect(Date.parse(newPost.pickUpDates[0].until)).toEqual(Date.parse(pickUpDates.until));
         expect(newPost.status).toEqual(Status.COLLECTED);
-        
-        const response2 = await request(app).get('/api/posts/' + newPost._id);
-        expect(response2.statusCode).toEqual(200);
-        const post2 = response2.body.post;
-        expect(post2._id).toEqual(newPost._id);
-        expect(post2.headline).toEqual(headline);
-        expect(post2.userId).toEqual(userId);
-        expect(post2.address).toEqual(address);
-        expect(Date.parse(post2.pickUpDates[0].from)).toEqual(Date.parse(pickUpDates.from));
-        expect(Date.parse(post2.pickUpDates[0].until)).toEqual(Date.parse(pickUpDates.until));
-        expect(post2.status).toEqual(Status.COLLECTED);
+    });
 
-        const response3 = await request(app).get('/api/posts');
-        const posts = response3.body.posts;
+    test('get post by id test', async () => {
+        const response = await request(app).get('/api/posts/' + newPost._id);
+        expect(response.statusCode).toEqual(200);
+        const post = response.body.post;
+        expect(post._id).toEqual(newPost._id);
+        expect(post.headline).toEqual(headline);
+        expect(post.userId).toEqual(userId);
+        expect(post.address).toEqual(address);
+        expect(Date.parse(post.pickUpDates[0].from)).toEqual(Date.parse(pickUpDates.from));
+        expect(Date.parse(post.pickUpDates[0].until)).toEqual(Date.parse(pickUpDates.until));
+        expect(post.status).toEqual(Status.COLLECTED);
+    });
+
+    test('get all posts test', async () => {
+        const response = await request(app).get('/api/posts');
+        const posts = response.body.posts;
         expect(posts.length).toBeGreaterThanOrEqual(1);
+    });
 
-        const response4 = await request(app).post('/api/posts/' + newPost._id)
+    test('update post test', async () => {
+        const response = await request(app).post('/api/posts/' + newPost._id)
         .send({
                 "headline": headline + 'update',
                 "userId": userId,
@@ -80,9 +87,9 @@ describe('Testing Post API',()=>{
                 "pickUpDates": pickUpDates,
                 "status": Status.PARTIALLY_COLLECTED
         });
-        expect(response4.statusCode).toEqual(200);
-        const response5 = await request(app).get('/api/posts/' + newPost._id);
-        const updatedPost = response5.body.post;
+        expect(response.statusCode).toEqual(200);
+        const response2 = await request(app).get('/api/posts/' + newPost._id);
+        const updatedPost = response2.body.post;
         expect(updatedPost._id).toEqual(newPost._id);
         expect(updatedPost.headline).toEqual(headline + 'update');
         expect(updatedPost.userId).toEqual(userId);
@@ -92,47 +99,51 @@ describe('Testing Post API',()=>{
         expect(updatedPost.status).toEqual(Status.PARTIALLY_COLLECTED);
     });
 
-    test('get posts by user, category and tag test', async ()=> {
-    for(i=0; i<5; i++) {
-    const response = await request(app).post('/api/posts').send({
-            "headline": headline + i,
-            "userId": userId,
-            "address": address,
-            "pickUpDates": pickUpDates,
-            "status": Status.COLLECTED,
-            "tags": "623ef26d9945413bb822b12a",
-            "content": [
-                {
-                    "name": "Tomato",
-                    "amount": 9,
-                    "scale": Scale.UNIT,
-                    "packing": Packing.PAPER_BAG,
-                    "category": "62471b06d433f84670e0c6e4"
-                },
-                {
-                    "name": "Melon",
-                    "amount": 5,
-                    "scale": Scale.KILOGRAM,
-                    "packing": Packing.PAPER_BOX,
-                    "category": "623eed4e4a8a7d3c88258479"
-                }
-            ]
-        });
-    }
-    expect(response.statusCode).toEqual(200);
-    const response2 = await request(app).get('/api/posts/?user=' + userId);
-    expect(response2.statusCode).toEqual(200);
-    const postsByUser = response2.body.posts;
-    expect(postsByUser.length).toBeGreaterThanOrEqual(5);
+    test('get posts by user test', async ()=> {
+        for(i=0; i<5; i++) {
+            const response = await request(app).post('/api/posts').send({
+                "headline": headline + i,
+                "userId": userId,
+                "address": address,
+                "pickUpDates": pickUpDates,
+                "status": Status.COLLECTED,
+                "tags": "623ef26d9945413bb822b12a",
+                "content": [
+                    {
+                        "name": "Tomato",
+                        "amount": 9,
+                        "scale": Scale.UNIT,
+                        "packing": Packing.PAPER_BAG,
+                        "category": "62471b06d433f84670e0c6e4"
+                    },
+                    {
+                        "name": "Melon",
+                        "amount": 5,
+                        "scale": Scale.KILOGRAM,
+                        "packing": Packing.PAPER_BOX,
+                        "category": "623eed4e4a8a7d3c88258479"
+                    }
+                ]
+            });
+        }
+        expect(response.statusCode).toEqual(200);
+        const response2 = await request(app).get('/api/posts/?user=' + userId);
+        expect(response2.statusCode).toEqual(200);
+        const postsByUser = response2.body.posts;
+        expect(postsByUser.length).toBeGreaterThanOrEqual(5);
+    });
 
-    const response3 = await request(app).get('/api/posts/?category=' + "623eed4e4a8a7d3c88258479");
-    expect(response3.statusCode).toEqual(200);
-    const postsByCategory = response3.body.posts;
-    expect(postsByCategory.length).toBeGreaterThanOrEqual(5);   
-    
-    const response4 = await request(app).get('/api/posts/?tag=' + "623ef26d9945413bb822b12a");
-    expect(response4.statusCode).toEqual(200);
-    const postsByTag = response4.body.posts;
-    expect(postsByTag.length).toBeGreaterThanOrEqual(5);
-});
+    test('get posts by category test', async () => {
+        const response = await request(app).get('/api/posts/?category=' + "623eed4e4a8a7d3c88258479");
+        expect(response.statusCode).toEqual(200);
+        const postsByCategory = response.body.posts;
+        expect(postsByCategory.length).toBeGreaterThanOrEqual(5);   
+    });
+
+    test('get posts by tag test', async () => {
+        const response = await request(app).get('/api/posts/?tag=' + "623ef26d9945413bb822b12a");
+        expect(response.statusCode).toEqual(200);
+        const postsByTag = response.body.posts;
+        expect(postsByTag.length).toBeGreaterThanOrEqual(5);
+    });
 });

@@ -29,6 +29,7 @@ afterAll(done=>{
 
 
 describe('Testing Grocery API',()=>{
+    let newGrocery;
 
     test('add new grocery, get grocery by id, get all groceries',async ()=>{
         const response = await request(app).post('/api/groceries')
@@ -40,23 +41,29 @@ describe('Testing Grocery API',()=>{
             "category": categoryId
         });
         expect(response.statusCode).toEqual(200);
-        const newGrocery = response.body.grocery;
+        newGrocery = response.body.grocery;
         expect(newGrocery.name).toEqual(name);
-        
-        const response2 = await request(app).get('/api/groceries/' + newGrocery._id);
-        expect(response2.statusCode).toEqual(200);
-        const grocery2 = response2.body.grocery;
-        expect(grocery2._id).toEqual(newGrocery._id);
-        expect(grocery2.name).toEqual(name);
-        expect(grocery2.amount).toEqual(amount);
-        expect(grocery2.scale).toEqual(Scale.KILOGRAM);
-        expect(grocery2.packing).toEqual(Packing.GLASS_BOTTLE);
+    });
 
-        const response3 = await request(app).get('/api/groceries');
-        const groceries = response3.body.groceries;
+    test('get grocery by id test', async () => {
+        const response = await request(app).get('/api/groceries/' + newGrocery._id);
+        expect(response.statusCode).toEqual(200);
+        const grocery = response.body.grocery;
+        expect(grocery._id).toEqual(newGrocery._id);
+        expect(grocery.name).toEqual(name);
+        expect(grocery.amount).toEqual(amount);
+        expect(grocery.scale).toEqual(Scale.KILOGRAM);
+        expect(grocery.packing).toEqual(Packing.GLASS_BOTTLE);
+    });
+
+    test('get all groceries', async () => {
+        const response = await request(app).get('/api/groceries');
+        const groceries = response.body.groceries;
         expect(groceries.length).toBeGreaterThanOrEqual(1);
+    });
 
-        const response4 = await request(app).post('/api/groceries/' + newGrocery._id)
+    test('update grocery test', async () => {
+        const response = await request(app).post('/api/groceries/' + newGrocery._id)
         .send({
             "name": name + 'update',
             "amount": amount + 10,
@@ -64,14 +71,13 @@ describe('Testing Grocery API',()=>{
             "packing": Packing.PLASTIC_BAG,
             "category": categoryId
         });
-        expect(response4.statusCode).toEqual(200);
-        const response5 = await request(app).get('/api/groceries/' + newGrocery._id);
-        const updatedGrocery = response5.body.grocery;
+        expect(response.statusCode).toEqual(200);
+        const response2 = await request(app).get('/api/groceries/' + newGrocery._id);
+        const updatedGrocery = response2.body.grocery;
         expect(updatedGrocery._id).toEqual(newGrocery._id);
         expect(updatedGrocery.name).toEqual(name + 'update');
         expect(updatedGrocery.amount).toEqual(amount + 10);
         expect(updatedGrocery.scale).toEqual(Scale.LITRE);
         expect(updatedGrocery.packing).toEqual(Packing.PLASTIC_BAG);
     });
-
 });
