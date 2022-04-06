@@ -33,7 +33,7 @@ const register = async (req,res) => {
 
 const login = async (req, res) => {
     console.log('login');
-    const email = req.body.email;
+    const email = req.body.emailAddress;
     const password = req.body.password;
 
     if(email == null || password == null) {
