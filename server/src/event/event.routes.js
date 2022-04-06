@@ -4,18 +4,18 @@ const EventController = require('./event.controllers');
 const router = express.Router();
 const authenticate = require('../common/middlewares/authentication');
 
-router.get('/', authenticate, EventController.getEvents);
+router.get('/', EventController.getEvents);
 
-router.get('/:id', authenticate, EventController.getEventById);
+router.get('/:id', EventController.getEventById);
 
-router.get('/user=:id', authenticate, EventController.getEventsByUser);
+router.get('/user=:id', EventController.getEventsByUser);
 
-router.get('/tag=:id', authenticate, EventController.getEventsByTag);
+router.get('/tag=:id', EventController.getEventsByTag);
 
-router.post('/', authenticate, EventController.addEvent);
+router.post('/', EventController.addEvent);
 
-router.delete('/:id', authenticate, EventController.deleteEvent);
+router.delete('/:id', EventController.deleteEvent);
 
-router.post('/:id', authenticate, EventController.updateEvent);
+router.post('/:id', EventController.updateEvent);
 
 module.exports = router;

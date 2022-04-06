@@ -6,17 +6,17 @@ const Category = require('../category/category.model');
 const Tag = require('../tag/tag.model');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/grosharies',{ useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('Database connected successfully!')).then(() => init()).finally(() => mongoose.disconnect().then(() => console.log('Database disconnected successfully!')))
+mongoose.connect('mongodb://127.0.0.1:27017/grosharies',{ useNewUrlParser: true, useUnifiedTopology: true });
+    mongoose.connection.once('connected', () => console.log('Database connected successfully!')).then(() => init()).finally(() => mongoose.disconnect().then(() => console.log('Database disconnected successfully!')))
     .catch(() => console.log('Unable to connect to database'));
 
 mongoose.set('useFindAndModify', false);
 
 const init = async () => {
+    let groceries = [];
     let posts = [];
     let events = [];
     let tags = [];
-    let groceries = [];
     for(let i=0; i<10 ; i++) {
         let user = new User({
             "firstName": "Jacob" + i,
@@ -25,7 +25,7 @@ const init = async () => {
             "password": "123456",
             "phone": "052373555" + i
         });
-        user.save().then(dbUser => {
+        await user.save().then(dbUser => {
 
         let post = new Post({
             "headline": "A Post " + i,
@@ -59,7 +59,8 @@ const init = async () => {
         let category = new Category({
             "name": "General Category " + i
         });
-        category.save().then(cat => {
+
+        await category.save().then(cat => {
         let grocery = new Grocery({
             "name": "Random Grocery " + i,
             "amount": i,
@@ -70,6 +71,7 @@ const init = async () => {
         groceries[i] = grocery;
     });
     }
+    
     for await(const g of groceries) {await g.save(); }
     for await(const t of tags) {await t.save(); }
     for await(const e of events) {await e.save(); }

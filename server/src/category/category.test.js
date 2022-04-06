@@ -23,31 +23,38 @@ afterAll(done=>{
 
 
 describe('Testing Category API',()=>{
+    let newCategory;
 
-    test('add new category, get category by id, get all categories',async ()=>{
+    test('add new category', async ()=>{
         const response = await request(app).post('/api/categories')
         .send({ "name": name });
         expect(response.statusCode).toEqual(200);
-        const newCategory = response.body.category;
+        newCategory = response.body.category;
         expect(newCategory.name).toEqual(name);
-        
-        const response2 = await request(app).get('/api/categories/' + newCategory._id);
-        expect(response2.statusCode).toEqual(200);
-        const category2 = response2.body.category;
-        expect(category2._id).toEqual(newCategory._id);
-        expect(category2.name).toEqual(name);
+    });
 
-        const response3 = await request(app).get('/api/categories');
-        const categories = response3.body.categories;
+    test('get category by id', async () => {
+        const response = await request(app).get('/api/categories/' + newCategory._id);
+        expect(response.statusCode).toEqual(200);
+        const category = response.body.category;
+        expect(category._id).toEqual(newCategory._id);
+        expect(category.name).toEqual(name);
+    });
+
+    test('get all categories', async () => {
+        const response = await request(app).get('/api/categories');
+        const categories = response.body.categories;
         expect(categories.length).toBeGreaterThanOrEqual(1);
+    });
 
-        const response4 = await request(app).post('/api/categories/' + newCategory._id)
+    test('update category', async () => {
+        const response = await request(app).post('/api/categories/' + newCategory._id)
         .send({
                 "name": name + 'update'
         });
-        expect(response4.statusCode).toEqual(200);
-        const response5 = await request(app).get('/api/categories/' + newCategory._id);
-        const updatedCategory = response5.body.category;
+        expect(response.statusCode).toEqual(200);
+        const response2 = await request(app).get('/api/categories/' + newCategory._id);
+        const updatedCategory = response2.body.category;
         expect(updatedCategory._id).toEqual(newCategory._id);
         expect(updatedCategory.name).toEqual(name + 'update');
     });

@@ -17,7 +17,9 @@ getTags = async function (query) {
 getTagById = async function (tagId) {
     try {
         const tag = await Tag.findById(tagId);
-        return tag;
+        if(tag != null) {
+            return tag;
+        } else throw Error("No tag with that id exists");
     } catch (e) {
         console.log('repository error: ' + e.message);
 

@@ -35,9 +35,9 @@ afterAll(done=>{
 });
 
 
-describe('Testing Event API',()=>{
-
-    test('add new event, get event by id, get all events',async ()=>{
+describe('Testing Event API', () => {
+    let newEvent;
+    test('add new event test', async ()=> {
         const response = await request(app).post('/api/events')
         .send({
                 "headline": headline,
@@ -47,30 +47,36 @@ describe('Testing Event API',()=>{
                 "status": Status.ONGOING
         });
         expect(response.statusCode).toEqual(200);
-        const newEvent = response.body.event;
+        newEvent = response.body.event;
         expect(newEvent.headline).toEqual(headline);
         expect(newEvent.userId).toEqual(userId);
         expect(newEvent.address).toEqual(address);
         expect(Date.parse(newEvent.happeningDates[0].from)).toEqual(Date.parse(happeningDates.from));
         expect(Date.parse(newEvent.happeningDates[0].until)).toEqual(Date.parse(happeningDates.until));
         expect(newEvent.status).toEqual(Status.ONGOING);
-        
-        const response2 = await request(app).get('/api/events/' + newEvent._id);
-        expect(response2.statusCode).toEqual(200);
-        const event2 = response2.body.event;
-        expect(event2._id).toEqual(newEvent._id);
-        expect(event2.headline).toEqual(headline);
-        expect(event2.userId).toEqual(userId);
-        expect(event2.address).toEqual(address);
-        expect(Date.parse(event2.happeningDates[0].from)).toEqual(Date.parse(happeningDates.from));
-        expect(Date.parse(event2.happeningDates[0].until)).toEqual(Date.parse(happeningDates.until));
-        expect(event2.status).toEqual(Status.ONGOING);
+    });
 
-        const response3 = await request(app).get('/api/events');
-        const events = response3.body.events;
+    test('get event by id test', async () => {
+        const response = await request(app).get('/api/events/' + newEvent._id);
+        expect(response.statusCode).toEqual(200);
+        const event = response.body.event;
+        expect(event._id).toEqual(newEvent._id);
+        expect(event.headline).toEqual(headline);
+        expect(event.userId).toEqual(userId);
+        expect(event.address).toEqual(address);
+        expect(Date.parse(event.happeningDates[0].from)).toEqual(Date.parse(happeningDates.from));
+        expect(Date.parse(event.happeningDates[0].until)).toEqual(Date.parse(happeningDates.until));
+        expect(event.status).toEqual(Status.ONGOING);
+    });
+
+    test('get all events test', async () => {
+        const response = await request(app).get('/api/events');
+        const events = response.body.events;
         expect(events.length).toBeGreaterThanOrEqual(1);
+    });
 
-        const response4 = await request(app).post('/api/events/' + newEvent._id)
+    test('update event test', async () => {
+        const response = await request(app).post('/api/events/' + newEvent._id)
         .send({
                 "headline": headline + 'update',
                 "userId": userId,
@@ -78,9 +84,9 @@ describe('Testing Event API',()=>{
                 "happeningDates": happeningDates,
                 "status": Status.FUTURE
         });
-        expect(response4.statusCode).toEqual(200);
-        const response5 = await request(app).get('/api/events/' + newEvent._id);
-        const updatedEvent = response5.body.event;
+        expect(response.statusCode).toEqual(200);
+        const response2 = await request(app).get('/api/events/' + newEvent._id);
+        const updatedEvent = response2.body.event;
         expect(updatedEvent._id).toEqual(newEvent._id);
         expect(updatedEvent.headline).toEqual(headline + 'update');
         expect(updatedEvent.userId).toEqual(userId);
@@ -90,7 +96,7 @@ describe('Testing Event API',()=>{
         expect(updatedEvent.status).toEqual(Status.FUTURE);
     });
 
-    test('get events by user and tag test', async ()=> {
+    test('get events by user test', async ()=> {
         for(i=0; i<5; i++) {
         const response = await request(app).post('/api/events').send({
                 "headline": headline + i,
@@ -106,10 +112,12 @@ describe('Testing Event API',()=>{
         expect(response2.statusCode).toEqual(200);
         const eventsByUser = response2.body.events;
         expect(eventsByUser.length).toBeGreaterThanOrEqual(5); 
-        
-        const response3 = await request(app).get('/api/events/?tag=' + "623ef26d9945413bb822b12a");
-        expect(response3.statusCode).toEqual(200);
-        const eventsByTag = response3.body.events;
+    });
+
+    test('get events by tag test', async ()=> {
+        const response = await request(app).get('/api/events/?tag=' + "623ef26d9945413bb822b12a");
+        expect(response.statusCode).toEqual(200);
+        const eventsByTag = response.body.events;
         expect(eventsByTag.length).toBeGreaterThanOrEqual(5);
     });
 
