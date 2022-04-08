@@ -79,7 +79,7 @@ describe('Testing Post API',()=>{
     });
 
     test('update post test', async () => {
-        const response = await request(app).post('/api/posts/' + newPost._id)
+        const response = await request(app).put('/api/posts/' + newPost._id)
         .send({
                 "headline": headline + 'update',
                 "userId": userId,

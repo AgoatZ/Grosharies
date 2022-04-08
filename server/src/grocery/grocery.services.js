@@ -25,6 +25,17 @@ getGroceryById = async function (groceryId) {
     }
 };
 
+getGroceryByName = async function (groceryName) {
+    try {
+        const grocery = await Repository.getGroceryByName(groceryName);
+        return grocery;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error('Error while Retrieving Grocery');
+    }
+};
+
 addGrocery = async function (groceryDetails) {
     try {
         const grocery = await Repository.addGrocery(groceryDetails);
@@ -61,6 +72,7 @@ updateGrocery = async function (groceryId, groceryDetails) {
 module.exports = {
     getGroceries,
     getGroceryById,
+    getGroceryByName,
     addGrocery,
     deleteGrocery,
     updateGrocery

@@ -3,6 +3,7 @@ const request = require('supertest');
 const mongoosse = require('../db');
 const { response } = require('.././../index');
 const Event = require('./event.model');
+const User = require('../user/user.model');
 const Status = require('../enums/eventStatus');
 
 const headline = 'Test Event';
@@ -15,8 +16,9 @@ const happeningDates = {
 
 beforeAll(done=>{
     Event.remove({ 'headline' : headline }, (err)=>{});
+    User.remove({'emailAddress': 'test@test.com'}, (err) => {});
     for(i=0; i<5; i++) {
-        Event.remove({'headline' : headline +''+ i}, (err)=>{})
+        Event.remove({'headline' : headline +''+ i}, (err)=>{});
     }
     Event.remove({ 'headline' : headline + 'update' }, (err)=>{
         done();
@@ -25,6 +27,7 @@ beforeAll(done=>{
 
 afterAll(done=>{
     Event.remove({ 'headline' : headline }, (err)=>{});
+    User.remove({'emailAddress': 'test@test.com'}, (err) => {});
     for(i=0; i<5; i++) {
         Event.remove({'headline' : headline +''+ i}, (err)=>{})
     }
@@ -37,7 +40,23 @@ afterAll(done=>{
 
 describe('Testing Event API', () => {
     let newEvent;
+    let accessToken;
     test('add new event test', async ()=> {
+
+        const regResponse = await request(app).post('/api/auth/register').send({
+            "firstName": "fake name",
+            "lastName": "fake last",
+            "emailAddress": "test@test.com",
+            "password": "12345678",
+            "phone": "0543212345"
+        });
+    
+        const logResponse = await request(app).post('/api/auth/login').send({
+            "emailAddress": "test@test.com",
+            "password": "12345678"
+        });
+        accessToken = logResponse.body.accessToken;
+
         const response = await request(app).post('/api/events')
         .send({
                 "headline": headline,
@@ -70,13 +89,13 @@ describe('Testing Event API', () => {
     });
 
     test('get all events test', async () => {
-        const response = await request(app).get('/api/events');
+        const response = await request(app).get('/api/events').set({ Authorization: 'barer '+accessToken });
         const events = response.body.events;
         expect(events.length).toBeGreaterThanOrEqual(1);
     });
 
     test('update event test', async () => {
-        const response = await request(app).post('/api/events/' + newEvent._id)
+        const response = await request(app).put('/api/events/' + newEvent._id)
         .send({
                 "headline": headline + 'update',
                 "userId": userId,
@@ -98,7 +117,8 @@ describe('Testing Event API', () => {
 
     test('get events by user test', async ()=> {
         for(i=0; i<5; i++) {
-        const response = await request(app).post('/api/events').send({
+        const response = await request(app).post('/api/events')
+        .send({
                 "headline": headline + i,
                 "userId": userId,
                 "address": address,
@@ -108,14 +128,14 @@ describe('Testing Event API', () => {
             });
         }
         expect(response.statusCode).toEqual(200);
-        const response2 = await request(app).get('/api/events/?user=' + userId);
+        const response2 = await request(app).get('/api/events/?user=' + userId).set({ Authorization: 'barer '+accessToken });
         expect(response2.statusCode).toEqual(200);
         const eventsByUser = response2.body.events;
         expect(eventsByUser.length).toBeGreaterThanOrEqual(5); 
     });
 
     test('get events by tag test', async ()=> {
-        const response = await request(app).get('/api/events/?tag=' + "623ef26d9945413bb822b12a");
+        const response = await request(app).get('/api/events/?tag=' + "623ef26d9945413bb822b12a").set({ Authorization: 'barer '+accessToken });
         expect(response.statusCode).toEqual(200);
         const eventsByTag = response.body.events;
         expect(eventsByTag.length).toBeGreaterThanOrEqual(5);

@@ -65,7 +65,7 @@ describe('Testing User API',()=>{
     });
 
     test('update user', async () => {
-        const response = await request(app).post('/api/users/' + newUser._id)
+        const response = await request(app).put('/api/users/' + newUser._id)
         .send({
             "firstName": firstName + 'update',
             "lastName": lastName + 'update',

@@ -63,7 +63,7 @@ describe('Testing Grocery API',()=>{
     });
 
     test('update grocery test', async () => {
-        const response = await request(app).post('/api/groceries/' + newGrocery._id)
+        const response = await request(app).put('/api/groceries/' + newGrocery._id)
         .send({
             "name": name + 'update',
             "amount": amount + 10,

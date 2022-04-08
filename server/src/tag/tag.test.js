@@ -48,7 +48,7 @@ describe('Testing Tag API',()=>{
     });
 
     test('update tag', async () => {
-        const response = await request(app).post('/api/tags/' + newTag._id)
+        const response = await request(app).put('/api/tags/' + newTag._id)
         .send({
                 "name": name + 'update'
         });

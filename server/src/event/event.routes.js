@@ -4,7 +4,7 @@ const EventController = require('./event.controllers');
 const router = express.Router();
 const authenticate = require('../common/middlewares/authentication');
 
-router.get('/', EventController.getEvents);
+router.get('/', authenticate, EventController.getEvents);
 
 router.get('/:id', EventController.getEventById);
 
@@ -16,6 +16,6 @@ router.post('/', EventController.addEvent);
 
 router.delete('/:id', EventController.deleteEvent);
 
-router.post('/:id', EventController.updateEvent);
+router.put('/:id', EventController.updateEvent);
 
 module.exports = router;

@@ -48,7 +48,7 @@ describe('Testing Category API',()=>{
     });
 
     test('update category', async () => {
-        const response = await request(app).post('/api/categories/' + newCategory._id)
+        const response = await request(app).put('/api/categories/' + newCategory._id)
         .send({
                 "name": name + 'update'
         });

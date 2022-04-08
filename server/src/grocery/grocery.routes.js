@@ -7,10 +7,12 @@ router.get('/', GroceryController.getGroceries);
 
 router.get('/:id', GroceryController.getGroceryById);
 
+router.get('/name=:name', GroceryController.getGroceryByName);
+
 router.post('/', GroceryController.addGrocery);
 
 router.delete('/:id', GroceryController.deleteGrocery);
 
-router.post('/:id', GroceryController.updateGrocery);
+router.put('/:id', GroceryController.updateGrocery);
 
 module.exports = router;
