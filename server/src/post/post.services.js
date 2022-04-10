@@ -122,7 +122,10 @@ updatePost = async function (postId, postDetails, userId) {
 
 interrestedUserReminder = async (userId, postId) => {
     const user = UserRepository.getUserById(userId);
-    const remind = phone => console.log("UUSER REMINDER!!!");
+    const remind = async (phone) => {
+        console.log("TAKEN???");
+        setTimeout(decide, timeToWait);
+    }
 
     setTimeout(remind(user.phone), timeToWait);
 };

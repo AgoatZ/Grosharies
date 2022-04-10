@@ -1,4 +1,4 @@
-const mongoose = require('../db');
+const mongoose = require('mongoose');
 const status = require('../enums/eventStatus');
 
 const event = new mongoose.Schema({

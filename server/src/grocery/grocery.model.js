@@ -1,4 +1,4 @@
-const mongoose = require('../db');
+const mongoose = require('mongoose');
 const packing = require('../enums/packing');
 const scale = require('../enums/scale');
 const Category = require('../category/category.model');

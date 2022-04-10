@@ -1,4 +1,4 @@
-const mongoose = require('../db');
+const mongoose = require('mongoose');
 const userType = require('../enums/userType');
 const Grocery = require('../grocery/grocery.model');
 

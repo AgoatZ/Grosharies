@@ -1,4 +1,4 @@
-const mongoose = require('../db');
+const mongoose = require('mongoose');
 const status = require('../enums/postStatus');
 const Grocery = require('../grocery/grocery.model');
 const reply = require('../enums/postReply');

@@ -7,7 +7,7 @@
     "test": "jest --detectOpenHandles --forceExit",
     "start": "node app.js",
     "start:prod": "node app.js",
-    "init-data": "node app.js && node ./src/scripts/init-data.js",
+    "db:init": "node ./src/scripts/init-data.js",
     "build": "cd ../client && npm install && npm run build"
   },
   "author": "Best Team in the World",
