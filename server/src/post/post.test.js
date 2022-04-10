@@ -47,7 +47,23 @@ describe('Testing Post API',()=>{
                 "userId": userId,
                 "address": address,
                 "pickUpDates": pickUpDates,
-                "status": Status.COLLECTED
+                "status": Status.COLLECTED,
+                "content": [
+                    {
+                        "name": "Tomato",
+                        "amount": 9,
+                        "scale": Scale.UNIT,
+                        "packing": Packing.PAPER_BAG,
+                        "category": "62471b06d433f84670e0c6e4"
+                    },
+                    {
+                        "name": "Melon",
+                        "amount": 5,
+                        "scale": Scale.KILOGRAM,
+                        "packing": Packing.PAPER_BOX,
+                        "category": "623eed4e4a8a7d3c88258479"
+                    }
+                ]
         });
         expect(response.statusCode).toEqual(200);
         newPost = response.body.post;
@@ -85,7 +101,23 @@ describe('Testing Post API',()=>{
                 "userId": userId,
                 "address": address + 'update',
                 "pickUpDates": pickUpDates,
-                "status": Status.PARTIALLY_COLLECTED
+                "status": Status.PARTIALLY_COLLECTED,
+                "content": [
+                    {
+                        "name": "Tomato",
+                        "amount": 5,
+                        "scale": Scale.UNIT,
+                        "packing": Packing.PAPER_BAG,
+                        "category": "62471b06d433f84670e0c6e4"
+                    },
+                    {
+                        "name": "Melon",
+                        "amount": 2,
+                        "scale": Scale.KILOGRAM,
+                        "packing": Packing.PAPER_BOX,
+                        "category": "623eed4e4a8a7d3c88258479"
+                    }
+                ]
         });
         expect(response.statusCode).toEqual(200);
         const response2 = await request(app).get('/api/posts/' + newPost._id);

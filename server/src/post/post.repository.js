@@ -2,6 +2,7 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Post = require('./post.model');
 const router = express.Router();
+const reply = require('../enums/postReply');
 
 getPosts = async (query) => {
     try {
@@ -58,6 +59,17 @@ getPostsByTag = async function (tagId) {
     }
 };
 
+getPostsByCollector = async function (userId) {
+    try {
+        const posts = await Post.find({ 'repliers': { 'user': userId, 'reply':  reply.PARTIALLY_TOOK || reply.TOOK } });
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
 
 addPost = async function (postDetails) {
     try {
@@ -98,6 +110,7 @@ module.exports = {
     getPostsByUser,
     getPostsByCategory,
     getPostsByTag,
+    getPostsByCollector,
     addPost,
     deletePost,
     updatePost

@@ -65,10 +65,22 @@ updateUser = async function (req, res, next) {
     }
 };
 
+getPickupHistory = async (req, res, next) => {
+    try{
+        const history = await UserService.getPickupHistory(req.params.id);
+        return res.status(200).json({ history: history, message: "Succesfully History Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 module.exports = {
     getUsers,
     getUserById,
     addUser,
     deleteUser,
-    updateUser
+    updateUser,
+    getPickupHistory
 }

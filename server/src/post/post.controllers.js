@@ -1,5 +1,4 @@
 const PostService = require('./post.services');  
-const GroceryService = require('../grocery/grocery.services');
 
 getPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
@@ -92,19 +91,7 @@ updatePost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        let amountTaken = 0;
         const oldPost = await PostService.updatePost(req.params.id, req.body);
-        const newPost = req.body;
-        oldPost.content.forEach(grocery => {
-            newPost.content.forEach(newGrocery => {
-                if(newGrocery.name.equals(grocery.name)) {
-                    amountTaken = grocery.amount - newGrocery.amount;
-                }
-            });
-            let toUpdate = GroceryService.getGroceryByName(grocery.name);
-            toUpdate.amount += amountTaken;
-            GroceryService.updateGrocery(toUpdate.id, toUpdate);
-        });
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('controller error: ' + e.message);

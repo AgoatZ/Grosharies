@@ -12,7 +12,10 @@ const user = new mongoose.Schema({
   rank: { type: Number, default: 0 },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   profileImage: String,
-  collectedHistory: [{ type: Grocery.schema, required: true , default: []}]
+  collectedHistory: [
+    { grocery: [{ type: Grocery.schema, required: true, default: [] }] },
+    { post: { type: mongoose.Schema.Types.ObjectId, ref: "Post" } }
+  ]
 });
 
 const User = mongoose.model('User', user, 'User');

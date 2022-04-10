@@ -13,4 +13,6 @@ router.delete('/:id', UserController.deleteUser);
 
 router.put('/:id', UserController.updateUser);
 
+router.get('/pickuphistory/:id', UserController.getPickupHistory);
+
 module.exports = router;
