@@ -23,6 +23,10 @@ const appTheme = createTheme({
       contrastText: '#fff'
     },
   },
+  typography: {
+    fontFamily: ["'Quicksand'", 'sans-serif'].join(','), 
+    button: { textTransform: "capitalize", fontSize:16, letterSpacing:'0.07em' },
+  },
 });
 
 const App = () => {

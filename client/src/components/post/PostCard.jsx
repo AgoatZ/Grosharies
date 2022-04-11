@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button, CardActionArea, CardActions, Card, CardContent, CardMedia, Typography } from '@mui/material';
+import { PostImage } from '../common/Images';
 
+//TODO: set content acording to height 
 const cardStyle = {
-  minWidth: 300,
-  minHeight: 305,
+  width: 300,
+  height: 305,
   padding: 1,
   textAlign: 'center'
 }
@@ -20,7 +22,8 @@ const PostCard = (props) => {
   return (
     <Card>
       <CardActionArea sx={cardStyle} onClick={toPostPage} >
-        <CardMedia component="img" height="140" image="/assets/default-post.svg" />
+        <CardMedia height='128' image='/assets/default-post-image.svg'/>
+          <PostImage height='128'/>
         <CardContent>
           <Typography gutterBottom variant="h5">{props.title}</Typography>
           <Typography variant="body2" color="text.secondary">{props.description}</Typography>

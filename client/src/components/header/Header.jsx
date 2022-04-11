@@ -1,28 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { UserImageThumbnail } from '../common/Images';
 
 const pages = ['Groceries', 'Events'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const Header = () => {
   let navigate = useNavigate();
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
+  const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
+  const handleCloseNavMenu = () => setAnchorElNav(null);
+  const handleCloseUserMenu = () => setAnchorElUser(null);
 
   const handleClickItemNavMenu = (event) => {
     setAnchorElNav(null);
@@ -36,6 +30,32 @@ const Header = () => {
     navigate("./" + target, {});
   };
 
+  const [userData, setUser] = useState({});
+  const [noUser, setUserState] = useState(() => {
+
+    //TODO: add request to get user's status
+
+    //if no user is signed in
+    //return true;
+
+    //if the user is signed in
+    const fakeUser = {
+      firstName: "Ilan",
+      lastName: "Rozenfeld",
+      emailAddress: "Ilan@Walla.com",
+      phone: "05000000000",
+      accountType: "user",
+      rank: 0,
+      posts: [],
+      profileImage: "/assets/ohad.png",
+      collectedHistory: []
+    };
+
+    setUser(fakeUser);
+
+    return false;
+  });
+  
   return (
     <AppBar position="fixed">
       <Container maxWidth="xl">
@@ -43,9 +63,8 @@ const Header = () => {
 
           {/* Large Screen Setup */}
           <Button href='/' sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
-            <img src={'assets/logo_name_white.png'} height='30px' width='100px' />
+            <img src={'assets/logo_label_white.png'} height='30px' width='100px' />
           </Button>
-
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button key={page} onClick={handleClickItemNavMenu}
@@ -69,6 +88,7 @@ const Header = () => {
             <Menu
               id="menu-appbar"
               keepMounted
+              disableScrollLock
               anchorEl={anchorElNav}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
               transformOrigin={{ vertical: 'top', horizontal: 'left', }}
@@ -83,24 +103,24 @@ const Header = () => {
               ))}
             </Menu>
           </Box>
-
           <Button href='/' sx={{ justifyContent: 'left', flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <img src={'assets/logo_name_white.png'} height='30px' width='100px' />
+            <img src={'assets/logo_label_white.png'} height='30px' width='100px' />
           </Button>
 
           {/* Profile Icon Setup */}
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0 }} hidden={Boolean(noUser)}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="No Account" src="/assets/ohad.png" />
+                <UserImageThumbnail src={userData.profileImage}/>
               </IconButton>
             </Tooltip>
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
               keepMounted
+              disableScrollLock
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
@@ -111,6 +131,11 @@ const Header = () => {
                 </MenuItem>
               ))}
             </Menu>
+          </Box>
+
+          {/* Profile Icon Setup */}
+          <Box sx={{ flexGrow: 0 }} hidden={Boolean(!noUser)}>
+            <Button sx={{ color: 'white' }}>Sign In \ Create account</Button>
           </Box>
 
         </Toolbar>
