@@ -1,4 +1,4 @@
-const PostService = require('./post.services');  
+const PendingService = require('./pending.services');  
 
 getPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
@@ -6,7 +6,7 @@ getPosts = async function (req, res, next) {
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getPosts({}, page, limit);
+        const posts = await PendingService.getPosts({}, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -18,7 +18,7 @@ getPosts = async function (req, res, next) {
 getPostById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const post = await PostService.getPostById(req.params.id);
+        const post = await PendingService.getPostById(req.params.id);
         return res.status(200).json({ post: post, message: "Succesfully Post Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -30,7 +30,7 @@ getPostById = async function (req, res, next) {
 getPostsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PostService.getPostsByUser(req.params.id);
+        const posts = await PendingService.getPostsByUser(req.params.id);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -42,7 +42,7 @@ getPostsByUser = async function (req, res, next) {
 getPostsByCategory = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PostService.getPostsByCategory(req.params.id);
+        const posts = await PendingService.getPostsByCategory(req.params.id);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -54,7 +54,7 @@ getPostsByCategory = async function (req, res, next) {
 getPostsByTag = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PostService.getPostsByTag(req.params.id);
+        const posts = await PendingService.getPostsByTag(req.params.id);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -66,7 +66,31 @@ getPostsByTag = async function (req, res, next) {
 getPostsByCollector = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PostService.getPostsByCollector(req.params.id);
+        const posts = await PendingService.getPostsByCollector(req.params.id);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+getAllPendingPosts = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PendingService.getAllPendingPosts();
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+getAllFinishedPosts = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PendingService.getAllFinishedPosts();
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -79,7 +103,7 @@ addPost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const post = await PostService.addPost(req.body);
+        const post = await PendingService.addPost(req.body);
         return res.status(200).json({ post: post, message: "Succesfully Posts Added" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -90,7 +114,7 @@ addPost = async function (req, res, next) {
 
 deletePost = async function (req, res, next) {
     try {
-        const post = await PostService.deletePost(req.params.id);
+        const post = await PendingService.deletePost(req.params.id);
         return res.status(200).json({ post: post, message: "Succesfully Posts Deleted" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -103,7 +127,7 @@ updatePost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const oldPost = await PostService.updatePost(req.params.id, req.body);
+        const oldPost = await PendingService.updatePost(req.params.id, req.body);
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -119,6 +143,8 @@ module.exports = {
     getPostsByCategory,
     getPostsByTag,
     getPostsByCollector,
+    getAllFinishedPosts,
+    getAllPendingPosts,
     addPost,
     deletePost,
     updatePost

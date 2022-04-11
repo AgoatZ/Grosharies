@@ -13,6 +13,8 @@ router.get('/category=:id', PostController.getPostsByCategory);
 
 router.get('/tag=:id', PostController.getPostsByTag);
 
+router.get('/collector=:id', PendingController.getPostsByCollector);
+
 router.post('/', PostController.addPost);
 
 router.delete('/:id', PostController.deletePost);

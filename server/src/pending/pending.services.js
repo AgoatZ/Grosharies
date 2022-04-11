@@ -1,6 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const Repository = require('./post.repository');
+const Repository = require('./pending.repository');
 const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const router = express.Router();
@@ -39,6 +39,17 @@ getPostsByUser = async function (userId) {
     }
 };
 
+getPostsByCollector = async function (userId) {
+    try {
+        const pendingPosts = await Repository.getPostsByCollector(userId);
+        return pendingPosts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
 getPostsByCategory = async function (categoryId) {
     try {
         const posts = await Repository.getPostsByCategory(categoryId);
@@ -58,17 +69,6 @@ getPostsByTag = async function (tagId) {
         console.log('service error: ' + e.message);
 
         throw Error(e);
-    }
-};
-
-getPostsByCollector = async function (userId) {
-    try {
-        const posts = await Repository.getPostsByCollector(userId);
-        return posts;
-    } catch (e) {
-        console.log('repository error: ' + e.message);
-
-        throw Error('Error while Retrieving Post: ' + e.message);
     }
 };
 
@@ -96,33 +96,31 @@ deletePost = async function (postId) {
     }
 };
 
-updatePost = async function (postId, postDetails, userId) {
+getAllPendingPosts = async function () {
     try {
-        //TODO ORDER AND FINISH
-        let amountTaken = 0;
-        const newPost = postDetails;
+        const pendingPosts = await Repository.getAllPendingPosts();
+        return pendingPosts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
+getAllFinishedPosts = async function () {
+    try {
+        const finishedPosts = await Repository.getAllFinishedPosts();
+        return finishedPosts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
+updatePost = async function (postId, postDetails) {
+    try {
         const oldPost = await Repository.updatePost(postId, postDetails);
-        oldPost.content.forEach(grocery => {
-            newPost.content.forEach(newGrocery => {
-                if(newGrocery.name.equals(grocery.name)) {
-                    amountTaken = grocery.amount - newGrocery.amount;
-                }
-            });
-            let toUpdate = GroceryRepository.getGroceryByName(grocery.name);
-            toUpdate.amount += amountTaken;
-            GroceryRepository.updateGrocery(toUpdate.id, toUpdate);
-            let user = UserRepository.getUserById(userId);
-            let collectedHistory = user.collectedHistory;
-            let userGrocery = grocery;
-            userGrocery.amount = amountTaken;
-            let historyToAdd = {
-                "grocery": userGrocery,
-                "post": newPost
-            };
-            collectedHistory = collectedHistory.concat(historyToAdd);
-            user.collectedHistory = collectedHistory;
-            UserRepository.updateUser(userId, user);
-        });
         return oldPost;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -148,6 +146,8 @@ module.exports = {
     getPostsByCategory,
     getPostsByTag,
     getPostsByCollector,
+    getAllFinishedPosts,
+    getAllPendingPosts,
     addPost,
     deletePost,
     updatePost
