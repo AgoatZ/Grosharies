@@ -7,6 +7,10 @@ import Footer from "./components/footer/Footer";
 import Home from './components/home/Home';
 import Post from './components/post/Post';
 import About from "./components/about/About";
+import Groceries from './components/groceries/Groceries';
+import Events from './components/events/Events';
+import Profile from './components/profile/Profile';
+import Account from './components/account/Account';
 
 const appTheme = createTheme({
   palette: {
@@ -37,6 +41,10 @@ const App = () => {
         <Route path="/" element={<Layout />} >
           <Route index element={<Home />} />
           <Route path="post/:id" element={<Post />} />
+          <Route path="groceries" element={<Groceries />} />
+          <Route path="events" element={<Events />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="account" element={<Account />} />
           <Route path="about" element={<About />} />
           <Route path="*" element={<NoMatch />} />
         </Route>

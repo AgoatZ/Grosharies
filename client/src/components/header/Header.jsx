@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, Tooltip, MenuItem, Drawer, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
+import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, Tooltip, MenuItem, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
@@ -8,61 +8,62 @@ import EventIcon from '@mui/icons-material/Event';
 import { UserImageThumbnail } from '../common/Images';
 
 const Header = () => {
+  //General navigation 
   let navigate = useNavigate();
-
-  //Navigation menu setup
-  const [navDrawerState, setNavDrawerState] = useState(false);
-  const toggleNavDrawer = (open) => (event) => {
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift"))
-      return;
-    open ? setNavDrawerState(true) : setNavDrawerState(false);
-  };
-  const handleClickItemNavMenu = (event) => {
-    const target = event.currentTarget.innerText.toLowerCase();
-    navigate("./" + target, {});
-  };
-
-  const pagesAndIcons = {
-    Groceries: <ShoppingBasketIcon />,
-    Events: <EventIcon />
-  }
-  const navMenu =
-    Object.keys(pagesAndIcons).map((page) => (
-      <MenuItem button key={page} onClick={handleClickItemNavMenu}>
-        <ListItemIcon>{pagesAndIcons[page]}</ListItemIcon>
-        <ListItemText primary={page} />
-      </MenuItem>
-    ));
-
-  //User menu setup
-  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
-  const handleOpenUserMenu = (event) => setUserMenuAnchorEl(event.currentTarget);
-  const handleCloseUserMenu = () => setUserMenuAnchorEl(null);
-
-  const handleClickItemUserMenu = (event) => {
+  const handleClickItemMenu = (event) => {
     setUserMenuAnchorEl(null);
     const target = event.currentTarget.innerText.toLowerCase();
     navigate("./" + target, {});
   };
 
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-  const userMenu =
-    settings.map((setting) => (
-      <MenuItem key={setting} onClick={handleClickItemUserMenu}>
-        <Typography textAlign="center">{setting}</Typography>
+  //Navigation menu setup (drawer and bar)
+  const [navDrawerState, setNavDrawerState] = useState(false);
+  const toggleNavDrawer = (open) => (event) => {
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift"))
+      return;
+    setNavDrawerState(open);
+  };
+  const navMenu =
+    [
+      <MenuItem key='Groceries' onClick={handleClickItemMenu}>
+        <ListItemIcon><ShoppingBasketIcon /></ListItemIcon>
+        <ListItemText primary='Groceries' />
+      </MenuItem>,
+      <MenuItem key='Events' onClick={handleClickItemMenu}>
+        <ListItemIcon><EventIcon /></ListItemIcon>
+        <ListItemText primary='Events' />
       </MenuItem>
-    ));
+    ];
+
+  //User menu setup
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
+  const handleOpenUserMenu = (event) => setUserMenuAnchorEl(event.currentTarget);
+  const handleCloseUserMenu = () => setUserMenuAnchorEl(null);
+  const userMenu =
+    [
+      <MenuItem button key='Profile' onClick={handleClickItemMenu}>
+        <ListItemText primary='Profile' />
+      </MenuItem>,
+      <MenuItem button key='Account' onClick={handleClickItemMenu}>
+        <ListItemText primary='Account' />
+      </MenuItem>,
+      <Divider />,
+      <MenuItem button key='Logout' onClick={handleClickItemMenu}>
+        <ListItemText primary='Logout' />
+      </MenuItem>
+    ];
 
   //User Data Setup
-  const [userData, setUser] = useState({});
-  const [noUser, setUserState] = useState(() => {
+  const [noUser, setNoUser] = useState(true);
+  const [userData, setUser] = useState(() => {
 
     //TODO: add request to get user's status and data
 
     //if no user is signed in
-    //return true;
+    //setNoUser(true);
 
     //if the user is signed in
+    setNoUser(false);
     const fakeUser = {
       firstName: "Ilan",
       lastName: "Rozenfeld",
@@ -75,9 +76,7 @@ const Header = () => {
       collectedHistory: []
     };
 
-    setUser(fakeUser);
-
-    return false;
+    return fakeUser;
   });
 
   const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
@@ -125,7 +124,7 @@ const Header = () => {
               <img src={'assets/logo_label_white.png'} height='30px' width='100px' />
             </Button>
 
-            {/* Profile Icon Setup */}
+            {/* User Profile Setup */}
             <Box sx={{ flexGrow: 0 }} hidden={Boolean(noUser)}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -147,9 +146,9 @@ const Header = () => {
               </Menu>
             </Box>
 
-            {/* Profile Icon Setup */}
+            {/* User Profile Setup */}
             <Box sx={{ flexGrow: 0 }} hidden={Boolean(!noUser)}>
-              <Button size='small' variant="outlined" sx={{ color: 'white', border: '1px solid white'}}>Sign In</Button>
+              <Button size='small' variant="outlined" sx={{ color: 'white', border: '1px solid white' }}>Sign In</Button>
             </Box>
 
           </Toolbar>
