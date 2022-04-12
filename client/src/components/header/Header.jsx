@@ -149,7 +149,7 @@ const Header = () => {
 
             {/* Profile Icon Setup */}
             <Box sx={{ flexGrow: 0 }} hidden={Boolean(!noUser)}>
-              <Button sx={{ color: 'white' }}>Sign In \ Create account</Button>
+              <Button size='small' variant="outlined" sx={{ color: 'white', border: '1px solid white'}}>Sign In</Button>
             </Box>
 
           </Toolbar>
