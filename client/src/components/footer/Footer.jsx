@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { AppBar, Box, Toolbar, Typography, Menu, Container, Button, MenuItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const pages = ['About'];
 
@@ -12,20 +13,24 @@ const Footer = () => {
     navigate("./" + target, {});
   };
 
+  const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
   return (
-    <AppBar position="relative" sx={{ top: 'auto', bottom: 0 }}>
-      <Toolbar>
-        <Container maxWidth="xl">
-          <Box >
-            {pages.map((page) => (
-              <Button key={page} onClick={handleClickItemNavMenu} sx={{ color: 'white' }}>
-                {page}
-              </Button>
-            ))}
-          </Box>
-        </Container>
-      </Toolbar>
-    </AppBar>
+    <Box >
+      <Offset />
+      <AppBar position="sticky" sx={{ top: 'auto', bottom: 0 }}>
+        <Toolbar>
+          <Container maxWidth="xl">
+            <Box >
+              {pages.map((page) => (
+                <Button key={page} onClick={handleClickItemNavMenu} sx={{ color: 'white' }}>
+                  {page}
+                </Button>
+              ))}
+            </Box>
+          </Container>
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 };
 export default Footer;

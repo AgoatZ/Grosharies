@@ -1,11 +1,16 @@
+import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Link } from "react-router-dom";
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-import { Container } from "@mui/material";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Grid, Container } from "@mui/material";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import Home from './components/home/Home';
 import Post from './components/post/Post';
 import About from "./components/about/About";
+import Groceries from './components/groceries/Groceries';
+import Events from './components/events/Events';
+import Profile from './components/profile/Profile';
+import Account from './components/account/Account';
 
 const appTheme = createTheme({
   palette: {
@@ -23,36 +28,47 @@ const appTheme = createTheme({
       contrastText: '#fff'
     },
   },
+  typography: {
+    fontFamily: ["'Quicksand'", 'sans-serif'].join(','),
+    button: { textTransform: "capitalize", fontSize: 16, letterSpacing: '0.07em' },
+  },
 });
 
 const App = () => {
-
   return (
-    <ThemeProvider theme={appTheme}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />} >
-            <Route index element={<Home />} />
-            <Route path="post/:id" element={<Post />} />
-            <Route path="about" element={<About />} />
-            <Route path="*" element={<NoMatch />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />} >
+          <Route index element={<Home />} />
+          <Route path="post/:id" element={<Post />} />
+          <Route path="groceries" element={<Groceries />} />
+          <Route path="events" element={<Events />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="account" element={<Account />} />
+          <Route path="about" element={<About />} />
+          <Route path="*" element={<NoMatch />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 };
 
 const Layout = () => {
-  const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
   return (
-    <div>
-      <Header />
-      <Offset />
-      <Outlet />
-      <Offset />
-      <Footer />
-    </div>
+    <ThemeProvider theme={appTheme}>
+      <Grid
+        component='layout'
+        container
+        direction="column"
+        display='grid'
+        height='100%'
+        gridTemplateRows='auto 1fr auto'
+      >
+        <Grid item component='header'><Header /></Grid>
+        <Grid item component='main'><Outlet /></Grid>
+        <Grid item component='footer'><Footer /></Grid>
+      </Grid>
+    </ThemeProvider>
   );
 };
 
