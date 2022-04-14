@@ -88,6 +88,18 @@ addPost = async function (req, res, next) {
     }
 };
 
+pendPost = async function (req, res, next) {
+    try {
+        console.log("controller groceries: ", req.body.groceries);
+        const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.body.collectorId, req.body.groceries);
+        return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({message: e.message});
+    }
+}
+
 deletePost = async function (req, res, next) {
     try {
         const post = await PostService.deletePost(req.params.id);
@@ -120,6 +132,7 @@ module.exports = {
     getPostsByTag,
     getPostsByCollector,
     addPost,
+    pendPost,
     deletePost,
     updatePost
 }

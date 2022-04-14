@@ -3,6 +3,7 @@ const { status } = require('express/lib/response');
 const Repository = require('./pending.repository');
 const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
+const PostRepository = require('../post/post.repository');
 const router = express.Router();
 const timeToWait = 3000000;
 
@@ -72,9 +73,25 @@ getPostsByTag = async function (tagId) {
     }
 };
 
-addPost = async function (postDetails) {
+addPending = async function (postDetails) {
     try {
         const post = await Repository.addPost(postDetails);
+        console.log('service: ' + post);
+
+        return post;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
+addPendingFromPost = async function (postId, data) {
+    try {
+        let post = await PostRepository.getPostById(postId);
+        delete post[_id];
+        post = JSON.stringify(post).concat(data);
+        post = await Repository.addPost(post);        
         console.log('service: ' + post);
 
         return post;
@@ -132,7 +149,7 @@ updatePost = async function (postId, postDetails) {
 interrestedUserReminder = async (userId, postId) => {
     const user = UserRepository.getUserById(userId);
     const remind = async (phone) => {
-        console.log("TAKEN???");
+        console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
         setTimeout(decide, timeToWait);
     }
 
@@ -148,7 +165,7 @@ module.exports = {
     getPostsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
-    addPost,
+    addPending,
     deletePost,
     updatePost
 }

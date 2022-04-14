@@ -7,7 +7,8 @@ const packing = {
     PAPER_BOX : "paper box",
     PAPER_BAG : "paper bag",
     PLASTIC_BAG : "plastic bag",
-    ALUMINIUM : "aluminium"
+    ALUMINIUM : "aluminium",
+    NONE : "none"
 };
 
 module.exports = packing;

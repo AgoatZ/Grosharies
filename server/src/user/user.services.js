@@ -66,7 +66,7 @@ getPickupHistory = async function (userId) {
         let history = [];
         user.collectedHistory.forEach(postAndGrocery => {
             posts.forEach(post => {
-                if(post.id.equals(postAndGrocery.post)) {
+                if(post.id === postAndGrocery.post) {
                     history = history.concat(post);
                 }
             })

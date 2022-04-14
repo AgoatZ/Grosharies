@@ -2,7 +2,9 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./post.repository');
 const GroceryRepository = require('../grocery/grocery.repository');
+const PendingRepository = require('../pending/pending.repository');
 const UserRepository = require('../user/user.repository');
+const Grocery = require('../grocery/grocery.model');
 const router = express.Router();
 const timeToWait = 3000000;
 
@@ -96,18 +98,77 @@ deletePost = async function (postId) {
     }
 };
 
-updatePost = async function (postId, postDetails, userId) {
+updatePost = async function (postId, postDetails) {
     try {
-        //TODO ORDER AND FINISH
-        let amountTaken = 0;
-        const newPost = postDetails;
         const oldPost = await Repository.updatePost(postId, postDetails);
-        oldPost.content.forEach(grocery => {
-            newPost.content.forEach(newGrocery => {
-                if(newGrocery.name.equals(grocery.name)) {
-                    amountTaken = grocery.amount - newGrocery.amount;
+        return oldPost;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
+pendPost = async function (postId, collectorId, groceries) {
+    try {
+        const post = await Repository.getPostById(postId);
+        const updatedContent = [];
+
+        console.log("service groceries: ", groceries);
+        console.log("service post groceries: ", post.content);
+
+        post.content.forEach(grocery => {
+            console.log("grocery from post: ", grocery);
+            var isThere = false;
+            groceries.forEach(newGrocery => {
+                console.log("grocery from array: ", newGrocery);
+                if(newGrocery.name === grocery.name) {
+                    //reduce amount and creat json for updating
+                    isThere = true;
+                    amount = grocery.amount - newGrocery.amount;
+                    if (amount < 0) {
+                        throw Error("Requested amount is higher than available");
+                    }
+                    updatedContent.push({
+                        "name": grocery.name,
+                        "amount": amount,
+                        "scale": grocery.scale,
+                        "packing": grocery.packing,
+                        "category": grocery.category
+                    });
                 }
             });
+            if (!isThere) {
+                updatedContent.push(grocery);
+            }
+        });
+        console.log(updatedContent);
+        await Repository.updateContent(postId, updatedContent);
+
+        const oneHour = 60*60*1000;
+        const pendingPost = await PendingRepository.addPending({
+            "headline": post.headline,
+            "address": post.address,
+            "content": groceries,
+            "sourcePost": post._id,
+            "publisherId": post.userId,
+            "collectorId": collectorId,
+            "pendingTime": { 
+                "from": Date.now(),
+                "until": Date.now() + oneHour
+              }
+        });
+
+        const updatedPost = await Repository.getPostById(postId);
+
+        return { updatedPost, pendingPost };
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+/*
             let toUpdate = GroceryRepository.getGroceryByName(grocery.name);
             toUpdate.amount += amountTaken;
             GroceryRepository.updateGrocery(toUpdate.id, toUpdate);
@@ -122,14 +183,9 @@ updatePost = async function (postId, postDetails, userId) {
             collectedHistory = collectedHistory.concat(historyToAdd);
             user.collectedHistory = collectedHistory;
             UserRepository.updateUser(userId, user);
-        });
+        }
         return oldPost;
-    } catch (e) {
-        console.log('service error: ' + e.message);
-
-        throw Error(e);
-    }
-};
+*/
 
 interrestedUserReminder = async (userId, postId) => {
     const user = UserRepository.getUserById(userId);
@@ -149,6 +205,7 @@ module.exports = {
     getPostsByTag,
     getPostsByCollector,
     addPost,
+    pendPost,
     deletePost,
     updatePost
 }

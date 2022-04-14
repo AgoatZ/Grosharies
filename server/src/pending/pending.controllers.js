@@ -99,12 +99,12 @@ getAllFinishedPosts = async function (req, res, next) {
     }
 };
 
-addPost = async function (req, res, next) {
+addPending = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const post = await PendingService.addPost(req.body);
-        return res.status(200).json({ post: post, message: "Succesfully Posts Added" });
+        const post = await PendingService.addPending(req.body);
+        return res.status(200).json({ post: post, message: "Succesfully Pending Added" });
     } catch (e) {
         console.log('controller error: ' + e.message);
 
@@ -145,7 +145,7 @@ module.exports = {
     getPostsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
-    addPost,
+    addPending,
     deletePost,
     updatePost
 }

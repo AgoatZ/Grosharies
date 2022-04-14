@@ -1,15 +1,20 @@
 const mongoose = require('mongoose');
-const Post = require('../post/post.model');
+const Grocery = require('../grocery/grocery.model');
 
 const pending = new mongoose.Schema({
+  headline: { type: String, required: true },
+  address: { type: String, required: true },
+  content: [{ type: Grocery.schema, required: true , default: []}],
+  sourcePost: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
+  publisherId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   collectorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   isPending: { type: Boolean, required: true, default: true },
   pendingTime: { 
-    from: { type: Date, default: Date.now },
-    until: { type: Date, required: true }
+    from: { type: Date },
+    until: { type: Date }
   }
 });
 
-const Pending = Post.discriminator('PendingPost', pending);
+const Pending = mongoose.model('PendingPost', pending, 'PendingPost');
 
 module.exports = Pending;

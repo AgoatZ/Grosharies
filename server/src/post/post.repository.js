@@ -104,6 +104,17 @@ updatePost = async function (postId, postDetails) {
     }
 };
 
+updateContent = async function (postId, content) {
+    try {
+        const oldPost = await Post.findByIdAndUpdate(postId, {content: content});
+        return oldPost;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Updating Post: ' + e.message);
+    }
+};
+
 module.exports = {
     getPosts,
     getPostById,
@@ -113,5 +124,6 @@ module.exports = {
     getPostsByCollector,
     addPost,
     deletePost,
-    updatePost
+    updatePost,
+    updateContent
 }

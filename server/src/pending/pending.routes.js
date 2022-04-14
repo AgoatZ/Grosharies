@@ -19,7 +19,7 @@ router.get('/pendings', PendingController.getAllPendingPosts);
 
 router.get('/finished', PendingController.getAllFinishedPosts);
 
-router.post('/', PendingController.addPost);
+router.post('/', PendingController.addPending);
 
 router.delete('/:id', PendingController.deletePost);
 

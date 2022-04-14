@@ -92,7 +92,7 @@ getAllFinishedPosts = async function () {
     }
 };
 
-addPost = async function (postDetails) {
+addPending = async function (postDetails) {
     try {
         const pendingPost = new Pending(postDetails);
         return await pendingPost.save();
@@ -134,7 +134,7 @@ module.exports = {
     getPostsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
-    addPost,
+    addPending,
     deletePost,
     updatePost
 }
