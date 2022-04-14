@@ -27,7 +27,7 @@ getGroceryById = async function (groceryId) {
 
 getGroceryByName = async function (groceryName) {
     try {
-        const grocery = await Grocery.findOne(groceryName);
+        const grocery = await Grocery.findOne({ name: groceryName });
         return grocery;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -69,11 +69,23 @@ updateGrocery = async function (groceryId, groceryDetails) {
     }
 };
 
+updateAmount = async function (groceryId, amount) {
+    try {
+        const oldGrocery = await Grocery.findByIdAndUpdate(groceryId, {amount: amount});
+        return oldGrocery;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Updating Grocery');
+    }
+};
+
 module.exports = {
     getGroceries,
     getGroceryById,
     getGroceryByName,
     addGrocery,
     deleteGrocery,
-    updateGrocery
+    updateGrocery,
+    updateAmount
 }

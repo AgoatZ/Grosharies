@@ -136,6 +136,17 @@ updatePost = async function (req, res, next) {
     }
 };
 
+finishPending = async function (req, res, next) {
+    try {
+        const {finishedPost, trafficGroceries} = await PendingService.finishPending(req.params.id);
+        return res.status(200).json({ post: finishedPost, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 module.exports = {
     getPosts,
     getPostById,
@@ -146,6 +157,7 @@ module.exports = {
     getAllFinishedPosts,
     getAllPendingPosts,
     addPending,
+    finishPending,
     deletePost,
     updatePost
 }

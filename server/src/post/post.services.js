@@ -113,35 +113,35 @@ pendPost = async function (postId, collectorId, groceries) {
     try {
         const post = await Repository.getPostById(postId);
         const updatedContent = [];
-
+        const content = post.content;
         console.log("service groceries: ", groceries);
         console.log("service post groceries: ", post.content);
 
-        post.content.forEach(grocery => {
-            console.log("grocery from post: ", grocery);
+        for (grocery in content) {
+            console.log("grocery from post: ", content[grocery]);
             var isThere = false;
-            groceries.forEach(newGrocery => {
-                console.log("grocery from array: ", newGrocery);
-                if(newGrocery.name === grocery.name) {
+            for (newGrocery in groceries) {
+                console.log("grocery from array: ", groceries[newGrocery]);
+                if(groceries[newGrocery].name === content[grocery].name) {
                     //reduce amount and creat json for updating
                     isThere = true;
-                    amount = grocery.amount - newGrocery.amount;
+                    amount = content[grocery].amount - groceries[newGrocery].amount;
                     if (amount < 0) {
                         throw Error("Requested amount is higher than available");
                     }
                     updatedContent.push({
-                        "name": grocery.name,
+                        "name": content[grocery].name,
                         "amount": amount,
-                        "scale": grocery.scale,
-                        "packing": grocery.packing,
-                        "category": grocery.category
+                        "scale": content[grocery].scale,
+                        "packing": content[grocery].packing,
+                        "category": content[grocery].category
                     });
                 }
-            });
-            if (!isThere) {
-                updatedContent.push(grocery);
             }
-        });
+            if (!isThere) {
+                updatedContent.push(content[grocery]);
+            }
+        }
         console.log(updatedContent);
         await Repository.updateContent(postId, updatedContent);
 
@@ -186,16 +186,6 @@ pendPost = async function (postId, collectorId, groceries) {
         }
         return oldPost;
 */
-
-interrestedUserReminder = async (userId, postId) => {
-    const user = UserRepository.getUserById(userId);
-    const remind = async (phone) => {
-        console.log("TAKEN???");
-        setTimeout(decide, timeToWait);
-    }
-
-    setTimeout(remind(user.phone), timeToWait);
-};
 
 module.exports = {
     getPosts,

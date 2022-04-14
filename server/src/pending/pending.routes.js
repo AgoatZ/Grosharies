@@ -21,6 +21,8 @@ router.get('/finished', PendingController.getAllFinishedPosts);
 
 router.post('/', PendingController.addPending);
 
+router.post('/finish=:id', PendingController.finishPending);
+
 router.delete('/:id', PendingController.deletePost);
 
 router.put('/:id', PendingController.updatePost);

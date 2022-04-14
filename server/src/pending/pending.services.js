@@ -146,6 +146,31 @@ updatePost = async function (postId, postDetails) {
     }
 };
 
+finishPending = async function (pendingPostId) {
+    try {
+        const pendingPost = await Repository.getPostById(pendingPostId);
+        const trafficGroceries = [];
+        const content = pendingPost.content;        
+        for (grocery in content) {
+            let trafficGrocery = await GroceryRepository.getGroceryByName(content[grocery].name);
+            let newAmount = content[grocery].amount + trafficGrocery.amount;
+            await GroceryRepository.updateAmount(trafficGrocery._id, newAmount);
+            trafficGrocery = await GroceryRepository.getGroceryByName(content[grocery].name);
+            trafficGroceries.push(trafficGrocery);
+        }
+        pendingPost.isPending = false;
+        await Repository.updatePost(pendingPostId, pendingPost);
+
+        const finishedPost = await Repository.getPostById(pendingPostId);
+
+        return {finishedPost, trafficGroceries};
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
 interrestedUserReminder = async (userId, postId) => {
     const user = UserRepository.getUserById(userId);
     const remind = async (phone) => {
@@ -166,6 +191,7 @@ module.exports = {
     getAllFinishedPosts,
     getAllPendingPosts,
     addPending,
+    finishPending,
     deletePost,
     updatePost
 }
