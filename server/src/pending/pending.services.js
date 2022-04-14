@@ -149,6 +149,9 @@ updatePost = async function (postId, postDetails) {
 finishPending = async function (pendingPostId) {
     try {
         const pendingPost = await Repository.getPostById(pendingPostId);
+        if (!pendingPost.isPending) {
+            throw Error('Pending Post is already finished!');
+        }
         const trafficGroceries = [];
         const content = pendingPost.content;        
         for (grocery in content) {

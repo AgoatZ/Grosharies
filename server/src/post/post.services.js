@@ -127,7 +127,7 @@ pendPost = async function (postId, collectorId, groceries) {
                     isThere = true;
                     amount = content[grocery].amount - groceries[newGrocery].amount;
                     if (amount < 0) {
-                        throw Error("Requested amount is higher than available");
+                        throw Error('Requested amount is higher than available');
                     }
                     updatedContent.push({
                         "name": content[grocery].name,
@@ -168,24 +168,6 @@ pendPost = async function (postId, collectorId, groceries) {
         throw Error(e);
     }
 };
-/*
-            let toUpdate = GroceryRepository.getGroceryByName(grocery.name);
-            toUpdate.amount += amountTaken;
-            GroceryRepository.updateGrocery(toUpdate.id, toUpdate);
-            let user = UserRepository.getUserById(userId);
-            let collectedHistory = user.collectedHistory;
-            let userGrocery = grocery;
-            userGrocery.amount = amountTaken;
-            let historyToAdd = {
-                "grocery": userGrocery,
-                "post": newPost
-            };
-            collectedHistory = collectedHistory.concat(historyToAdd);
-            user.collectedHistory = collectedHistory;
-            UserRepository.updateUser(userId, user);
-        }
-        return oldPost;
-*/
 
 module.exports = {
     getPosts,
