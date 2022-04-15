@@ -27,9 +27,9 @@ getPostById = async function (postId) {
     }
 };
 
-getPostsByUser = async function (userId) {
+getPostsByPublisher = async function (userId) {
     try {
-        const pendingPosts = await Pending.find({ 'userId': userId });
+        const pendingPosts = await Pending.find({ 'publisherId': userId });
         return pendingPosts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -140,7 +140,7 @@ updatePost = async function (postId, postDetails) {
 module.exports = {
     getPosts,
     getPostById,
-    getPostsByUser,
+    getPostsByPublisher,
     getPostsByCategory,
     getPostsByTag,
     getPostsByCollector,

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const userType = require('../enums/userType');
-const Grocery = require('../grocery/grocery.model');
+const Pending = require('../pending/pending.model');
 
 const user = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -12,10 +12,7 @@ const user = new mongoose.Schema({
   rank: { type: Number, default: 0 },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   profileImage: String,
-  collectedHistory: [
-    { grocery: [{ type: Grocery.schema, required: true, default: [] }] },
-    { post: { type: mongoose.Schema.Types.ObjectId, ref: "Post" } }
-  ]
+  collectedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "PendingPost"}]
 });
 
 const User = mongoose.model('User', user, 'User');

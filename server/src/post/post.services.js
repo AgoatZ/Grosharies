@@ -159,6 +159,8 @@ pendPost = async function (postId, collectorId, groceries) {
               }
         });
 
+        const collector = await UserRepository.addToHistory(collectorId, pendingPost._id);
+
         const updatedPost = await Repository.getPostById(postId);
 
         return { updatedPost, pendingPost };

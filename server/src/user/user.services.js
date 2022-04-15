@@ -2,6 +2,7 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./user.repository');
 const PostRepository = require('../post/post.repository');
+const PendingRepository = require('../pending/pending.repository');
 const router = express.Router();
 
 getUsers = async function (query, page, limit) {
@@ -59,19 +60,24 @@ updateUser = async function (userId, userDetails) {
     }
 };
 
+addToHistory = async function (userId, pendingPostId) {
+    try {
+        const oldUser = await Repository.getUserById(userId);
+        let history = JSON.stringify(oldUser.collectedHistory);
+        history = history.concat(pendingPostId);
+        oldUser = await Repository.addToHistory(userId, history);
+        return oldUser;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error('Error while Updating User');
+    }
+};
+
 getPickupHistory = async function (userId) {
     try {
-        const posts = PostRepository.getPosts();
-        const user = Repository.getUserById(userId);
-        let history = [];
-        user.collectedHistory.forEach(postAndGrocery => {
-            posts.forEach(post => {
-                if(post.id === postAndGrocery.post) {
-                    history = history.concat(post);
-                }
-            })
-        })
-        return history;
+        const pendingPosts = await PendingRepository.getPostsByCollector(userId);
+        return pendingPosts;
     } catch (e) {
         console.log('service error: ' + e.message);
 
@@ -85,5 +91,6 @@ module.exports = {
     addUser,
     deleteUser,
     updateUser,
+    addToHistory,
     getPickupHistory
 };

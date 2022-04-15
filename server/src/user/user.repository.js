@@ -69,11 +69,23 @@ updateUser = async function (userId, userDetails) {
     }
 };
 
+addToHistory = async function (userId, history) {
+    try {
+        const oldUser = await User.findByIdAndUpdate(userId, {collectedHistory: history});
+        return oldUser;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Updating User');
+    }
+};
+
 module.exports = {
     getUsers,
     getUserById,
     getUserByEmail,
     addUser,
+    addToHistory,
     deleteUser,
     updateUser
 }
