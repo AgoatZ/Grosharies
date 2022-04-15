@@ -6,6 +6,7 @@ const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const router = express.Router();
 const timeToWait = 3000000;
+const Status = require('../enums/pendingStatus');
 
 getPosts = async function (query, page, limit) {
     try {
@@ -135,6 +136,17 @@ getAllFinishedPosts = async function () {
     }
 };
 
+getAllCancelledPosts = async function () {
+    try {
+        const finishedPosts = await Repository.getAllCancelledPosts();
+        return finishedPosts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
 updatePost = async function (postId, postDetails) {
     try {
         const oldPost = await Repository.updatePost(postId, postDetails);
@@ -149,8 +161,8 @@ updatePost = async function (postId, postDetails) {
 finishPending = async function (pendingPostId) {
     try {
         const pendingPost = await Repository.getPostById(pendingPostId);
-        if (!pendingPost.isPending) {
-            throw Error('Pending Post is already finished!');
+        if (pendingPost.status !== Status.PENDING) {
+            throw Error('Pending Post is not pending anymore!');
         }
         const trafficGroceries = [];
         const content = pendingPost.content;        
@@ -161,12 +173,60 @@ finishPending = async function (pendingPostId) {
             trafficGrocery = await GroceryRepository.getGroceryByName(content[grocery].name);
             trafficGroceries.push(trafficGrocery);
         }
-        pendingPost.isPending = false;
+        pendingPost.status = Status.COLLECTED;
         await Repository.updatePost(pendingPostId, pendingPost);
 
         const finishedPost = await Repository.getPostById(pendingPostId);
 
         return {finishedPost, trafficGroceries};
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
+cancelPending = async function (pendingPostId) {
+    try {
+        const pendingPost = await Repository.getPostById(pendingPostId);
+        if (pendingPost.status !== Status.PENDING) {
+            throw Error('Pending Post is not pending anymore!');
+        }
+        const originalPost = await PostRepository.getPostById(pendingPost.sourcePost);
+        const content = originalPost.content;
+        const updatedContent = [];
+        const groceries = pendingPost.content;        
+        for (grocery in content) {
+            console.log("grocery from post: ", content[grocery]);
+            var isThere = false;
+            for (newGrocery in groceries) {
+                console.log("grocery from array: ", groceries[newGrocery]);
+                if(groceries[newGrocery].name === content[grocery].name) {
+                    isThere = true;
+                    amount = content[grocery].amount + groceries[newGrocery].amount;
+                    updatedContent.push({
+                        "name": content[grocery].name,
+                        "amount": amount,
+                        "scale": content[grocery].scale,
+                        "packing": content[grocery].packing,
+                        "category": content[grocery].category
+                    });
+                }
+            }
+            if (!isThere) {
+                updatedContent.push(content[grocery]);
+            }
+        }
+        console.log(updatedContent);
+        await PostRepository.updateContent(originalPost._id, updatedContent);
+        const updatedPost = await PostRepository.getPostById(pendingPost.sourcePost);
+
+        pendingPost.status = Status.CANCELLED;
+        await Repository.updatePost(pendingPostId, pendingPost);
+
+        const cancelledPost = await Repository.getPostById(pendingPostId);
+
+        return {cancelledPost, updatedPost};
     } catch (e) {
         console.log('service error: ' + e.message);
 
@@ -193,8 +253,10 @@ module.exports = {
     getPostsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
+    getAllCancelledPosts,
     addPending,
     finishPending,
+    cancelPending,
     deletePost,
     updatePost
 }

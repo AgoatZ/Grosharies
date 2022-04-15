@@ -99,6 +99,18 @@ getAllFinishedPosts = async function (req, res, next) {
     }
 };
 
+getAllCancelledPosts = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PendingService.getAllCancelledPosts();
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 addPending = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
@@ -147,6 +159,17 @@ finishPending = async function (req, res, next) {
     }
 };
 
+cancelPending = async function (req, res, next) {
+    try {
+        const {cancelledPost, updatedPost} = await PendingService.cancelPending(req.params.id);
+        return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 module.exports = {
     getPosts,
     getPostById,
@@ -156,8 +179,10 @@ module.exports = {
     getPostsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
+    getAllCancelledPosts,
     addPending,
     finishPending,
+    cancelPending,
     deletePost,
     updatePost
 }

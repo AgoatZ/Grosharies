@@ -3,6 +3,7 @@ const { status } = require('express/lib/response');
 const Pending = require('./pending.model');
 const router = express.Router();
 const reply = require('../enums/postReply');
+const Status = require('../enums/pendingStatus');
 
 getPosts = async (query) => {
     try {
@@ -72,7 +73,7 @@ getPostsByTag = async function (tagId) {
 
 getAllPendingPosts = async function () {
     try {
-        const pendingPosts = await Pending.find({ 'isPending': true });
+        const pendingPosts = await Pending.find({ 'status': Status.PENDING });
         return pendingPosts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -83,7 +84,18 @@ getAllPendingPosts = async function () {
 
 getAllFinishedPosts = async function () {
     try {
-        const finishedPosts = await Pending.find({ 'isPending': false });
+        const finishedPosts = await Pending.find({ 'status': Status.COLLECTED });
+        return finishedPosts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
+getAllCancelledPosts = async function () {
+    try {
+        const finishedPosts = await Pending.find({ 'status': Status.CANCELLED });
         return finishedPosts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -134,6 +146,7 @@ module.exports = {
     getPostsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
+    getAllCancelledPosts,
     addPending,
     deletePost,
     updatePost
