@@ -87,6 +87,7 @@ addPending = async function (postDetails) {
     }
 };
 
+/*
 addPendingFromPost = async function (postId, data) {
     try {
         let post = await PostRepository.getPostById(postId);
@@ -102,6 +103,7 @@ addPendingFromPost = async function (postId, data) {
         throw Error(e);
     }
 };
+*/
 
 deletePost = async function (postId) {
     try {

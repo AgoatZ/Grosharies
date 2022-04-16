@@ -3,7 +3,7 @@ const { status } = require('express/lib/response');
 const Repository = require('./post.repository');
 const GroceryRepository = require('../grocery/grocery.repository');
 const PendingRepository = require('../pending/pending.repository');
-const UserRepository = require('../user/user.repository');
+const UserService = require('../user/user.services');
 const Grocery = require('../grocery/grocery.model');
 const router = express.Router();
 const timeToWait = 3000000;
@@ -159,7 +159,7 @@ pendPost = async function (postId, collectorId, groceries) {
               }
         });
 
-        const collector = await UserRepository.addToHistory(collectorId, pendingPost._id);
+        const collector = await UserService.addToHistory(collectorId, pendingPost._id);
 
         const updatedPost = await Repository.getPostById(postId);
 

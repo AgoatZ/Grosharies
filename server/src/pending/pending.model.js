@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Grocery = require('../grocery/grocery.model');
 const status = require('../enums/pendingStatus');
+
 const pending = new mongoose.Schema({
   headline: { type: String, required: true },
   address: { type: String, required: true },
