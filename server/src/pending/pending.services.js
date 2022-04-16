@@ -76,10 +76,11 @@ getPostsByTag = async function (tagId) {
 
 addPending = async function (postDetails) {
     try {
-        const post = await Repository.addPost(postDetails);
+        const pendingPost = await Repository.addPost(postDetails);
+        interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
         console.log('service: ' + post);
 
-        return post;
+        return pendingPost;
     } catch (e) {
         console.log('service error: ' + e.message);
 
@@ -238,6 +239,14 @@ cancelPending = async function (pendingPostId) {
 
 interrestedUserReminder = async (userId, postId) => {
     const user = UserRepository.getUserById(userId);
+    
+    const decide = async () => {
+        const post = Repository.getPostById(postId);
+        if(post.status === Status.PENDING) {
+            cancelPending(postId);
+        }
+    }
+
     const remind = async (phone) => {
         console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
         setTimeout(decide, timeToWait);

@@ -158,7 +158,7 @@ pendPost = async function (postId, collectorId, groceries) {
                 "until": Date.now() + oneHour
               }
         });
-
+        console.log("PostService ID: ", pendingPost._id);
         const collector = await UserService.addToHistory(collectorId, pendingPost._id);
 
         const updatedPost = await Repository.getPostById(postId);
