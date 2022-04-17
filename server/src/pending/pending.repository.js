@@ -5,67 +5,67 @@ const router = express.Router();
 const reply = require('../enums/postReply');
 const Status = require('../enums/pendingStatus');
 
-getPosts = async (query) => {
+getPendings = async (query) => {
     try {
         const pendingPosts = await Pending.find(query);
         return pendingPosts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getPendings: ', e.message);
 
         throw Error('Error while Retrieving Posts: ' + e.message);
     }
 };
 
-getPostById = async function (postId) {
+getPendingById = async function (postId) {
     try {
         const pendingPost = await Pending.findById(postId);
         return pendingPost;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getPendingById: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
 };
 
-getPostsByPublisher = async function (userId) {
+getPendingsByPublisher = async function (userId) {
     try {
         const pendingPosts = await Pending.find({ 'publisherId': userId });
         return pendingPosts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getPendingsByPublisher: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
 };
 
-getPostsByCollector = async function (userId) {
+getPendingsByCollector = async function (userId) {
     try {
         const pendingPosts = await Pending.find({ 'collectorId': userId });
         return pendingPosts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getPendingsByCollector: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
 };
 
-getPostsByCategory = async function (categoryId) {
+getPendingsByCategory = async function (categoryId) {
     try {
         const pendingPosts = await Pending.find({ 'content': { 'category': categoryId }});
         return pendingPosts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getPendingsByCategory: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
 };
 
-getPostsByTag = async function (tagId) {
+getPendingsByTag = async function (tagId) {
     try {
         const pendingPosts = await Pending.find({ 'tags': tagId });
         return pendingPosts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getPendingsByTag: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
@@ -76,7 +76,7 @@ getAllPendingPosts = async function () {
         const pendingPosts = await Pending.find({ 'status': Status.PENDING });
         return pendingPosts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getAllPendingPosts: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
@@ -87,7 +87,7 @@ getAllFinishedPosts = async function () {
         const finishedPosts = await Pending.find({ 'status': Status.COLLECTED });
         return finishedPosts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getAllFinishedPosts: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
@@ -98,7 +98,7 @@ getAllCancelledPosts = async function () {
         const finishedPosts = await Pending.find({ 'status': Status.CANCELLED });
         return finishedPosts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from getAllCancellededPosts: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
@@ -109,57 +109,57 @@ addPending = async function (postDetails) {
         const pendingPost = new Pending(postDetails);
         return await pendingPost.save();
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from addPending: ', e.message);
         
         throw Error('Error while Adding Post: ' + e.message);
     }
 };
 
-deletePost = async function (postId) {
+deletePending = async function (postId) {
     try {
         const deletedPendingPost = await Pending.findByIdAndDelete(postId);
         return deletedPendingPost;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from deletePending: ', e.message);
 
         throw Error('Error while Deleting Post: ' + e.message);
     }
 };
 
-updatePost = async function (postId, postDetails) {
+updatePending = async function (postId, postDetails) {
     try {
         const oldPendingPost = await Pending.findByIdAndUpdate(postId, postDetails);
         return oldPendingPost;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Pending repository error from updatePending: ', e.message);
 
         throw Error('Error while Updating Post: ' + e.message);
     }
 };
 
-const updatePostStatus = async function (postId, updatedStatus) {
+const updatePendingStatus = async function (postId, updatedStatus) {
     try {
         const oldPost = await Pending.findByIdAndUpdate(postId, {status: updatedStatus});
         return oldPost;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Pending repository error from updatePendingStatus: ', e.message);
 
         throw Error(e);
     }
 };
 
 module.exports = {
-    getPosts,
-    getPostById,
-    getPostsByPublisher,
-    getPostsByCategory,
-    getPostsByTag,
-    getPostsByCollector,
+    getPendings,
+    getPendingById,
+    getPendingsByPublisher,
+    getPendingsByCategory,
+    getPendingsByTag,
+    getPendingsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
     getAllCancelledPosts,
     addPending,
-    deletePost,
-    updatePost,
-    updatePostStatus
+    deletePending,
+    updatePending,
+    updatePendingStatus
 }

@@ -3,17 +3,17 @@ const { status } = require('express/lib/response');
 const PendingController = require('./pending.controllers');
 const router = express.Router();
 
-router.get('/', PendingController.getPosts);
+router.get('/', PendingController.getPendings);
 
-router.get('/:id', PendingController.getPostById);
+router.get('/:id', PendingController.getPendingById);
 
-router.get('/user=:id', PendingController.getPostsByUser);
+router.get('/user=:id', PendingController.getPendingsByUser);
 
-router.get('/category=:id', PendingController.getPostsByCategory);
+router.get('/category=:id', PendingController.getPendingsByCategory);
 
-router.get('/tag=:id', PendingController.getPostsByTag);
+router.get('/tag=:id', PendingController.getPendingsByTag);
 
-router.get('/collector=:id', PendingController.getPostsByCollector);
+router.get('/collector=:id', PendingController.getPendingsByCollector);
 
 router.get('/pendings', PendingController.getAllPendingPosts);
 
@@ -27,8 +27,8 @@ router.post('/finish=:id', PendingController.finishPending);
 
 router.post('/cancel=:id', PendingController.cancelPending);
 
-router.delete('/:id', PendingController.deletePost);
+router.delete('/:id', PendingController.deletePending);
 
-router.put('/:id', PendingController.updatePost);
+router.put('/:id', PendingController.updatePending);
 
 module.exports = router;

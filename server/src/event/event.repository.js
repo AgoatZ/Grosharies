@@ -8,7 +8,7 @@ getEvents = async function (query) {
         const event = await Event.find(query);
         return event;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Event repository error from getEvents: ', e.message);
 
         throw Error('Error while Paginating Events');
     }
@@ -19,7 +19,7 @@ getEventById = async function (eventId) {
         const event = await Event.findById(eventId);
         return event;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Event repository error from getEventById: ', e.message);
 
         throw Error('Error while Retrieving Event');
     }
@@ -30,7 +30,7 @@ getEventsByUser = async function (userId) {
         const events = await Event.find({ 'userId': userId });
         return events;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Event repository error from getEventsByUser: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
@@ -41,7 +41,7 @@ getEventsByTag = async function (tagId) {
         const events = await Event.find({ 'tags': tagId });
         return events;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Event repository error from getEventsByTag: ', e.message);
 
         throw Error('Error while Retrieving Post: ' + e.message);
     }
@@ -52,7 +52,7 @@ addEvent = async function (eventDetails) {
         const event = new Event(eventDetails);
         return await event.save();
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Event repository error from addEvent: ', e.message);
 
         throw Error('Error while Adding Event');
     }
@@ -63,7 +63,7 @@ deleteEvent = async function (eventId) {
         const deletedEvent = await Event.findByIdAndDelete(eventId);
         return deletedEvent;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Event repository error from deleteEvent: ', e.message);
 
         throw Error('Error while Deleting Event');
     }
@@ -74,7 +74,7 @@ updateEvent = async function (eventId, eventDetails) {
         const oldEvent = await Event.findByIdAndUpdate(eventId, eventDetails);
         return oldEvent;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Event repository error from updateEvent: ', e.message);
 
         throw Error('Error while Updating Event');
     }

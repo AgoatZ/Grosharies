@@ -2,12 +2,12 @@ const app = require('../../index');
 const request = require('supertest');
 const mongoosse = require('../db');
 const { response } = require('../../index');
-const Post = require('./pending.model');
-const Status = require('../enums/postStatus');
+const Pending = require('./pending.model');
+const Status = require('../enums/pendingStatus');
 const Scale = require('../enums/scale');
 const Packing = require('../enums/packing');
 
-const headline = 'Test Post';
+const headline = 'Test Pending';
 const userId = '62449a58c487bf4f38fbca59';
 const address = 'NowhereTest 666';
 const pickUpDates = {
@@ -16,37 +16,37 @@ const pickUpDates = {
     };
 
 beforeAll(done=>{
-    Post.remove({ 'headline' : headline }, (err)=>{});
+    Pending.remove({ 'headline' : headline }, (err)=>{});
     for(i=0; i<5; i++) {
-        Post.remove({'headline' : headline +''+ i}, (err)=>{})
+        Pending.remove({'headline' : headline +''+ i}, (err)=>{})
     }
-    Post.remove({ 'headline' : headline + 'update' }, (err)=>{
+    Pending.remove({ 'headline' : headline + 'update' }, (err)=>{
         done();
     });
 });
 
 afterAll(done=>{
-    Post.remove({ 'headline' : headline }, (err)=>{});
+    Pending.remove({ 'headline' : headline }, (err)=>{});
     for(i=0; i<5; i++) {
-        Post.remove({'headline' : headline +''+ i}, (err)=>{})
+        Pending.remove({'headline' : headline +''+ i}, (err)=>{})
     }
-    Post.remove({ 'headline' : headline + 'update' }, (err)=>{
+    Pending.remove({ 'headline' : headline + 'update' }, (err)=>{
         mongoosse.connection.close();
         done();
     });
 });
 
 
-describe('Testing Post API',()=>{
-    let newPost;
+describe('Testing Pending API',()=>{
+    let newPending;
 
-    test('add new post test',async ()=>{
-        const response = await request(app).post('/api/posts')
+    test('add new pending test',async ()=>{
+        const response = await request(app).post('/api/pendings')
         .send({
                 "headline": headline,
-                "userId": userId,
+                "collectorId": userId,
+                "publisherId": userId,
                 "address": address,
-                "pickUpDates": pickUpDates,
                 "status": Status.COLLECTED,
                 "content": [
                     {
@@ -68,40 +68,34 @@ describe('Testing Post API',()=>{
         expect(response.statusCode).toEqual(200);
         newPost = response.body.post;
         expect(newPost.headline).toEqual(headline);
-        expect(newPost.userId).toEqual(userId);
         expect(newPost.address).toEqual(address);
-        expect(Date.parse(newPost.pickUpDates[0].from)).toEqual(Date.parse(pickUpDates.from));
-        expect(Date.parse(newPost.pickUpDates[0].until)).toEqual(Date.parse(pickUpDates.until));
         expect(newPost.status).toEqual(Status.COLLECTED);
     });
 
-    test('get post by id test', async () => {
-        const response = await request(app).get('/api/posts/' + newPost._id);
+    test('get pending by id test', async () => {
+        const response = await request(app).get('/api/pendings/' + newPost._id);
         expect(response.statusCode).toEqual(200);
         const post = response.body.post;
         expect(post._id).toEqual(newPost._id);
         expect(post.headline).toEqual(headline);
-        expect(post.userId).toEqual(userId);
         expect(post.address).toEqual(address);
-        expect(Date.parse(post.pickUpDates[0].from)).toEqual(Date.parse(pickUpDates.from));
-        expect(Date.parse(post.pickUpDates[0].until)).toEqual(Date.parse(pickUpDates.until));
         expect(post.status).toEqual(Status.COLLECTED);
     });
 
-    test('get all posts test', async () => {
-        const response = await request(app).get('/api/posts');
+    test('get all pendings test', async () => {
+        const response = await request(app).get('/api/pendings');
         const posts = response.body.posts;
         expect(posts.length).toBeGreaterThanOrEqual(1);
     });
 
-    test('update post test', async () => {
-        const response = await request(app).put('/api/posts/' + newPost._id)
+    test('update pending test', async () => {
+        const response = await request(app).put('/api/pendings/' + newPost._id)
         .send({
                 "headline": headline + 'update',
-                "userId": userId,
+                "collectorId": userId,
+                "publisherId": userId,
                 "address": address + 'update',
-                "pickUpDates": pickUpDates,
-                "status": Status.PARTIALLY_COLLECTED,
+                "status": Status.CANCELLED,
                 "content": [
                     {
                         "name": "Tomato",
@@ -120,24 +114,21 @@ describe('Testing Post API',()=>{
                 ]
         });
         expect(response.statusCode).toEqual(200);
-        const response2 = await request(app).get('/api/posts/' + newPost._id);
+        const response2 = await request(app).get('/api/pendings/' + newPost._id);
         const updatedPost = response2.body.post;
         expect(updatedPost._id).toEqual(newPost._id);
         expect(updatedPost.headline).toEqual(headline + 'update');
-        expect(updatedPost.userId).toEqual(userId);
         expect(updatedPost.address).toEqual(address + 'update');
-        expect(Date.parse(updatedPost.pickUpDates[0].from)).toEqual(Date.parse(pickUpDates.from));
-        expect(Date.parse(updatedPost.pickUpDates[0].until)).toEqual(Date.parse(pickUpDates.until));
-        expect(updatedPost.status).toEqual(Status.PARTIALLY_COLLECTED);
+        expect(updatedPost.status).toEqual(Status.CANCELLED);
     });
 
-    test('get posts by user test', async ()=> {
+    test('get pendings by user test', async ()=> {
         for(i=0; i<5; i++) {
-            const response = await request(app).post('/api/posts').send({
+            const response = await request(app).post('/api/pendings').send({
                 "headline": headline + i,
-                "userId": userId,
+                "collectorId": userId,
+                "publisherId": userId,
                 "address": address,
-                "pickUpDates": pickUpDates,
                 "status": Status.COLLECTED,
                 "tags": "623ef26d9945413bb822b12a",
                 "content": [
@@ -159,21 +150,21 @@ describe('Testing Post API',()=>{
             });
         }
         expect(response.statusCode).toEqual(200);
-        const response2 = await request(app).get('/api/posts/?user=' + userId);
+        const response2 = await request(app).get('/api/pendings/?user=' + userId);
         expect(response2.statusCode).toEqual(200);
         const postsByUser = response2.body.posts;
         expect(postsByUser.length).toBeGreaterThanOrEqual(5);
     });
 
-    test('get posts by category test', async () => {
-        const response = await request(app).get('/api/posts/?category=' + "623eed4e4a8a7d3c88258479");
+    test('get pendings by category test', async () => {
+        const response = await request(app).get('/api/pendings/?category=' + "623eed4e4a8a7d3c88258479");
         expect(response.statusCode).toEqual(200);
         const postsByCategory = response.body.posts;
         expect(postsByCategory.length).toBeGreaterThanOrEqual(5);   
     });
 
-    test('get posts by tag test', async () => {
-        const response = await request(app).get('/api/posts/?tag=' + "623ef26d9945413bb822b12a");
+    test('get pendings by tag test', async () => {
+        const response = await request(app).get('/api/pendings/?tag=' + "623ef26d9945413bb822b12a");
         expect(response.statusCode).toEqual(200);
         const postsByTag = response.body.posts;
         expect(postsByTag.length).toBeGreaterThanOrEqual(5);

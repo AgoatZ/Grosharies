@@ -8,7 +8,7 @@ getCategories = async function (query) {
         const categories = await Category.find(query);
         return categories;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Category repository error from getCategories: ' + e.message);
 
         throw Error('Error while Paginating Categories');
     }
@@ -19,7 +19,7 @@ getCategoryById = async function (categoryId) {
         const category = await Category.findById(categoryId);
         return category;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Category repository error from getCategoryById: ' + e.message);
 
         throw Error('Error while Retrieving Category');
     }
@@ -30,7 +30,7 @@ addCategory = async function (categoryDetails) {
         const category = new Category(categoryDetails);
         return await category.save();
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Category repository error from addCategory: ' + e.message);
 
         throw Error('Error while Adding Category');
     }
@@ -41,7 +41,7 @@ deleteCategory = async function (categpryId) {
         const deletedCategory = await Category.findByIdAndDelete(categpryId);
         return deletedCategory;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Category repository error from deleteCategory: ' + e.message);
 
         throw Error('Error while Deleting Category');
     }
@@ -52,7 +52,7 @@ updateCategory = async function (categoryId, categoryDetails) {
         const oldCategory = await Category.findByIdAndUpdate(categoryId, categoryDetails);
         return oldCategory;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('Category repository error from updateCategory: ' + e.message);
 
         throw Error('Error while Updating Category');
     }

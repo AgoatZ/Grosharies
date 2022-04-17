@@ -76,7 +76,7 @@ addToHistory = async function (userId, pendingPostId) {
 
 getPickupHistory = async function (userId) {
     try {
-        const pendingPosts = await PendingRepository.getPostsByCollector(userId);
+        const pendingPosts = await PendingRepository.getPendingsByCollector(userId);
         return pendingPosts;
     } catch (e) {
         console.log('service error: ' + e.message);
