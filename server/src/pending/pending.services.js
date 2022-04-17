@@ -5,7 +5,7 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const router = express.Router();
-const timeToWait = 3000000;
+const oneHour = process.env.ONE_HOUR;
 const Status = require('../enums/pendingStatus');
 
 getPosts = async function (query, page, limit) {
@@ -76,13 +76,12 @@ getPostsByTag = async function (tagId) {
 
 addPending = async function (postDetails) {
     try {
-        const pendingPost = await Repository.addPost(postDetails);
-        interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
-        console.log('service: ' + post);
+        const pendingPost = await Repository.addPending(postDetails);
+        await interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
 
         return pendingPost;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('service error from addPending: ' + e.message);
 
         throw Error(e);
     }
@@ -163,7 +162,7 @@ updatePost = async function (postId, postDetails) {
 
 finishPending = async function (pendingPostId) {
     try {
-        const pendingPost = await Repository.getPostById(pendingPostId);
+        let pendingPost = await Repository.getPostById(pendingPostId);
         if (pendingPost.status !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
         }
@@ -176,8 +175,7 @@ finishPending = async function (pendingPostId) {
             trafficGrocery = await GroceryRepository.getGroceryByName(content[grocery].name);
             trafficGroceries.push(trafficGrocery);
         }
-        pendingPost.status = Status.COLLECTED;
-        await Repository.updatePost(pendingPostId, pendingPost);
+        await Repository.updatePostStatus(pendingPostId, Status.COLLECTED);
 
         const finishedPost = await Repository.getPostById(pendingPostId);
 
@@ -189,12 +187,16 @@ finishPending = async function (pendingPostId) {
     }
 };
 
-cancelPending = async function (pendingPostId) {
+const cancelPending = async function (pendingPostId) {
+    console.log("ENTERRED CANCEL PENDING FIRST");
     try {
-        const pendingPost = await Repository.getPostById(pendingPostId);
+        console.log("cacncelling ID: ", pendingPostId);
+        let pendingPost = await Repository.getPostById(pendingPostId);
+        console.log("pendingPost at service from repository: ", pendingPost);
         if (pendingPost.status !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
         }
+        console.log("ENTERRED CANCEL PENDING");
         const originalPost = await PostRepository.getPostById(pendingPost.sourcePost);
         const content = originalPost.content;
         const updatedContent = [];
@@ -224,35 +226,46 @@ cancelPending = async function (pendingPostId) {
         await PostRepository.updateContent(originalPost._id, updatedContent);
         const updatedPost = await PostRepository.getPostById(pendingPost.sourcePost);
 
-        pendingPost.status = Status.CANCELLED;
-        await Repository.updatePost(pendingPostId, pendingPost);
+        await Repository.updatePostStatus(pendingPostId, Status.CANCELLED);
 
         const cancelledPost = await Repository.getPostById(pendingPostId);
 
         return {cancelledPost, updatedPost};
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('service error from cancelPending: ', e.message);
 
         throw Error(e);
     }
 };
 
 interrestedUserReminder = async (userId, postId) => {
-    const user = UserRepository.getUserById(userId);
-    
-    const decide = async () => {
-        const post = Repository.getPostById(postId);
-        if(post.status === Status.PENDING) {
-            cancelPending(postId);
+    try {
+        const user = await UserRepository.getUserById(userId);
+        console.log("ENTERRED REMINDER");
+        
+        const decide = async function () {
+            console.log("ENTERRED DECIDE with id: ", postId);
+            const post = await Repository.getPostById(postId);
+            if(post.status === Status.PENDING) {
+                console.log("status from interrestedUserReminder: ", post.status);
+                console.log("WILL CALL NOW CANCEL PENDING POST");
+                let {cancelledPost, updatedPost} = await cancelPending(postId);
+            }
+            return;
         }
-    }
 
-    const remind = async (phone) => {
-        console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
-        setTimeout(decide, timeToWait);
-    }
+        const remind = async (phone) => {
+            console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
+            setTimeout(async function() {await decide()}, oneHour/4);
+            return;
+        }
 
-    setTimeout(remind(user.phone), timeToWait);
+        setTimeout(async function() {await remind(user.phone)}, oneHour*(3/4));
+    } catch (e) {
+        console.log('service error from interrestedUserReminder: ', e.message);
+
+        throw Error(e.message);
+    }
 };
 
 module.exports = {

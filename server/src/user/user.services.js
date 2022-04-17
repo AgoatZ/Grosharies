@@ -65,7 +65,6 @@ addToHistory = async function (userId, pendingPostId) {
         let oldUser = await Repository.getUserById(userId);
         let history = oldUser.collectedHistory;
         history = history.concat(pendingPostId);
-        console.log("Service HISTORY: ", history);
         oldUser = await Repository.addToHistory(userId, history);
         return oldUser;
     } catch (e) {

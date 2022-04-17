@@ -59,7 +59,7 @@ updateUser = async function (req, res, next) {
         const oldUser = await UserService.updateUser(req.params.id, req.body);
         return res.status(200).json({ oldUser: oldUser, message: "Succesfully User Updated" });
     } catch (e) {
-        console.log('controller error: ' + e.message);
+        console.log('controller error from updateUser: ' + e.message);
 
         return res.status(400).json({ message: e.message });
     }

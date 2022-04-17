@@ -137,6 +137,17 @@ updatePost = async function (postId, postDetails) {
     }
 };
 
+const updatePostStatus = async function (postId, updatedStatus) {
+    try {
+        const oldPost = await Pending.findByIdAndUpdate(postId, {status: updatedStatus});
+        return oldPost;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e);
+    }
+};
+
 module.exports = {
     getPosts,
     getPostById,
@@ -149,5 +160,6 @@ module.exports = {
     getAllCancelledPosts,
     addPending,
     deletePost,
-    updatePost
+    updatePost,
+    updatePostStatus
 }

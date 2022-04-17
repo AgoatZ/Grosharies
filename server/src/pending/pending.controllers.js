@@ -118,7 +118,7 @@ addPending = async function (req, res, next) {
         const post = await PendingService.addPending(req.body);
         return res.status(200).json({ post: post, message: "Succesfully Pending Added" });
     } catch (e) {
-        console.log('controller error: ' + e.message);
+        console.log('controller error from addPending: ' + e.message);
 
         return res.status(400).json({ message: e.message });
     }
@@ -164,7 +164,7 @@ cancelPending = async function (req, res, next) {
         const {cancelledPost, updatedPost} = await PendingService.cancelPending(req.params.id);
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
     } catch (e) {
-        console.log('controller error: ' + e.message);
+        console.log('controller error from cancelPending: ' + e.message);
 
         return res.status(400).json({ message: e.message });
     }

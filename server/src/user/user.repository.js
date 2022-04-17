@@ -71,7 +71,6 @@ updateUser = async function (userId, userDetails) {
 
 addToHistory = async function (userId, history) {
     try {
-        console.log("Repository HISTORY: ", history);
         const oldUser = await User.findByIdAndUpdate(userId, {collectedHistory: history});
         return oldUser;
     } catch (e) {
