@@ -8,7 +8,7 @@ getGroceries = async function (query, page, limit) {
         const groceries = await Repository.getGroceries(query);
         return groceries;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Grocery service error from getGroceries: ', e.message);
 
         throw Error('Error while Paginating Groceries');
     }
@@ -19,7 +19,7 @@ getGroceryById = async function (groceryId) {
         const grocery = await Repository.getGroceryById(groceryId);
         return grocery;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Grocery service error from getGroceryById: ', e.message);
 
         throw Error('Error while Retrieving Grocery');
     }
@@ -30,7 +30,7 @@ getGroceryByName = async function (groceryName) {
         const grocery = await Repository.getGroceryByName(groceryName);
         return grocery;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Grocery service error from getGroceryByName: ', e.message);
 
         throw Error('Error while Retrieving Grocery');
     }
@@ -41,7 +41,7 @@ addGrocery = async function (groceryDetails) {
         const grocery = await Repository.addGrocery(groceryDetails);
         return grocery;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Grocery service error from addGrocery: ', e.message);
 
         throw Error('Error while Adding Grocery');
     }
@@ -52,7 +52,7 @@ deleteGrocery = async function (groceryId) {
         const deletedGrocery = await Repository.deleteGrocery(groceryId);
         return deletedGrocery;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Grocery service error from deleteGrocery: ', e.message);
 
         throw Error('Error while Deleting Grocery');
     }
@@ -63,7 +63,7 @@ updateGrocery = async function (groceryId, groceryDetails) {
         const oldGrocery = await Repository.updateGrocery(groceryId, groceryDetails);
         return oldGrocery;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Grocery service error from updateGrocery: ', e.message);
 
         throw Error('Error while Updating Grocery');
     }

@@ -62,8 +62,8 @@ updateUser = async function (userId, userDetails) {
 
 addToHistory = async function (userId, pendingPostId) {
     try {
-        const oldUser = await Repository.getUserById(userId);
-        let history = JSON.stringify(oldUser.collectedHistory);
+        let oldUser = await Repository.getUserById(userId);
+        let history = oldUser.collectedHistory;
         history = history.concat(pendingPostId);
         oldUser = await Repository.addToHistory(userId, history);
         return oldUser;
@@ -76,7 +76,7 @@ addToHistory = async function (userId, pendingPostId) {
 
 getPickupHistory = async function (userId) {
     try {
-        const pendingPosts = await PendingRepository.getPostsByCollector(userId);
+        const pendingPosts = await PendingRepository.getPendingsByCollector(userId);
         return pendingPosts;
     } catch (e) {
         console.log('service error: ' + e.message);

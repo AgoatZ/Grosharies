@@ -2,7 +2,7 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./post.repository');
 const GroceryRepository = require('../grocery/grocery.repository');
-const PendingRepository = require('../pending/pending.repository');
+const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
 const Grocery = require('../grocery/grocery.model');
 const router = express.Router();
@@ -114,8 +114,6 @@ pendPost = async function (postId, collectorId, groceries) {
         const post = await Repository.getPostById(postId);
         const updatedContent = [];
         const content = post.content;
-        console.log("service groceries: ", groceries);
-        console.log("service post groceries: ", post.content);
 
         for (grocery in content) {
             console.log("grocery from post: ", content[grocery]);
@@ -146,7 +144,7 @@ pendPost = async function (postId, collectorId, groceries) {
         await Repository.updateContent(postId, updatedContent);
 
         const oneHour = 60*60*1000;
-        const pendingPost = await PendingRepository.addPending({
+        const pendingPost = await PendingService.addPending({
             "headline": post.headline,
             "address": post.address,
             "content": groceries,
@@ -158,7 +156,6 @@ pendPost = async function (postId, collectorId, groceries) {
                 "until": Date.now() + oneHour
               }
         });
-
         const collector = await UserService.addToHistory(collectorId, pendingPost._id);
 
         const updatedPost = await Repository.getPostById(postId);

@@ -10,7 +10,7 @@ const getUserByEmail = async (userEmail) => {
         const user = await Repository.getUserByEmail(userEmail);
         return user;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Auth service error from getUserByEmail: ' + e.message);
 
         throw Error('Error while Retrieving User');
     }
@@ -21,7 +21,7 @@ const addUser = async (userDetails) => {
         const user = await Repository.addUser(userDetails);
         return user;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Auth service error from addUser: ' + e.message);
 
         throw Error('Error while Adding User');
     }

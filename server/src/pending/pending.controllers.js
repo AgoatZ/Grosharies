@@ -1,12 +1,12 @@
 const PendingService = require('./pending.services');  
 
-getPosts = async function (req, res, next) {
+getPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PendingService.getPosts({}, page, limit);
+        const posts = await PendingService.getPendings({}, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -15,10 +15,10 @@ getPosts = async function (req, res, next) {
     }
 };
 
-getPostById = async function (req, res, next) {
+getPendingById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const post = await PendingService.getPostById(req.params.id);
+        const post = await PendingService.getPendingById(req.params.id);
         return res.status(200).json({ post: post, message: "Succesfully Post Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -27,10 +27,10 @@ getPostById = async function (req, res, next) {
     }
 };
 
-getPostsByUser = async function (req, res, next) {
+getPendingsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getPostsByUser(req.params.id);
+        const posts = await PendingService.getPendingsByUser(req.params.id);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -39,10 +39,10 @@ getPostsByUser = async function (req, res, next) {
     }
 };
 
-getPostsByCategory = async function (req, res, next) {
+getPendingsByCategory = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getPostsByCategory(req.params.id);
+        const posts = await PendingService.getPendingsByCategory(req.params.id);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -51,10 +51,10 @@ getPostsByCategory = async function (req, res, next) {
     }
 };
 
-getPostsByTag = async function (req, res, next) {
+getPendingsByTag = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getPostsByTag(req.params.id);
+        const posts = await PendingService.getPendingsByTag(req.params.id);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -63,10 +63,10 @@ getPostsByTag = async function (req, res, next) {
     }
 };
 
-getPostsByCollector = async function (req, res, next) {
+getPendingsByCollector = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getPostsByCollector(req.params.id);
+        const posts = await PendingService.getPendingsByCollector(req.params.id);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -118,15 +118,15 @@ addPending = async function (req, res, next) {
         const post = await PendingService.addPending(req.body);
         return res.status(200).json({ post: post, message: "Succesfully Pending Added" });
     } catch (e) {
-        console.log('controller error: ' + e.message);
+        console.log('controller error from addPending: ' + e.message);
 
         return res.status(400).json({ message: e.message });
     }
 };
 
-deletePost = async function (req, res, next) {
+deletePending = async function (req, res, next) {
     try {
-        const post = await PendingService.deletePost(req.params.id);
+        const post = await PendingService.deletePending(req.params.id);
         return res.status(200).json({ post: post, message: "Succesfully Posts Deleted" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -135,11 +135,11 @@ deletePost = async function (req, res, next) {
     }
 }
 
-updatePost = async function (req, res, next) {
+updatePending = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const oldPost = await PendingService.updatePost(req.params.id, req.body);
+        const oldPost = await PendingService.updatePending(req.params.id, req.body);
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -164,25 +164,25 @@ cancelPending = async function (req, res, next) {
         const {cancelledPost, updatedPost} = await PendingService.cancelPending(req.params.id);
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
     } catch (e) {
-        console.log('controller error: ' + e.message);
+        console.log('controller error from cancelPending: ' + e.message);
 
         return res.status(400).json({ message: e.message });
     }
 };
 
 module.exports = {
-    getPosts,
-    getPostById,
-    getPostsByUser,
-    getPostsByCategory,
-    getPostsByTag,
-    getPostsByCollector,
+    getPendings,
+    getPendingById,
+    getPendingsByUser,
+    getPendingsByCategory,
+    getPendingsByTag,
+    getPendingsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
     getAllCancelledPosts,
     addPending,
     finishPending,
     cancelPending,
-    deletePost,
-    updatePost
+    deletePending,
+    updatePending
 }
