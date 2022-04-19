@@ -5,6 +5,8 @@ const dotenv = require('dotenv').config();
 
 const app = express();
 
+
+
 const routeTasks = require('./src/routes/tasks');
 const routeUsers = require('./src/user/user.routes');
 const routePosts = require('./src/post/post.routes');
@@ -17,6 +19,7 @@ const routeAuth = require('./src/auth/auth.routes');
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
+jest.setTimeout(10000);
 
 app.use('/api/tasks', routeTasks, (req, res) => res.sendStatus(401));
 app.use('/api/users', routeUsers, (req, res) => res.sendStatus(401));

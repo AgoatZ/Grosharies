@@ -6,6 +6,7 @@ const User = require('../user/user.model');
 const userApi = require('../user/user.routes');
 const Authenticate = require('../common/middlewares/authentication');
 
+
 const firstName = 'Test First Name';
 const lastName = 'Test Last Name';
 const emailAddress = 'test@mail.com';
@@ -51,7 +52,8 @@ describe('Testing Auth API',()=>{
     });
 
     test('test authentication', async ()=>{
-        const response = await request(app).get('/api/events').set({ Authorization: 'barer '+accessToken });
+        
+        const response = await request(app).get('/api/tags').set({ Authorization: 'JWT '+accessToken });
         
         console.log('response from get events: '+response.body);
         expect(response.statusCode).toEqual(200);
