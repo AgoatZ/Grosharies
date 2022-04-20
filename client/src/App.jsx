@@ -33,6 +33,7 @@ const App = () => {
           <Route path="about" element={<About />} />
           <Route path="login" element={<Login/>} />
           <Route path="*" element={<NoMatch />} />
+          <Route path="register" element={<Register/>}/>
         </Route>
       </Routes>
     </BrowserRouter>
