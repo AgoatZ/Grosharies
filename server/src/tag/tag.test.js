@@ -58,7 +58,7 @@ describe('Testing Tag API',()=>{
     });
 
     test('get all tags', async () => {
-        const response = await request(app).get('/api/tags').set({ Authorization: 'JWT '+accessToken });
+        const response = await request(app).get('/api/tags').set({ Authorization: 'Bearer '+accessToken });
         const tags = response.body.tags;
         expect(tags.length).toBeGreaterThanOrEqual(1);
     });

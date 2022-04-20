@@ -52,10 +52,7 @@ describe('Testing Auth API',()=>{
     });
 
     test('test authentication', async ()=>{
-        
-        const response = await request(app).get('/api/tags').set({ Authorization: 'JWT '+accessToken });
-        
-        console.log('response from get events: '+response.body);
+        const response = await request(app).get('/api/tags').set({ Authorization: 'Bearer '+accessToken });
         expect(response.statusCode).toEqual(200);
     });
    

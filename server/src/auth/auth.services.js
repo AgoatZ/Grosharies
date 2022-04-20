@@ -1,33 +1,58 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const Repository = require('../user/user.repository');
+const UserRepository = require('../user/user.repository');
 const router = express.Router();
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-const getUserByEmail = async (userEmail) => {
+const register = async (user) => {
     try {
-        const user = await Repository.getUserByEmail(userEmail);
-        return user;
-    } catch (e) {
-        console.log('Auth service error from getUserByEmail: ' + e.message);
+        const exists = await UserRepository.getUserByEmail(user.email);
+        if (exists != null) {
+            throw Error('user already exists');
+        } else {
+            const salt = await bcrypt.genSalt(10);
+            const hashPwd = await bcrypt.hash(user.password, salt);
 
-        throw Error('Error while Retrieving User');
+            user.password = hashPwd;
+            newUser = await UserRepository.addUser(user);
+            return newUser;
+        }
+    } catch (err) {
+        throw Error(err);
     }
-};
+}
 
-const addUser = async (userDetails) => {
-    try {
-        const user = await Repository.addUser(userDetails);
-        return user;
-    } catch (e) {
-        console.log('Auth service error from addUser: ' + e.message);
-
-        throw Error('Error while Adding User');
+const login = async (email, password) => {
+    if(email == null || password == null) {
+        throw Error('wrong email or password');
     }
-};
+
+    try{
+        const user = await UserRepository.getUserByEmail(email);
+        if(user == null) {
+            throw Error('wrong email or password');
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+        if(!match) {
+            throw Error('wrong email or password');
+        }
+
+        const accessToken = await jwt.sign(
+            {'id': user._id},
+            process.env.ACCESS_TOKEN_SECRET,
+            {expiresIn: process.env.JWT_TOKEN_EXPIRATION}
+        );
+        return accessToken;
+    } catch (err) {
+        throw Error(err);
+    }
+}
 
 module.exports = {
-    getUserByEmail,
-    addUser
+    register,
+    login
 };

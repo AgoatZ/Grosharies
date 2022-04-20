@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config();
 
 const app = express();
-
+//require('./src/common/middlewares/passport');
 
 
 const routeTasks = require('./src/routes/tasks');
@@ -19,7 +19,6 @@ const routeAuth = require('./src/auth/auth.routes');
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
-jest.setTimeout(10000);
 
 app.use('/api/tasks', routeTasks, (req, res) => res.sendStatus(401));
 app.use('/api/users', routeUsers, (req, res) => res.sendStatus(401));

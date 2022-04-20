@@ -10,68 +10,18 @@ const sendError = (res, code, message) => {
 };
 
 const register = async (req,res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-
     try {
-        const exists = await AuthService.getUserByEmail(email);
-        if (exists != null) {
-            return sendError(res, 400, 'user already exists');
-        } else {
-            const salt = await bcrypt.genSalt(10);
-            const hashPwd = await bcrypt.hash(password, salt);
-
-            let user = req.body;
-            user.password = hashPwd;
-            newUser = await AuthService.addUser(user);
-            res.status(200).send(newUser);
-        }
+        const newUser = await AuthService.register(req.body);
+        return res.status(200).json({ user: newUser, message: "Succesfully user registered" });
     } catch (err) {
         return sendError(res, 400, err.message);
     }
 };
 
-// passport.use(new LocalStrategy(function verify(email, password, cb) {
-//     AuthService.getUserByEmail(email, function(err, row) {
-//       if (err) { return cb(err); }
-//       if (!row) { return cb(null, false, { message: 'Incorrect username or password.' }); }
-  
-//       crypto.pbkdf2(password, row.salt, 310000, 32, 'sha256', function(err, hashedPassword) {
-//         if (err) { return cb(err); }
-//         if (!crypto.timingSafeEqual(row.hashed_password, hashedPassword)) {
-//           return cb(null, false, { message: 'Incorrect username or password.' });
-//         }
-//         return cb(null, row);
-//       });
-//     });
-//   }));
-
 const login = async (req, res) => {
-    console.log('login');
-    const email = req.body.emailAddress;
-    const password = req.body.password;
-
-    if(email == null || password == null) {
-        return sendError(res, 400, 'wrong email or password');
-    }
-
-    try{
-        const user = await AuthService.getUserByEmail(email);
-        if(user == null) {
-            return sendError(res, 400, 'wrong email or password');
-        }
-        console.log(user._id);
-        const match = await bcrypt.compare(password, user.password);
-        if(!match) {
-            return sendError(res, 400, 'wrong email or password');
-        }
-
-        const accessToken = await jwt.sign(
-            {'id': user._id},
-            process.env.ACCESS_TOKEN_SECRET,
-            {expiresIn: process.env.JWT_TOKEN_EXPIRATION}
-        );
-        res.status(200).send({'accessToken': accessToken});
+    try {
+        const accessToken = await AuthService.login(req.body.emailAddress, req.body.password);
+        return res.status(200).send({'accessToken': accessToken});
     } catch (err) {
         return sendError(res, 400, err.message);
     }
