@@ -15,11 +15,11 @@ router.get('/tag=:id', PendingController.getPendingsByTag);
 
 router.get('/collector=:id', PendingController.getPendingsByCollector);
 
-router.get('/pendings', PendingController.getAllPendingPosts);
+router.get('/:pendings', PendingController.getAllPendingPosts);
 
-router.get('/finished', PendingController.getAllFinishedPosts);
+router.get('/:finished', PendingController.getAllFinishedPosts);
 
-router.get('/cancelled', PendingController.getAllCancelledPosts);
+router.use('/:cancelled', PendingController.getAllCancelledPosts);
 
 router.post('/', PendingController.addPending);
 
