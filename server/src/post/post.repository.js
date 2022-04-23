@@ -2,7 +2,7 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Post = require('./post.model');
 const router = express.Router();
-const reply = require('../enums/postReply');
+const reply = require('../enums/post-reply');
 
 getPosts = async (query) => {
     try {

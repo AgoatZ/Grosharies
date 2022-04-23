@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const status = require('../enums/postStatus');
+const status = require('../enums/post-status');
 const Grocery = require('../grocery/grocery.model');
-const reply = require('../enums/postReply');
+const reply = require('../enums/post-reply');
 
 const post = new mongoose.Schema({
   headline: { type: String, required: true },

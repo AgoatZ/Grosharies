@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const status = require('../enums/eventStatus');
+const status = require('../enums/event-status');
 
 const event = new mongoose.Schema({
   headline: { type: String, required: true },

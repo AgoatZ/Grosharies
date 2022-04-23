@@ -28,6 +28,17 @@ getUserById = async function (userId) {
     }
 };
 
+getUserByEmail = async function (userEmail) {
+    try {
+        const user = await Repository.getUserByEmail(userEmail)
+        return user;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error('Error while Retrieving user');
+    }
+};
+
 addUser = async function (userDetails) {
     try {
         const user = await Repository.addUser(userDetails);
@@ -36,6 +47,17 @@ addUser = async function (userDetails) {
         console.log('service error: ' + e.message);
 
         throw Error('Error while Adding User');
+    }
+};
+
+const addGoogleUser = async (user) => {
+    try {
+    const googleUser = await Repository.addGoogleUser(user)
+    return googleUser;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error(e.message);
     }
 };
 
@@ -89,7 +111,9 @@ getPickupHistory = async function (userId) {
 module.exports = {
     getUsers,
     getUserById,
+    getUserByEmail,
     addUser,
+    addGoogleUser,
     deleteUser,
     updateUser,
     addToHistory,

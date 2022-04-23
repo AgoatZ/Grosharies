@@ -2,7 +2,7 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const TagController = require('./tag.controllers');
 const router = express.Router();
-const authJwt = require('../common/middlewares/passport');
+const { authJwt } = require('../common/middlewares/passport');
 
 router.get('/', authJwt, TagController.getTags);
 

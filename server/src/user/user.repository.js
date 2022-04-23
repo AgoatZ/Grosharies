@@ -47,6 +47,18 @@ addUser = async function (userDetails) {
     }
 };
 
+const addGoogleUser = (User) => async ({ id, email, firstName, lastName, profilePhoto }) => {
+    const user = new User({
+      "_id": id,
+      "emailAddress": email,
+      "firstName": firstName,
+      "lastName": lastName,
+      "profileImage": profilePhoto,
+      "source": "google"
+    })
+    return await user.save()
+  }
+
 deleteUser = async function (userId) {
     try {
         const deletedUser = await User.findByIdAndDelete(userId);
@@ -85,6 +97,7 @@ module.exports = {
     getUserById,
     getUserByEmail,
     addUser,
+    addGoogleUser,
     addToHistory,
     deleteUser,
     updateUser

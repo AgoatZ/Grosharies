@@ -6,7 +6,7 @@ const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const router = express.Router();
 const oneHour = 60*1000;
-const Status = require('../enums/pendingStatus');
+const Status = require('../enums/pending-status');
 
 getPendings = async function (query, page, limit) {
     try {
