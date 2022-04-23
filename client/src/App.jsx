@@ -34,6 +34,8 @@ const App = () => {
           <Route path="login" element={<Login/>} />
           <Route path="*" element={<NoMatch />} />
           <Route path="register" element={<Register/>}/>
+          <Route path="login" element={<Login/>}/>
+
         </Route>
       </Routes>
     </BrowserRouter>
