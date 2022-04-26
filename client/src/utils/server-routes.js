@@ -1,6 +1,6 @@
 const serverRoutes = {
-  Register: "",
-  Login: "login",
+  Register: "auth/register",
+  Login: "auth/login",
 };
 
 export default serverRoutes;

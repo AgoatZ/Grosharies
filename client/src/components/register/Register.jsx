@@ -15,22 +15,35 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import validator from 'validator'
+import axios from "../../utils/axios";
+import serverRoutes from '../../utils/server-routes';
+import validator from 'validator';
 
 
 
 const theme = createTheme();
 
 export default function Register() {
-  const [isValid, setIsValid] = React.useState(true)
+  const [isEmailValid, setIsValid] = React.useState(true);
+  const [isPasswordValid, setPassword] = React.useState(true);
 
   const handleSubmit = (event) => {
+    if (!isEmailValid || !isPasswordValid) {
+      return;
+    }
     event.preventDefault();
+
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
+
+    axios.post(serverRoutes.Register, {
+      emailAddress: data.get('email'),
+      firstName: data.get('firstName'),
+      lastName: data.get('lastName'),
+      phone: data.get('phone'),
       password: data.get('password'),
-    });
+    }).then((res) => {
+      console.log(res.data)
+    }).catch((e) => console.log(e))
 
   };
 
@@ -57,7 +70,9 @@ export default function Register() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
+                  type="text"
                   name="firstName"
+                  inputProps={{ maxLength: 12 }}
                   required
                   fullWidth
                   id="firstName"
@@ -69,6 +84,8 @@ export default function Register() {
                 <TextField
                   required
                   fullWidth
+                  type="text"
+                  inputProps={{ maxLength: 12 }}
                   id="lastName"
                   label="Last Name"
                   name="lastName"
@@ -79,7 +96,7 @@ export default function Register() {
                 <TextField
                   required
                   fullWidth
-                  error={!isValid}
+                  error={!isEmailValid}
                   onChange={(e) => {
                     if (!validator.isEmail(e.target.value))
                       setIsValid(false)
@@ -95,16 +112,26 @@ export default function Register() {
               </Grid>
               <Grid item xs={12}>
                 <PhoneInput
+                  inputProps={{
+                    name: 'phone',
+                    required: true,
+                    autoFocus: true
+                  }}
                   country={'il'}
                   inputStyle={{ width: "100%", height: "56px" }}
-                  onChange={phone => { }}
                 />
-
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={!isPasswordValid}
                   required
                   fullWidth
+                  onBlur={(e) => {
+                    console.log(e.target.value);
+                    // min 8 chars with at least one number and one letter
+                    let isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(e.target.value);
+                    setPassword(isPasswordValid);
+                  }}
                   name="password"
                   label="Password"
                   type="password"
