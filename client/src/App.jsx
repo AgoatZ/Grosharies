@@ -1,6 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Container } from "@mui/material";
+//FontAwesome Icons Setup
+import { library as iconsLibrary} from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+//Routs Components
 import Home from './components/home/Home';
 import Post from './components/post/Post';
 import About from "./components/about/About";
@@ -11,12 +16,14 @@ import Account from './components/account/Account';
 import Layout from './components/layout/Layout';
 import Login from './components/login/Login';
 
+iconsLibrary.add(fas,far);
+
 const App = () => {
+  //All Routs Componentes are nested under Layout->Outlet
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />} >
-          {/* All Routs Componentes are nested under Layout->Outlet  */}
           <Route index element={<Home />} />
           <Route path="post/:id" element={<Post />} />
           <Route path="groceries" element={<Groceries />} />
