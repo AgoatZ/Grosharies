@@ -7,7 +7,8 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import EventIcon from '@mui/icons-material/Event';
 import { UserImageThumbnail } from '../common/Images';
 
-const Header = () => {
+//props = noUser(Boolean) userData(Schema)
+const Header = (props) => {
   //General navigation 
   let navigate = useNavigate();
   const handleClickItemMenu = (event) => {
@@ -15,6 +16,7 @@ const Header = () => {
     const target = event.currentTarget.innerText.toLowerCase();
     navigate("./" + target, {});
   };
+  const toLoginPage = () => { navigate("./login/"); }
 
   //Navigation menu setup (drawer and bar)
   const [navDrawerState, setNavDrawerState] = useState(false);
@@ -52,32 +54,6 @@ const Header = () => {
         <ListItemText primary='Logout' />
       </MenuItem>
     ];
-
-  //User Data Setup
-  const [noUser, setNoUser] = useState(true);
-  const [userData, setUser] = useState(() => {
-
-    //TODO: add request to get user's status and data
-
-    //if no user is signed in
-    //setNoUser(true);
-
-    //if the user is signed in
-    setNoUser(false);
-    const fakeUser = {
-      firstName: "Ilan",
-      lastName: "Rozenfeld",
-      emailAddress: "Ilan@Walla.com",
-      phone: "05000000000",
-      accountType: "user",
-      rank: 0,
-      posts: [],
-      profileImage: "/assets/ohad.png",
-      collectedHistory: []
-    };
-
-    return fakeUser;
-  });
 
   const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
   return (
@@ -125,10 +101,10 @@ const Header = () => {
             </Button>
 
             {/* User Profile Setup */}
-            <Box sx={{ flexGrow: 0 }} hidden={Boolean(noUser)}>
-              <Tooltip title="Open settings">
+            <Box sx={{ flexGrow: 0 }} hidden={Boolean(props.noUser)}>
+              <Tooltip title="Open User Menu">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <UserImageThumbnail src={userData.profileImage} />
+                  <UserImageThumbnail src={props.userData.profileImage} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -147,8 +123,9 @@ const Header = () => {
             </Box>
 
             {/* User Profile Setup */}
-            <Box sx={{ flexGrow: 0 }} hidden={Boolean(!noUser)}>
-              <Button size='small' variant="outlined" sx={{ color: 'white', border: '1px solid white' }}>Sign In</Button>
+            <Box sx={{ flexGrow: 0 }} hidden={Boolean(!props.noUser)}>
+
+              <Button onClick={toLoginPage} size='small' variant="outlined" sx={{ color: 'white', border: '1px solid white' }}>Sign In</Button>
             </Box>
 
           </Toolbar>
