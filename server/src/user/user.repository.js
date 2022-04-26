@@ -47,16 +47,9 @@ addUser = async function (userDetails) {
     }
 };
 
-const addGoogleUser = (User) => async ({ id, email, firstName, lastName, profilePhoto }) => {
-    const user = new User({
-      "_id": id,
-      "emailAddress": email,
-      "firstName": firstName,
-      "lastName": lastName,
-      "profileImage": profilePhoto,
-      "source": "google"
-    })
-    return await user.save()
+const addGoogleUser = async (userDetails) => {
+    const user = new User(userDetails);
+    return await user.save();
   }
 
 deleteUser = async function (userId) {

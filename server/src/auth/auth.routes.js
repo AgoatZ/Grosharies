@@ -13,7 +13,7 @@ router.post('/login', AuthController.login);
 
 router.get('/login/federated/google', passportMiddlewares.authGoogle);
 
-router.get('/login/google/callback', passportMiddlewares.authGoogleCallback);
+router.get('/google/callback', passportMiddlewares.authGoogleCallback);
 
 router.post('/logout', AuthController.logout);
 

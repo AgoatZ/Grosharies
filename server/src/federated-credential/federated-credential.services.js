@@ -37,9 +37,9 @@ getFederatedCredentialByProviderAndSubject = async function (provider, subject) 
     }
 };
 
-addFederatedCredential = async function (federatedCredentialDetails) {
+addFederatedCredential = async function (id, issuer, profileId) {
     try {
-        const federatedCredential = await Repository.addFederatedCredential(federatedCredentialDetails);
+        const federatedCredential = await Repository.addFederatedCredential(id, issuer, profileId);
         return federatedCredential;
     } catch (e) {
         console.log('service error: ' + e.message);

@@ -34,42 +34,54 @@ passport.use(new GoogleStrategy({
         var credentials = await FederatedCredential.getFederatedCredentialByProviderAndSubject(issuer, profile.id);
         console.log('credentials:', credentials);
         if (!credentials) {
-            const user = await User.addUser({ name: profile.displayName, password: " " });
-            var id = this.lastID;
-            credentials = await FederatedCredential.addFederatedCredential(id, issuer, profile.id);
-            console.log('if not credentials, new credentials:', credentials);
+            console.log('if not credentials, profile:', profile);
             var newUser = {
-                _id: id,
-                firstName: profile.displayName,
-                lastName: "google",
-                emailAddress: profile.emailAddress,
+                firstName: profile.name.givenName,
+                lastName: profile.name.familyName,
+                emailAddress: profile.emails[0].value,
                 password: "123456",
-                phone: "052373555"
+                phone: "052373555",
+                source: "google"
             };
             newUser = await User.addGoogleUser(newUser);
+            console.log(newUser);
+            credentials = await FederatedCredential.addFederatedCredential(newUser._id, issuer, profile.id);
             return cb(null, newUser);
         } else {
-            const user = await User.getUserById(credentials.user_id);
+            const user = await User.getUserById(credentials.userId);
             if (!user) {
                 return cb(null, false);
+            } else {
+                return cb(null, user);
             }
-            return cb(null, user);
           }
         } catch (e) {
             return cb(e);
         }
     }
 ));
+
 const authGoogle = passport.authenticate("google", { scope: ["profile", "email"] });
 const authGoogleCallback = passport.authenticate("google", {
       failureRedirect: "/",
-      successRedirect: "/",
-      failureFlash: true,
-      successFlash: "Successfully logged in!",
+      successRedirect: "/api/groceries",
+    //   failureFlash: true,
+    //   successFlash: "Successfully logged in!",
     });
+
+const serializeUser = passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+      
+const deserializeUser = passport.deserializeUser(async (id, done) => {
+    const currentUser = await User.getUserById(id);
+    done(null, currentUser);
+});
 
 module.exports = {
     authJwt,
     authGoogle,
-    authGoogleCallback
+    authGoogleCallback,
+    serializeUser,
+    deserializeUser
 };
