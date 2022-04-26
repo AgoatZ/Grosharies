@@ -6,10 +6,11 @@ import Posts from '../posts/Posts';
 const tabs = ['Near By', 'Recently Added'];
 
 const Home = () => {
+    const [tabValue, setTabValue] = useState();
+    const handleChange = (event, newValue) => setTabValue(newValue);
 
     const [posts, setPosts] = useState([]);
     useEffect(() => { loadPosts(); }, []);
-
     const loadPosts = () => {
         axios.get('/api/posts/').then(res => {
             //console.log('data = ' + JSON.stringify(res.data.posts) + ", status = " + res.status);
@@ -45,24 +46,19 @@ const Home = () => {
         );
     }
 
-    const [value, setValue] = React.useState(0);
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
-
     return (
         <Stack direction="column" justifyContent="flex-start" alignItems="center" spacing={{ xs: 1, sm: 1, md: 5, lg: 5 }}>
             <Logo />
 
-            <Box sx={{ width: 'auto'}}>
-                <Tabs value={value} onChange={handleChange} >
+            <Box sx={{ width: 'auto' }}>
+                <Tabs value={tabValue} onChange={handleChange} >
                     <Tab label={tabs[0]} />
                     <Tab label={tabs[1]} />
                 </Tabs>
-                <TabPanel value={value} index={0}>
+                <TabPanel value={tabValue} index={0}>
                     <Posts posts={posts} />
                 </TabPanel>
-                <TabPanel value={value} index={1}>
+                <TabPanel value={tabValue} index={1}>
                     <Posts posts={posts.sort((a, b) => a - b)} />
                 </TabPanel>
             </Box>
