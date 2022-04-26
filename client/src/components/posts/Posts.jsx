@@ -16,7 +16,7 @@ const Posts = (props) => {
     });
 
     return (
-        <Container>
+        <Container disableGutters>
             <Grid container spacing={{ xs: 1, sm: 1, md: 2, lg: 2 }} justifyContent='center' sx={containerStyle}>
                 {posts}
             </Grid>
