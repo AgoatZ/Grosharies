@@ -1,61 +1,127 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, Tooltip, MenuItem, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider } from '@mui/material';
+import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, Tooltip, MenuItem, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider, Icon } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
-import EventIcon from '@mui/icons-material/Event';
 import { UserImageThumbnail } from '../common/Images';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-//props = noUser(Boolean) userData(Schema)
-const Header = (props) => {
-  //General navigation 
+const pages = ['Groceries', 'Events'];
+const userOptions = ['Profile', 'Account', 'Logout'];
+
+//props - noUser(Boolean) userData(DB User Schema)
+const Header = ({ noUser, userData }) => {
+
+  //Generic item click navigation 
   let navigate = useNavigate();
-  const handleClickItemMenu = (event) => {
-    setUserMenuAnchorEl(null);
+  const navigateToPage = (event) => {
     const target = event.currentTarget.innerText.toLowerCase();
     navigate("./" + target, {});
   };
-  const toLoginPage = () => { navigate("./login/"); }
 
-  //Navigation menu setup (drawer and bar)
-  const [navDrawerState, setNavDrawerState] = useState(false);
-  const toggleNavDrawer = (open) => (event) => {
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift"))
-      return;
-    setNavDrawerState(open);
-  };
-  const navMenu =
-    [
-      <MenuItem key='Groceries' onClick={handleClickItemMenu}>
-        <ListItemIcon><ShoppingBasketIcon /></ListItemIcon>
-        <ListItemText primary='Groceries' />
-      </MenuItem>,
-      <MenuItem key='Events' onClick={handleClickItemMenu}>
-        <ListItemIcon><EventIcon /></ListItemIcon>
-        <ListItemText primary='Events' />
-      </MenuItem>
-    ];
+  const NavigationBar = () => {
+    return (
+      <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+        <MenuItem key={pages[0]} onClick={navigateToPage}>
+          <ListItemIcon><FontAwesomeIcon icon="fa-solid fa-apple-whole" size='lg' color='white' /></ListItemIcon>
+          <ListItemText primary={pages[0]} />
+        </MenuItem>
+        <MenuItem key={pages[1]} onClick={navigateToPage}>
+          <ListItemIcon><FontAwesomeIcon icon="fa-solid fa-calendar" size='lg' color='white' /></ListItemIcon>
+          <ListItemText primary={pages[1]} />
+        </MenuItem>
+      </Box>
+    );
+  }
 
-  //User menu setup
-  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
-  const handleOpenUserMenu = (event) => setUserMenuAnchorEl(event.currentTarget);
-  const handleCloseUserMenu = () => setUserMenuAnchorEl(null);
-  const userMenu =
-    [
-      <MenuItem button key='Profile' onClick={handleClickItemMenu}>
-        <ListItemText primary='Profile' />
-      </MenuItem>,
-      <MenuItem button key='Account' onClick={handleClickItemMenu}>
-        <ListItemText primary='Account' />
-      </MenuItem>,
-      <Divider />,
-      <MenuItem button key='Logout' onClick={handleClickItemMenu}>
-        <ListItemText primary='Logout' />
-      </MenuItem>
-    ];
+  const NavigationDrawer = () => {
+    const [navDrawerState, setNavDrawerState] = useState(false);
+    const toggleNavDrawer = (open) => (event) => {
+      if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift"))
+        return;
+      setNavDrawerState(open);
+    };
 
+    return (
+      <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+        <IconButton onClick={toggleNavDrawer(true)} >
+          <FontAwesomeIcon icon="fa-solid fa-bars" color='white' size='sm' />
+        </IconButton>
+        <Drawer
+          anchor="left"
+          disableScrollLock
+          open={navDrawerState}
+          onClose={toggleNavDrawer(false)}>
+          <Box onClick={toggleNavDrawer(false)} onKeyDown={toggleNavDrawer(false)} >
+            <List>
+              <MenuItem key={pages[0]} onClick={navigateToPage}>
+                <ListItemIcon><FontAwesomeIcon icon="fa-solid fa-apple-whole" size='lg' /></ListItemIcon>
+                <ListItemText primary={pages[0]} />
+              </MenuItem>
+              <MenuItem key={pages[1]} onClick={navigateToPage}>
+                <ListItemIcon><FontAwesomeIcon icon="fa-solid fa-calendar" size='lg' /></ListItemIcon>
+                <ListItemText primary={pages[1]} />
+              </MenuItem>
+            </List>
+          </Box>
+        </Drawer>
+      </Box>
+    );
+  }
+
+  const UserOptions = () => {
+    const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
+    const handleOpenUserMenu = (event) => setUserMenuAnchorEl(event.currentTarget);
+    const handleCloseUserMenu = () => setUserMenuAnchorEl(null);
+
+    return (
+      <Box sx={{ flexGrow: 0 }} hidden={noUser}>
+        {/* User Pending GroSharies */}
+        <IconButton >
+          <FontAwesomeIcon icon="fa-solid fa-basket-shopping" color='white' size='lg' />
+        </IconButton>
+
+        {/* User Options Menu */}
+        <Tooltip title="Open User Menu">
+          <IconButton onClick={handleOpenUserMenu}>
+            <UserImageThumbnail src={userData.profileImage} />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          keepMounted
+          disableScrollLock
+          sx={{ mt: '45px' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          anchorEl={userMenuAnchorEl}
+          open={Boolean(userMenuAnchorEl)}
+          onClose={handleCloseUserMenu}
+        >
+          <MenuItem key={userOptions[0]} onClick={navigateToPage}>
+            <ListItemText primary={userOptions[0]} />
+          </MenuItem>
+          <MenuItem key={userOptions[1]} onClick={navigateToPage}>
+            <ListItemText primary={userOptions[1]} />
+          </MenuItem>
+          <Divider />
+          <MenuItem key={userOptions[2]} onClick={navigateToPage}>
+            <ListItemText primary={userOptions[2]} />
+          </MenuItem>
+        </Menu>
+      </Box>
+    );
+  }
+
+  const NoUser = () => {
+    return (
+      <Box sx={{ flexGrow: 0 }} hidden={!noUser}>
+        <Button onClick={navigateToPage} size='small' variant="outlined" sx={{ color: 'white', border: '1px solid white' }}>Login</Button>
+      </Box>
+    );
+  }
+
+  const Logo = () => { return <img src={'/assets/logo_label_white.png'} height='30px' width='100px' /> }
   const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
+
   return (
     <Box>
       <AppBar position="fixed">
@@ -63,70 +129,18 @@ const Header = (props) => {
           <Toolbar disableGutters>
 
             {/* Large Screen Setup */}
-            <Button href='/' sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
-              <img src={'assets/logo_label_white.png'} height='30px' width='100px' />
-            </Button>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {navMenu}
-            </Box>
+            <Button onClick={() => navigate("/")} sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}><Logo /></Button>
+            <NavigationBar />
 
             {/* Small Screen Setup */}
-            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-              <IconButton
-                size="large"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={toggleNavDrawer(true)}
-                color="inherit"
-              >
-                <MenuRoundedIcon sx={{ color: 'white' }} />
-              </IconButton>
-              <Drawer
-                anchor="left"
-                disableScrollLock
-                open={navDrawerState}
-                onClose={toggleNavDrawer(false)}>
-                <Box
-                  onClick={toggleNavDrawer(false)}
-                  onKeyDown={toggleNavDrawer(false)}
-                >
-                  <List>
-                    {navMenu}
-                  </List>
-                </Box>
-              </Drawer>
-            </Box>
-            <Button href='/' sx={{ justifyContent: 'left', flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-              <img src={'assets/logo_label_white.png'} height='30px' width='100px' />
-            </Button>
+            <NavigationDrawer />
+            <Button onClick={() => navigate("/")} sx={{ justifyContent: 'left', flexGrow: 1, display: { xs: 'flex', md: 'none' } }}><Logo /></Button>
 
-            {/* User Profile Setup */}
-            <Box sx={{ flexGrow: 0 }} hidden={Boolean(props.noUser)}>
-              <Tooltip title="Open User Menu">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <UserImageThumbnail src={props.userData.profileImage} />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={userMenuAnchorEl}
-                keepMounted
-                disableScrollLock
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                open={Boolean(userMenuAnchorEl)}
-                onClose={handleCloseUserMenu}
-              >
-                {userMenu}
-              </Menu>
-            </Box>
+            {/* User Setup */}
+            <UserOptions />
 
-            {/* User Profile Setup */}
-            <Box sx={{ flexGrow: 0 }} hidden={Boolean(!props.noUser)}>
-
-              <Button onClick={toLoginPage} size='small' variant="outlined" sx={{ color: 'white', border: '1px solid white' }}>Sign In</Button>
-            </Box>
+            {/* No User Setup */}
+            <NoUser />
 
           </Toolbar>
         </Container>
@@ -137,3 +151,6 @@ const Header = (props) => {
 };
 
 export default Header;
+
+
+

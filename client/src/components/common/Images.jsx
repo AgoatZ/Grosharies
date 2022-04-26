@@ -1,5 +1,4 @@
-import { maxHeight } from '@mui/material/node_modules/@mui/system';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 
 const defaultPostSrc = '/assets/default-post-image.svg';
 const defaultUserSrc = '/assets/default-user-image.svg';
