@@ -1,5 +1,7 @@
 
 import * as React from 'react';
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -19,13 +21,12 @@ import validator from 'validator'
 
 const theme = createTheme();
 
-
 export default function Register() {
-    const [isValid,setIsValid] = React.useState(true)
+  const [isValid, setIsValid] = React.useState(true)
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
       password: data.get('password'),
@@ -79,18 +80,26 @@ export default function Register() {
                   required
                   fullWidth
                   error={!isValid}
-                  onChange={(e)=>{
-                    if(!validator.isEmail(e.target.value))
-                        setIsValid(false)
+                  onChange={(e) => {
+                    if (!validator.isEmail(e.target.value))
+                      setIsValid(false)
                     else
-                        setIsValid(true)
-                }}
+                      setIsValid(true)
+                  }}
                   type="email"
                   id="email"
                   label="Email Address"
                   name="email"
                   autoComplete="email"
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <PhoneInput
+                  country={'il'}
+                  inputStyle={{ width: "100%", height: "56px" }}
+                  onChange={phone => { }}
+                />
+
               </Grid>
               <Grid item xs={12}>
                 <TextField
