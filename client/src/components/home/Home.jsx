@@ -6,14 +6,11 @@ import Posts from '../posts/Posts';
 const Home = () => {
 
     const [posts, setPosts] = useState([]);
-
-    useEffect(() => {
-        loadPosts();
-    }, []);
+    useEffect(() => { loadPosts(); }, []);
 
     const loadPosts = () => {
         axios.get('/api/posts/').then(res => {
-            console.log('data = ' + JSON.stringify(res.data.posts) + ", status = " + res.status);
+            //console.log('data = ' + JSON.stringify(res.data.posts) + ", status = " + res.status);
             setPosts(res.data.posts);
         });
     };

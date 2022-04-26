@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter, Routes, Route, Outlet, Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Outlet } from "react-router-dom";
 import { Grid } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Header from "../header/Header";
@@ -57,16 +57,14 @@ const Layout = () => {
     return (
         <ThemeProvider theme={appTheme}>
             <Grid
-                component='layout'
                 container
                 direction="column"
                 display='grid'
                 height='100%'
                 gridTemplateRows='auto 1fr auto'
             >
-                <Grid item component='header'><Header nouser={noUser} userData={userData} /></Grid>
-                <Grid item component='main'><Outlet nouser={noUser} userData={userData} /></Grid>
-                {/* <Grid item component='main'><Outlet context={{ noUser, userData }} /></Grid> */}
+                <Grid item component='header'><Header noUser={noUser} userData={userData} /></Grid>
+                <Grid item component='main'><Outlet context={{ noUser, userData }} /></Grid>
                 <Grid item component='footer'><Footer /></Grid>
             </Grid>
         </ThemeProvider>
