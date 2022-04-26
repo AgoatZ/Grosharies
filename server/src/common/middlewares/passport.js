@@ -25,21 +25,28 @@ passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
 const authJwt = passport.authenticate('jwt', { session: false });
 
 passport.use(new GoogleStrategy({
-    clientID: process.env['GOOGLE_CLIENT_ID'],
-    clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
-    callbackURL: '/oauth2/redirect/google',
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     scope: [ 'profile' ]
     }, async function verify(issuer, profile, cb) {
         try {
         var credentials = await FederatedCredential.getFederatedCredentialByProviderAndSubject(issuer, profile.id);
+        console.log('credentials:', credentials);
         if (!credentials) {
             const user = await User.addUser({ name: profile.displayName, password: " " });
             var id = this.lastID;
             credentials = await FederatedCredential.addFederatedCredential(id, issuer, profile.id);
+            console.log('if not credentials, new credentials:', credentials);
             var newUser = {
-                id: id,
-                name: profile.displayName
+                _id: id,
+                firstName: profile.displayName,
+                lastName: "google",
+                emailAddress: profile.emailAddress,
+                password: "123456",
+                phone: "052373555"
             };
+            newUser = await User.addGoogleUser(newUser);
             return cb(null, newUser);
         } else {
             const user = await User.getUserById(credentials.user_id);
@@ -54,8 +61,15 @@ passport.use(new GoogleStrategy({
     }
 ));
 const authGoogle = passport.authenticate("google", { scope: ["profile", "email"] });
+const authGoogleCallback = passport.authenticate("google", {
+      failureRedirect: "/",
+      successRedirect: "/",
+      failureFlash: true,
+      successFlash: "Successfully logged in!",
+    });
 
 module.exports = {
     authJwt,
-    authGoogle
+    authGoogle,
+    authGoogleCallback
 };

@@ -1,10 +1,14 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv').config();
+const MongoStore = require('connect-mongo');
 
 const app = express();
-//require('./src/common/middlewares/passport');
+const session = require('express-session');
+const passport = require('passport');
+require('./src/common/middlewares/passport');
 
 
 const routeTasks = require('./src/routes/tasks');
@@ -19,6 +23,21 @@ const routeAuth = require('./src/auth/auth.routes');
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(
+  session({
+    secret: "secret-key",
+    store: MongoStore.create({
+      mongoUrl: "mongodb://127.0.0.1:27017/grosharies",
+    }),
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    resave: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/api/tasks', routeTasks, (req, res) => res.sendStatus(401));
 app.use('/api/users', routeUsers, (req, res) => res.sendStatus(401));
