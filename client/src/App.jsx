@@ -1,9 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Outlet, Link } from "react-router-dom";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Grid, Container } from "@mui/material";
-import Header from "./components/header/Header";
-import Footer from "./components/footer/Footer";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { Container } from "@mui/material";
+//FontAwesome Icons Setup
+import { library as iconsLibrary} from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+//Routs Components
 import Home from './components/home/Home';
 import Post from './components/post/Post';
 import About from "./components/about/About";
@@ -11,30 +13,13 @@ import Groceries from './components/groceries/Groceries';
 import Events from './components/events/Events';
 import Profile from './components/profile/Profile';
 import Account from './components/account/Account';
+import Layout from './components/layout/Layout';
+import Login from './components/login/Login';
 
-const appTheme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#39ab8a',
-      light: '#45d1a8',
-      dark: '#349e7f',
-      contrastText: '#fff'
-    },
-    secondary: {
-      main: '#39abab',
-      light: '#45d1d1',
-      dark: '#349e9e',
-      contrastText: '#fff'
-    },
-  },
-  typography: {
-    fontFamily: ["'Quicksand'", 'sans-serif'].join(','),
-    button: { textTransform: "capitalize", fontSize: 16, letterSpacing: '0.07em' },
-  },
-});
+iconsLibrary.add(fas,far);
 
 const App = () => {
+  //All Routs Componentes are nested under Layout->Outlet
   return (
     <BrowserRouter>
       <Routes>
@@ -46,29 +31,11 @@ const App = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="account" element={<Account />} />
           <Route path="about" element={<About />} />
+          <Route path="login" element={<Login/>} />
           <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>
     </BrowserRouter>
-  );
-};
-
-const Layout = () => {
-  return (
-    <ThemeProvider theme={appTheme}>
-      <Grid
-        component='layout'
-        container
-        direction="column"
-        display='grid'
-        height='100%'
-        gridTemplateRows='auto 1fr auto'
-      >
-        <Grid item component='header'><Header /></Grid>
-        <Grid item component='main'><Outlet /></Grid>
-        <Grid item component='footer'><Footer /></Grid>
-      </Grid>
-    </ThemeProvider>
   );
 };
 
