@@ -6,8 +6,8 @@ import Posts from '../posts/Posts';
 const tabs = ['Near By', 'Recently Added'];
 
 const Home = () => {
-    const [tabValue, setTabValue] = useState();
-    const handleChange = (event, newValue) => setTabValue(newValue);
+    const [activeTabNumber, setActiveTabNumber] = useState(0);
+    const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
 
     const [posts, setPosts] = useState([]);
     useEffect(() => { loadPosts(); }, []);
@@ -33,8 +33,7 @@ const Home = () => {
         )
     };
 
-    const TabPanel = (props) => {
-        const { children, value, index } = props;
+    const TabPanel = ({ children, value, index }) => {
         return (
             <div role="tabpanel" hidden={value !== index}>
                 {value === index && (
@@ -51,14 +50,14 @@ const Home = () => {
             <Logo />
 
             <Box sx={{ width: 'auto' }}>
-                <Tabs value={tabValue} onChange={handleChange} >
+                <Tabs value={activeTabNumber} onChange={handleTabChange} >
                     <Tab label={tabs[0]} />
                     <Tab label={tabs[1]} />
                 </Tabs>
-                <TabPanel value={tabValue} index={0}>
+                <TabPanel value={activeTabNumber} index={0}>
                     <Posts posts={posts} />
                 </TabPanel>
-                <TabPanel value={tabValue} index={1}>
+                <TabPanel value={activeTabNumber} index={1}>
                     <Posts posts={posts.sort((a, b) => a - b)} />
                 </TabPanel>
             </Box>
