@@ -87,24 +87,6 @@ addPending = async function (postDetails) {
     }
 };
 
-/*
-addPendingFromPost = async function (postId, data) {
-    try {
-        let post = await PostRepository.getPostById(postId);
-        delete post[_id];
-        post = JSON.stringify(post).concat(data);
-        post = await Repository.addPost(post);        
-        console.log('service: ' + post);
-
-        return post;
-    } catch (e) {
-        console.log('service error: ' + e.message);
-
-        throw Error(e);
-    }
-};
-*/
-
 deletePending = async function (postId) {
     try {
         const deletedPost = await Repository.deletePending(postId);

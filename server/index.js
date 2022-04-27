@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv').config();
 const MongoStore = require('connect-mongo');
+const cors = require('cors');
 
 const app = express();
 const session = require('express-session');
@@ -38,6 +39,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors());
 
 app.use('/api/tasks', routeTasks, (req, res) => res.sendStatus(401));
 app.use('/api/users', routeUsers, (req, res) => res.sendStatus(401));

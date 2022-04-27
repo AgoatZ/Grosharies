@@ -1,13 +1,13 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const Repository = require('./user.repository');
+const UserRepository = require('./user.repository');
 const PostRepository = require('../post/post.repository');
 const PendingRepository = require('../pending/pending.repository');
 const router = express.Router();
 
 getUsers = async function (query, page, limit) {
     try {
-        const users = await Repository.getUsers(query);
+        const users = await UserRepository.getUsers(query);
         return users;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -19,7 +19,7 @@ getUsers = async function (query, page, limit) {
 getUserById = async function (userId) {
     try {
         console.log("User Service userId:", userId);
-        const user = await Repository.getUserById(userId)
+        const user = await UserRepository.getUserById(userId)
         return user;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -30,7 +30,7 @@ getUserById = async function (userId) {
 
 getUserByEmail = async function (userEmail) {
     try {
-        const user = await Repository.getUserByEmail(userEmail)
+        const user = await UserRepository.getUserByEmail(userEmail)
         return user;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -41,8 +41,12 @@ getUserByEmail = async function (userEmail) {
 
 addUser = async function (userDetails) {
     try {
-        const user = await Repository.addUser(userDetails);
-        return user;
+        const exists = await UserRepository.getUserByEmail(userDetails.emailAddress);
+        if (exists) throw Error('This email address belongs to another user');
+        else {
+            const user = await UserRepository.addUser(userDetails);
+            return user;
+        }
     } catch (e) {
         console.log('service error: ' + e.message);
 
@@ -52,8 +56,12 @@ addUser = async function (userDetails) {
 
 const addGoogleUser = async (user) => {
     try {
-    const googleUser = await Repository.addGoogleUser(user)
-    return googleUser;
+        const exists = await UserRepository.getUserByEmail(user.emailAddress);
+        if (exists) return exists;
+        else {
+            const googleUser = await UserRepository.addUser(user)
+            return googleUser;
+        }
     } catch (e) {
         console.log('service error: ' + e.message);
 
@@ -63,7 +71,7 @@ const addGoogleUser = async (user) => {
 
 deleteUser = async function (userId) {
     try {
-        const deletedUser = await Repository.deleteUser(userId);
+        const deletedUser = await UserRepository.deleteUser(userId);
         return deletedUser;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -74,8 +82,12 @@ deleteUser = async function (userId) {
 
 updateUser = async function (userId, userDetails) {
     try {
-        const oldUser = await Repository.updateUser(userId, userDetails);
-        return oldUser;
+        const exists = await UserRepository.getUserByEmail(userDetails.emailAddress);
+        if (exists && exists._id !== userId) throw Error('This email address belongs to another user');
+        else {
+            const oldUser = await UserRepository.updateUser(userId, userDetails);
+            return oldUser;
+        }
     } catch (e) {
         console.log('service error: ' + e.message);
 
@@ -85,10 +97,10 @@ updateUser = async function (userId, userDetails) {
 
 addToHistory = async function (userId, pendingPostId) {
     try {
-        let oldUser = await Repository.getUserById(userId);
+        let oldUser = await UserRepository.getUserById(userId);
         let history = oldUser.collectedHistory;
         history = history.concat(pendingPostId);
-        oldUser = await Repository.addToHistory(userId, history);
+        oldUser = await UserRepository.addToHistory(userId, history);
         return oldUser;
     } catch (e) {
         console.log('service error: ' + e.message);
