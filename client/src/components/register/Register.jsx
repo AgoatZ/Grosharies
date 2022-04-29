@@ -33,6 +33,7 @@ export default function Register() {
   const [passwordError, setPasswordError] = React.useState("");
   const [firstNameError, setFirstNameError] = React.useState("");
   const [lastNameError, setLastNameError] = React.useState("");
+  const [termsError, setTermsError] = React.useState(false);
 
   const handleSubmit = (event) => {
     const data = new FormData(event.currentTarget);
@@ -45,7 +46,6 @@ export default function Register() {
 
     event.preventDefault();
 
-    console.log(emailAddress);
     if (
       emailAddress === "" ||
       firstName === "" ||
@@ -70,6 +70,15 @@ export default function Register() {
       return;
     }
 
+    if (!termsError) {
+      MySwal.fire({
+        title: <strong>Oops!</strong>,
+        text: "You haven't agreed to the terms and conditions of the site",
+        icon: "warning",
+      });
+      return;
+    }
+
     axios
       .post(serverRoutes.Register, {
         emailAddress,
@@ -80,12 +89,18 @@ export default function Register() {
       })
       .then((res) => {
         MySwal.fire({
-          title: <strong>"Registered Successfully!"</strong>,
+          title: <strong>Registered Successfully!</strong>,
           icon: "success",
         });
         console.log(res.data);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        MySwal.fire({
+          title: <strong>Something Went Wrong</strong>,
+          icon: "error",
+        });
+        console.log(e);
+      });
   };
 
   return (
@@ -133,7 +148,6 @@ export default function Register() {
                       setFirstNameError("");
                     }
                   }}
-                  autoFocus
                 />
                 {firstNameError ? (
                   <label style={alertStyle}>{firstNameError}</label>
@@ -196,7 +210,6 @@ export default function Register() {
 
               <Grid item xs={12}>
                 <TextField
-                  error={passwordError !== ""}
                   required
                   fullWidth
                   name="password"
@@ -204,6 +217,7 @@ export default function Register() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  error={passwordError !== ""}
                   onBlur={(e) => {
                     let isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
                       e.target.value
@@ -224,7 +238,17 @@ export default function Register() {
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
+                    <Checkbox
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setTermsError(true);
+                        } else {
+                          setTermsError(false);
+                        }
+                      }}
+                      value="allowExtraEmails"
+                      color="primary"
+                    />
                   }
                   label="I agree to the terms and conditions."
                 />
@@ -240,7 +264,7 @@ export default function Register() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
