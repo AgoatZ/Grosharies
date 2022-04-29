@@ -1,50 +1,91 @@
-
-import * as React from 'react';
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css'
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import * as React from "react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "../../utils/axios";
-import serverRoutes from '../../utils/server-routes';
-import validator from 'validator';
-
-
+import serverRoutes from "../../utils/server-routes";
+import validator from "validator";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const theme = createTheme();
 
+const alertStyle = {
+  color: "red",
+};
+
+const MySwal = withReactContent(Swal);
+
 export default function Register() {
-  const [isEmailValid, setIsValid] = React.useState(true);
-  const [isPasswordValid, setPassword] = React.useState(true);
+  const [isEmailValid, setIsEmailValid] = React.useState(true);
+  const [passwordError, setPasswordError] = React.useState("");
+  const [firstNameError, setFirstNameError] = React.useState("");
+  const [lastNameError, setLastNameError] = React.useState("");
 
   const handleSubmit = (event) => {
-    if (!isEmailValid || !isPasswordValid) {
-      return;
-    }
-    event.preventDefault();
-
     const data = new FormData(event.currentTarget);
 
-    axios.post(serverRoutes.Register, {
-      emailAddress: data.get('email'),
-      firstName: data.get('firstName'),
-      lastName: data.get('lastName'),
-      phone: data.get('phone'),
-      password: data.get('password'),
-    }).then((res) => {
-      console.log(res.data)
-    }).catch((e) => console.log(e))
+    const emailAddress = data.get("email");
+    const firstName = data.get("firstName");
+    const lastName = data.get("lastName");
+    const phone = data.get("phone");
+    const password = data.get("password");
 
+    event.preventDefault();
+
+    console.log(emailAddress);
+    if (
+      emailAddress === "" ||
+      firstName === "" ||
+      lastName === "" ||
+      phone === "" ||
+      password === ""
+    ) {
+      MySwal.fire({
+        title: <strong>Something went wrong</strong>,
+        text: "Some of the fields are empty",
+        icon: "error",
+      });
+      return;
+    }
+
+    if (
+      !isEmailValid ||
+      passwordError !== "" ||
+      firstNameError !== "" ||
+      lastNameError !== ""
+    ) {
+      return;
+    }
+
+    axios
+      .post(serverRoutes.Register, {
+        emailAddress,
+        firstName,
+        lastName,
+        phone,
+        password,
+      })
+      .then((res) => {
+        MySwal.fire({
+          title: <strong>"Registered Successfully!"</strong>,
+          icon: "success",
+        });
+        console.log(res.data);
+      })
+      .catch((e) => console.log(e));
   };
 
   return (
@@ -54,21 +95,27 @@ export default function Register() {
         <Box
           sx={{
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  error={firstNameError !== ""}
                   autoComplete="given-name"
                   type="text"
                   name="firstName"
@@ -77,11 +124,25 @@ export default function Register() {
                   fullWidth
                   id="firstName"
                   label="First Name"
+                  onBlur={(e) => {
+                    if (e.target.value.length < 2) {
+                      setFirstNameError(
+                        "First name must be at least 2 characters"
+                      );
+                    } else {
+                      setFirstNameError("");
+                    }
+                  }}
                   autoFocus
                 />
+                {firstNameError ? (
+                  <label style={alertStyle}>{firstNameError}</label>
+                ) : null}
               </Grid>
+
               <Grid item xs={12} sm={6}>
                 <TextField
+                  error={lastNameError !== ""}
                   required
                   fullWidth
                   type="text"
@@ -90,7 +151,19 @@ export default function Register() {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
+                  onBlur={(e) => {
+                    if (e.target.value.length < 2) {
+                      setLastNameError(
+                        "Last name must be at least 2 characters"
+                      );
+                    } else {
+                      setLastNameError("");
+                    }
+                  }}
                 />
+                {lastNameError ? (
+                  <label style={alertStyle}>{lastNameError}</label>
+                ) : null}
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -99,9 +172,8 @@ export default function Register() {
                   error={!isEmailValid}
                   onChange={(e) => {
                     if (!validator.isEmail(e.target.value))
-                      setIsValid(false)
-                    else
-                      setIsValid(true)
+                      setIsEmailValid(false);
+                    else setIsEmailValid(true);
                   }}
                   type="email"
                   id="email"
@@ -113,36 +185,48 @@ export default function Register() {
               <Grid item xs={12}>
                 <PhoneInput
                   inputProps={{
-                    name: 'phone',
+                    name: "phone",
                     required: true,
-                    autoFocus: true
+                    autoFocus: true,
                   }}
-                  country={'il'}
+                  country={"il"}
                   inputStyle={{ width: "100%", height: "56px" }}
                 />
               </Grid>
+
               <Grid item xs={12}>
                 <TextField
-                  error={!isPasswordValid}
+                  error={passwordError !== ""}
                   required
                   fullWidth
-                  onBlur={(e) => {
-                    console.log(e.target.value);
-                    // min 8 chars with at least one number and one letter
-                    let isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(e.target.value);
-                    setPassword(isPasswordValid);
-                  }}
                   name="password"
                   label="Password"
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  onBlur={(e) => {
+                    let isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
+                      e.target.value
+                    );
+                    if (!isPasswordValid) {
+                      setPasswordError(
+                        "Password must be at least 8 characters and contain characters and numbers"
+                      );
+                    } else {
+                      setPasswordError("");
+                    }
+                  }}
                 />
+                {passwordError ? (
+                  <label style={alertStyle}>{passwordError}</label>
+                ) : null}
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                  control={
+                    <Checkbox value="allowExtraEmails" color="primary" />
+                  }
+                  label="I agree to the terms and conditions."
                 />
               </Grid>
             </Grid>
