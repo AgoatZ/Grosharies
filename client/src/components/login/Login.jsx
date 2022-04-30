@@ -15,21 +15,18 @@ import axios from "../../utils/axios";
 import serverRoutes from "../../utils/server-routes";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import Cookies from "universal-cookie";
 
 const theme = createTheme();
 const MySwal = withReactContent(Swal);
+const cookies = new Cookies();
 
 export default function Login(props) {
   const [isValid, setIsValid] = React.useState(true);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("emailAddress"),
-      password: data.get("password"),
-      serverRoutes,
-    });
 
     const emailAddress = data.get("emailAddress");
     const password = data.get("password");
@@ -43,9 +40,12 @@ export default function Login(props) {
         MySwal.fire({
           text: "Signed in Successfully",
           icon: "success",
-          showConfirmButton: false
+          showConfirmButton: false,
         });
         setTimeout(() => {
+          console.log(res);
+          localStorage.setItem("jwt_token", res.data.accessToken);
+          cookies.set("jwt_token", res.data.accessToken, { httpOnly: false });
           props.LoginUser();
         }, 1000);
       })
@@ -55,7 +55,6 @@ export default function Login(props) {
         MySwal.fire({
           text: "Wrong Username or Password, Please try again",
           icon: "warning",
-
         });
       });
   };
@@ -120,7 +119,7 @@ export default function Login(props) {
               Sign In
             </Button>
             <Grid container justifyContent="center">
-              <Grid item >
+              <Grid item>
                 <Link href="/register" variant="body2">
                   not have an account yet? Sign Up
                 </Link>
