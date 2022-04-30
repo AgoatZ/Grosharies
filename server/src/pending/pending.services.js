@@ -17,7 +17,7 @@ getPendings = async function (query, page, limit) {
     } catch (e) {
         console.log('Pending service error from getPendings: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pendings');
     }
 };
 
@@ -28,7 +28,7 @@ getPendingById = async function (postId) {
     } catch (e) {
         console.log('Pending service error from getPendingById: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pending');
     }
 };
 
@@ -39,7 +39,7 @@ getPendingsByUser = async function (userId) {
     } catch (e) {
         console.log('Pending service error from getPendingsByUser: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pendings by User');
     }
 };
 
@@ -50,7 +50,7 @@ getPendingsByCollector = async function (userId) {
     } catch (e) {
         console.log('Pending service error from getPendingsByCollector: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Pendings by Collector');
     }
 };
 
@@ -61,7 +61,7 @@ getPendingsByCategory = async function (categoryId) {
     } catch (e) {
         console.log('Pending service error from getPendingsByCategory: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pendings by Category');
     }
 };
 
@@ -72,7 +72,7 @@ getPendingsByTag = async function (tagId) {
     } catch (e) {
         console.log('Pending service error from getPendingsByTag: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pendings by Tag');
     }
 };
 
@@ -85,7 +85,7 @@ addPending = async function (postDetails) {
     } catch (e) {
         console.log('Pending service error from addPending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Adding Pendings');
     }
 };
 
@@ -96,7 +96,7 @@ deletePending = async function (postId) {
     } catch (e) {
         console.log('Pending service error from deletePending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Deleting Pendings');
     }
 };
 
@@ -107,7 +107,7 @@ getAllPendingPosts = async function () {
     } catch (e) {
         console.log('Pending service error from getAllPendingPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Pending Posts');
     }
 };
 
@@ -118,7 +118,7 @@ getAllFinishedPosts = async function () {
     } catch (e) {
         console.log('Pending service error from getAllFinishedPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Collected Posts');
     }
 };
 
@@ -129,7 +129,7 @@ getAllCancelledPosts = async function () {
     } catch (e) {
         console.log('Pending service error from getAllCancelledPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Cancelled Posts');
     }
 };
 
@@ -140,7 +140,7 @@ updatePending = async function (postId, postDetails) {
     } catch (e) {
         console.log('Pending service error from updatePending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Updating Pendings');
     }
 };
 
@@ -167,7 +167,7 @@ finishPending = async function (pendingPostId) {
     } catch (e) {
         console.log('Pending service error from finishPending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Finnishing Pending');
     }
 };
 
@@ -218,7 +218,7 @@ const cancelPending = async function (pendingPostId) {
     } catch (e) {
         console.log('Pending service error from cancelPending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Cancelling Pending');
     }
 };
 
@@ -251,7 +251,7 @@ interrestedUserReminder = async (userId, postId) => {
     } catch (e) {
         console.log('Pending service error from interrestedUserReminder: ', e.message);
 
-        throw Error(e.message);
+        throw Error('Error while Reminding User');
     }
 };
 
