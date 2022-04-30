@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
   Toolbar,
   IconButton,
-  Typography,
   Menu,
   Container,
   Button,
@@ -13,11 +12,9 @@ import {
   MenuItem,
   Drawer,
   List,
-  ListItem,
   ListItemText,
   ListItemIcon,
   Divider,
-  Icon,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { UserImageThumbnail } from "../common/Images";

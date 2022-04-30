@@ -17,16 +17,10 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 const theme = createTheme();
-
-const alertStyle = {
-  color: "red",
-};
-
 const MySwal = withReactContent(Swal);
 
 export default function Login(props) {
   const [isValid, setIsValid] = React.useState(true);
-  const [passwordError, setPasswordError] = React.useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -47,16 +41,21 @@ export default function Login(props) {
       })
       .then((res) => {
         MySwal.fire({
-          title: <strong>Signed in Successfully</strong>,
+          text: "Signed in Successfully",
           icon: "success",
+          showConfirmButton: false
         });
-        props.LoginUser();
+        setTimeout(() => {
+          props.LoginUser();
+        }, 1000);
       })
+
       .catch((e) => {
         console.log(e);
         MySwal.fire({
-          title: <strong>Something Went Wrong</strong>,
-          icon: "error",
+          text: "Wrong Username or Password, Please try again",
+          icon: "warning",
+
         });
       });
   };
@@ -110,23 +109,7 @@ export default function Login(props) {
                 type="password"
                 id="password"
                 autoComplete="new-password"
-                error={passwordError !== ""}
-                onBlur={(e) => {
-                  let isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
-                    e.target.value
-                  );
-                  if (!isPasswordValid) {
-                    setPasswordError(
-                      "Password must be at least 8 characters and contain characters and numbers"
-                    );
-                  } else {
-                    setPasswordError("");
-                  }
-                }}
               />
-              {passwordError ? (
-                <label style={alertStyle}>{passwordError}</label>
-              ) : null}
             </Grid>
             <Button
               type="submit"
@@ -136,8 +119,8 @@ export default function Login(props) {
             >
               Sign In
             </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
+            <Grid container justifyContent="center">
+              <Grid item >
                 <Link href="/register" variant="body2">
                   not have an account yet? Sign Up
                 </Link>

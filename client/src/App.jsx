@@ -16,15 +16,19 @@ import Account from "./components/account/Account";
 import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
+//TODO: remove import - test 
+import Cookies from 'js-cookie';
+
 
 iconsLibrary.add(fas, far);
 
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
-
+  const [loggedIn, setLoggedIn] = useState(() => {
+    console.log(Cookies.get("connect.sid"))
+  });
+  console.log(loggedIn)
   const LoginUser = () => {
     setLoggedIn(true);
-    window.location.replace("/");
   };
 
   //All Routes Componentes are nested under Layout->Outlet
