@@ -262,9 +262,9 @@ export default function Register() {
             >
               Sign Up
             </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/login" variant="body2">
+            <Grid container justifyContent="center" >
+              <Grid item >
+                <Link href="/login" variant="body2" >
                   Already have an account? Sign in
                 </Link>
               </Grid>
@@ -272,6 +272,6 @@ export default function Register() {
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }

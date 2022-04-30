@@ -16,6 +16,8 @@ import Account from "./components/account/Account";
 import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
+//TODO: remove import - test
+import Cookies from "js-cookie";
 
 iconsLibrary.add(fas, far);
 
@@ -24,8 +26,9 @@ const App = () => {
 
   const LoginUser = () => {
     setLoggedIn(true);
-    window.location.replace("/");
   };
+
+  const isLoggedIn = () => {}; // Stub
 
   //All Routes Componentes are nested under Layout->Outlet
   return (
