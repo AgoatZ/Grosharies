@@ -5,8 +5,10 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const router = express.Router();
-const oneHour = 60*1000;
+const oneHour = 60*60*1000;
 const Status = require('../enums/pending-status');
+const { PublishCommand } = require ('@aws-sdk/client-sns');
+const { snsClient } = require ('../common/utils/sns-client');
 
 getPendings = async function (query, page, limit) {
     try {
@@ -236,8 +238,11 @@ interrestedUserReminder = async (userId, postId) => {
             return;
         }
 
-        const remind = async (phone) => {
+        const remind = async (phoneNumber) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
+
+            //sendSMSToNumber('Taken???', phoneNumber);
+
             setTimeout(async function() {await decide()}, oneHour/4);
             return;
         }
@@ -250,6 +255,24 @@ interrestedUserReminder = async (userId, postId) => {
     }
 };
 
+const sendSMSToNumber = async (message, phoneNumber) => {
+    var params = {
+        Message: message,
+        PhoneNumber: phoneNumber
+    };
+  
+    const run = async () => {
+        try {
+        const data = await snsClient.send(new PublishCommand(params));
+        console.log("Success.",  data);
+        return data; // For unit tests.
+        } catch (err) {
+        console.log("Error", err.stack);
+        }
+    };
+    run();
+}
+
 module.exports = {
     getPendings,
     getPendingById,
@@ -261,6 +284,7 @@ module.exports = {
     getAllPendingPosts,
     getAllCancelledPosts,
     addPending,
+    sendSMSToNumber,
     finishPending,
     cancelPending,
     deletePending,
