@@ -65,7 +65,7 @@ const addGoogleUser = async (user) => {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e.message);
+        throw Error('Error while adding google user');
     }
 };
 

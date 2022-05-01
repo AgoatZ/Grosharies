@@ -26,6 +26,25 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(function(req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  next();
+});
+app.use(
+  cors({
+    origin: [`http://localhost:3000`, `https://localhost:3000`],
+    credentials: "true",
+  })
+);
 app.use(
   session({
     secret: "secret-key",
@@ -39,7 +58,6 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors());
 
 app.use('/api/tasks', routeTasks, (req, res) => res.sendStatus(401));
 app.use('/api/users', routeUsers, (req, res) => res.sendStatus(401));

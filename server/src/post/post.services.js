@@ -15,7 +15,7 @@ getPosts = async function (query, page, limit) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Posts');
     }
 };
 
@@ -26,7 +26,7 @@ getPostById = async function (postId) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Post');
     }
 };
 
@@ -37,7 +37,7 @@ getPostsByUser = async function (userId) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Posts by User');
     }
 };
 
@@ -48,7 +48,7 @@ getPostsByCategory = async function (categoryId) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Posts by Category');
     }
 };
 
@@ -59,7 +59,7 @@ getPostsByTag = async function (tagId) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Posts by Tag');
     }
 };
 
@@ -70,7 +70,7 @@ getPostsByCollector = async function (userId) {
     } catch (e) {
         console.log('repository error: ' + e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Posts by Collector');
     }
 };
 
@@ -83,7 +83,7 @@ addPost = async function (postDetails) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Adding Post');
     }
 };
 
@@ -94,7 +94,7 @@ deletePost = async function (postId) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Deleting Post');
     }
 };
 
@@ -105,7 +105,7 @@ updatePost = async function (postId, postDetails) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Updating Post');
     }
 };
 
@@ -164,7 +164,7 @@ pendPost = async function (postId, collectorId, groceries) {
     } catch (e) {
         console.log('service error: ' + e.message);
 
-        throw Error(e);
+        throw Error('Error while Pending Post');
     }
 };
 

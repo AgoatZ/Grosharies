@@ -5,8 +5,10 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const router = express.Router();
-const oneHour = 60*1000;
+const oneHour = 60*60*1000;
 const Status = require('../enums/pending-status');
+const { PublishCommand } = require ('@aws-sdk/client-sns');
+const { snsClient } = require ('../common/utils/sns-client');
 
 getPendings = async function (query, page, limit) {
     try {
@@ -15,7 +17,7 @@ getPendings = async function (query, page, limit) {
     } catch (e) {
         console.log('Pending service error from getPendings: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pendings');
     }
 };
 
@@ -26,7 +28,7 @@ getPendingById = async function (postId) {
     } catch (e) {
         console.log('Pending service error from getPendingById: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pending');
     }
 };
 
@@ -37,7 +39,7 @@ getPendingsByUser = async function (userId) {
     } catch (e) {
         console.log('Pending service error from getPendingsByUser: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pendings by User');
     }
 };
 
@@ -48,7 +50,7 @@ getPendingsByCollector = async function (userId) {
     } catch (e) {
         console.log('Pending service error from getPendingsByCollector: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Pendings by Collector');
     }
 };
 
@@ -59,7 +61,7 @@ getPendingsByCategory = async function (categoryId) {
     } catch (e) {
         console.log('Pending service error from getPendingsByCategory: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pendings by Category');
     }
 };
 
@@ -70,7 +72,7 @@ getPendingsByTag = async function (tagId) {
     } catch (e) {
         console.log('Pending service error from getPendingsByTag: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Pendings by Tag');
     }
 };
 
@@ -83,7 +85,7 @@ addPending = async function (postDetails) {
     } catch (e) {
         console.log('Pending service error from addPending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Adding Pendings');
     }
 };
 
@@ -94,7 +96,7 @@ deletePending = async function (postId) {
     } catch (e) {
         console.log('Pending service error from deletePending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Deleting Pendings');
     }
 };
 
@@ -105,7 +107,7 @@ getAllPendingPosts = async function () {
     } catch (e) {
         console.log('Pending service error from getAllPendingPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Pending Posts');
     }
 };
 
@@ -116,7 +118,7 @@ getAllFinishedPosts = async function () {
     } catch (e) {
         console.log('Pending service error from getAllFinishedPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Collected Posts');
     }
 };
 
@@ -127,7 +129,7 @@ getAllCancelledPosts = async function () {
     } catch (e) {
         console.log('Pending service error from getAllCancelledPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Cancelled Posts');
     }
 };
 
@@ -138,7 +140,7 @@ updatePending = async function (postId, postDetails) {
     } catch (e) {
         console.log('Pending service error from updatePending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Updating Pendings');
     }
 };
 
@@ -165,7 +167,7 @@ finishPending = async function (pendingPostId) {
     } catch (e) {
         console.log('Pending service error from finishPending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Finnishing Pending');
     }
 };
 
@@ -216,7 +218,7 @@ const cancelPending = async function (pendingPostId) {
     } catch (e) {
         console.log('Pending service error from cancelPending: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Cancelling Pending');
     }
 };
 
@@ -236,8 +238,11 @@ interrestedUserReminder = async (userId, postId) => {
             return;
         }
 
-        const remind = async (phone) => {
+        const remind = async (phoneNumber) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
+
+            //sendSMSToNumber('Taken???', phoneNumber);
+
             setTimeout(async function() {await decide()}, oneHour/4);
             return;
         }
@@ -246,9 +251,27 @@ interrestedUserReminder = async (userId, postId) => {
     } catch (e) {
         console.log('Pending service error from interrestedUserReminder: ', e.message);
 
-        throw Error(e.message);
+        throw Error('Error while Reminding User');
     }
 };
+
+const sendSMSToNumber = async (message, phoneNumber) => {
+    var params = {
+        Message: message,
+        PhoneNumber: phoneNumber
+    };
+  
+    const run = async () => {
+        try {
+        const data = await snsClient.send(new PublishCommand(params));
+        console.log("Success.",  data);
+        return data; // For unit tests.
+        } catch (err) {
+        console.log("Error", err.stack);
+        }
+    };
+    run();
+}
 
 module.exports = {
     getPendings,
@@ -261,6 +284,7 @@ module.exports = {
     getAllPendingPosts,
     getAllCancelledPosts,
     addPending,
+    sendSMSToNumber,
     finishPending,
     cancelPending,
     deletePending,

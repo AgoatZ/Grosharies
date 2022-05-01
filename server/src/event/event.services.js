@@ -32,7 +32,7 @@ getEventsByUser = async function (userId) {
     } catch (e) {
         console.log('Event service error from getEventsByUser: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Event by User');
     }
 };
 
@@ -43,7 +43,7 @@ getEventsByTag = async function (tagId) {
     } catch (e) {
         console.log('Event service error from getEventsByTag: ', e.message);
 
-        throw Error(e);
+        throw Error('Error while Retrieving Event by Tag');
     }
 };
 

@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 
 const register = async (user) => {
     try {
-        const exists = await UserRepository.getUserByEmail(user.email);
+        const exists = await UserRepository.getUserByEmail(user.emailAddress);
         if (exists != null) {
             throw Error('user already exists');
         } else {
