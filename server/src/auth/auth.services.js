@@ -25,26 +25,49 @@ const register = async (user) => {
     }
 }
 
-const login = async (email, password) => {
-    if(email == null || password == null) {
-        throw Error('wrong email or password');
+const login = async (email, password, source) => {
+    if (email == null || password == null) {
+        throw Error('wrong email or password1');
     }
 
-    try{
+    try {
+//ADD SOURCE GROSHARIES AND EXCHANGE SWITCH WITH IF
         const user = await UserRepository.getUserByEmail(email);
-        if(user == null) {
-            throw Error('wrong email or password');
+        if (user == null) {
+            throw Error('wrong email or password2');
         }
-
-        const match = await bcrypt.compare(password, user.password);
-        if(!match) {
-            throw Error('wrong email or password');
+        switch (source) {
+            case 'google': {
+                break;
+            }
+            default:
+                const match = await bcrypt.compare(password, user.password);
+                if (!match) {
+                    console.log(password);
+                    console.log(user.password);
+                    throw Error('wrong email or password3');
+                }
+                break;
         }
+//TODO: FINISH IT UP
+        // const user = await UserRepository.getUserByEmail(email);
+        // if(user == null) {
+        //     throw Error('wrong email or password2');
+        // }
 
-        const accessToken = await jwt.sign(
-            {'id': user._id},
+        // const match = await bcrypt.compare(password, user.password);
+        // if(!match) {
+        //     console.log(password);
+        //     console.log(user.password);
+        //     throw Error('wrong email or password3');
+        // }
+        console.log('loginauth');
+        const accessToken = await jwt.sign({
+            'id': user._id,
+            'role': user.userType
+        },
             process.env.ACCESS_TOKEN_SECRET,
-            {expiresIn: process.env.JWT_TOKEN_EXPIRATION}
+            { expiresIn: process.env.JWT_TOKEN_EXPIRATION }
         );
         return accessToken;
     } catch (err) {

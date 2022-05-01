@@ -5,8 +5,17 @@ const GoogleStrategy = require('passport-google-oidc');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
+var cookieExtractor = function(req) {
+    var token = null;
+    if (req && req.cookies)
+    {
+        token = req.cookies['jwt_token'];
+    }
+    return token;
+};
+
 var opts = {}
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey =  process.env.ACCESS_TOKEN_SECRET;
 passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
     const user = await User.getUserById(jwt_payload.id);
@@ -31,6 +40,7 @@ passport.use(new GoogleStrategy({
     scope: [ 'profile' ]
     }, async function verify(issuer, profile, cb) {
         try {
+            console.log('passgoogle');
         var credentials = await FederatedCredential.getFederatedCredentialByProviderAndSubject(issuer, profile.id);
         console.log('credentials:', credentials);
         if (!credentials) {
@@ -64,7 +74,7 @@ passport.use(new GoogleStrategy({
 const authGoogle = passport.authenticate("google", { scope: ["profile", "email"] });
 const authGoogleCallback = passport.authenticate("google", {
       failureRedirect: "/",
-      successRedirect: "/profile",
+      successRedirect: "/api/auth/google/ga",
     //   failureFlash: true,
     //   successFlash: "Successfully logged in!",
     });

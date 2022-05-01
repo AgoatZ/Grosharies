@@ -12,9 +12,10 @@ const user = new mongoose.Schema({
   rank: { type: Number, default: 0 },
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   profileImage: String,
-  source: String,
+  source: String,//TODO: ENUM
   collectedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "PendingPost"}]
 });
+//TODO: SUGGESTED POST
 
 const User = mongoose.model('User', user, 'User');
 
