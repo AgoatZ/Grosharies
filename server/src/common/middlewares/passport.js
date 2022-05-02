@@ -74,7 +74,7 @@ passport.use(new GoogleStrategy({
 const authGoogle = passport.authenticate("google", { scope: ["profile", "email"] });
 const authGoogleCallback = passport.authenticate("google", {
       failureRedirect: "/",
-      successRedirect: "/api/auth/google/ga",
+      successRedirect: "/api/auth/google/sign",
     //   failureFlash: true,
     //   successFlash: "Successfully logged in!",
     });

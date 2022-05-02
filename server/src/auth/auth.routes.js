@@ -15,16 +15,7 @@ router.get('/login/federated/google', passportMiddlewares.authGoogle);
 
 router.get('/google', passportMiddlewares.authGoogleCallback);
 
-router.get('/google/ga', (req,res) => {
-    AuthController.login({ 
-        //TODO: ONLY CONTROLLER ROUTE
-        body: {
-            emailAddress: req.user.emailAddress,
-            password: req.user.password,
-            source: req.user.source
-        }
-    }, res);
-});
+router.get('/google/sign', AuthController.jwtSign);
 
 router.post('/logout', AuthController.logout);
 

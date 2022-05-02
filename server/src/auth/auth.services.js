@@ -7,6 +7,14 @@ const LocalStrategy = require('passport-local');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const jwtSign = async (id, userType) => await jwt.sign({
+    'id': id,
+    'role': userType
+},
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.JWT_TOKEN_EXPIRATION }
+);
+
 const register = async (user) => {
     try {
         const exists = await UserRepository.getUserByEmail(user.emailAddress);
@@ -25,50 +33,23 @@ const register = async (user) => {
     }
 }
 
-const login = async (email, password, source) => {
+const login = async (email, password) => {
     if (email == null || password == null) {
-        throw Error('wrong email or password1');
+        throw Error('missing email or password');
     }
-
     try {
-//ADD SOURCE GROSHARIES AND EXCHANGE SWITCH WITH IF
+        //TODO:ADD SOURCE GROSHARIES AND EXCHANGE SWITCH WITH IF
         const user = await UserRepository.getUserByEmail(email);
         if (user == null) {
-            throw Error('wrong email or password2');
+            throw Error('wrong email or password');
         }
-        switch (source) {
-            case 'google': {
-                break;
-            }
-            default:
-                const match = await bcrypt.compare(password, user.password);
-                if (!match) {
-                    console.log(password);
-                    console.log(user.password);
-                    throw Error('wrong email or password3');
-                }
-                break;
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) {
+            console.log(password);
+            console.log(user.password);
+            throw Error('wrong email or password');
         }
-//TODO: FINISH IT UP
-        // const user = await UserRepository.getUserByEmail(email);
-        // if(user == null) {
-        //     throw Error('wrong email or password2');
-        // }
-
-        // const match = await bcrypt.compare(password, user.password);
-        // if(!match) {
-        //     console.log(password);
-        //     console.log(user.password);
-        //     throw Error('wrong email or password3');
-        // }
-        console.log('loginauth');
-        const accessToken = await jwt.sign({
-            'id': user._id,
-            'role': user.userType
-        },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: process.env.JWT_TOKEN_EXPIRATION }
-        );
+        const accessToken = await jwtSign(user._id, user.userType);
         return accessToken;
     } catch (err) {
         throw Error(err);
@@ -77,5 +58,6 @@ const login = async (email, password, source) => {
 
 module.exports = {
     register,
-    login
+    login,
+    jwtSign
 };
