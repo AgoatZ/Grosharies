@@ -1,5 +1,6 @@
 const passport = require('passport');
 const User = require('.././../user/user.services');
+const userSource = require('.././../enums/user-source');
 const FederatedCredential = require('.././../federated-credential/federated-credential.services');
 const GoogleStrategy = require('passport-google-oidc');
 const JwtStrategy = require('passport-jwt').Strategy;
@@ -49,9 +50,9 @@ passport.use(new GoogleStrategy({
                 firstName: profile.name.givenName,
                 lastName: profile.name.familyName,
                 emailAddress: profile.emails[0].value,
-                password: "123456",
-                phone: "052373555",
-                source: "google"
+                password: "a1234567",
+                phone: "N/A",
+                source: userSource.GOOGLE
             };
             newUser = await User.addGoogleUser(newUser);
             console.log(newUser);
