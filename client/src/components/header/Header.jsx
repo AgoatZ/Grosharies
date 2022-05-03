@@ -19,18 +19,24 @@ import {
 import { styled } from "@mui/material/styles";
 import { UserImageThumbnail } from "../common/Images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Cookies from "universal-cookie";
 
+const cookies = new Cookies();
 const pages = ["Groceries", "Events"];
 const userOptions = ["Profile", "Account", "Logout"];
 
 //props - noUser(Boolean) userData(DB User Schema)
-const Header = ({ loggedIn, userData }) => {
-  console.log(loggedIn);
+const Header = ({ loggedIn, userData, logoutUser }) => {
   //Generic item click navigation
   let navigate = useNavigate();
   const navigateToPage = (event) => {
     const target = event.currentTarget.innerText.toLowerCase();
     navigate("./" + target, {});
+  };
+  const logout = () => {
+    cookies.remove('jwt_token');
+    logoutUser();
+    navigate("./", {});
   };
 
   const NavigationBar = () => {
@@ -146,7 +152,7 @@ const Header = ({ loggedIn, userData }) => {
             <ListItemText primary={userOptions[1]} />
           </MenuItem>
           <Divider />
-          <MenuItem key={userOptions[2]} onClick={navigateToPage}>
+          <MenuItem key={userOptions[2]} onClick={(logout)}>
             <ListItemText primary={userOptions[2]} />
           </MenuItem>
         </Menu>

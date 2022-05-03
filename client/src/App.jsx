@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Container } from "@mui/material";
+import axios from "./utils/axios";
 //FontAwesome Icons Setup
 import { library as iconsLibrary } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -16,25 +17,35 @@ import Account from "./components/account/Account";
 import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
-//TODO: remove import - test
-import Cookies from "js-cookie";
 
 iconsLibrary.add(fas, far);
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
+  useEffect(() => {
+    axios.get('auth/isLoggedIn').then(() => {
+      setLoggedIn(true);
+    }).catch(() => {
+      setLoggedIn(false);
+    });
+  }, []);
+
   const LoginUser = () => {
     setLoggedIn(true);
+    window.location.replace('/');
   };
 
-  const isLoggedIn = () => {}; // Stub
+  const logoutUser = () => {
+    setLoggedIn(false);
+    window.location.replace('/');
+  };
 
   //All Routes Componentes are nested under Layout->Outlet
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout loggedIn={loggedIn} />}>
+        <Route path="/" element={<Layout loggedIn={loggedIn} logoutUser={logoutUser} />}>
           <Route index element={<Home />} />
           <Route path="post/:id" element={<Post />} />
           <Route path="groceries" element={<Groceries />} />

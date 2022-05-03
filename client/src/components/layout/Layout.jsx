@@ -63,7 +63,7 @@ const Layout = (props) => {
         gridTemplateRows="auto 1fr auto"
       >
         <Grid item component="header">
-          <Header loggedIn={loggedIn} userData={userData} />
+          <Header loggedIn={loggedIn} userData={userData} logoutUser={props.logoutUser} />
         </Grid>
         <Grid item component="main">
           <Outlet context={{ loggedIn, userData }} />
