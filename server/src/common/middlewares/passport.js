@@ -4,12 +4,10 @@ const userSource = require('.././../enums/user-source');
 const FederatedCredential = require('.././../federated-credential/federated-credential.services');
 const GoogleStrategy = require('passport-google-oidc');
 const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
 
-var cookieExtractor = function(req) {
+var cookieExtractor = function (req) {
     var token = null;
-    if (req && req.cookies)
-    {
+    if (req && req.cookies) {
         token = req.cookies['jwt_token'];
     }
     return token;
@@ -22,10 +20,10 @@ passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
     const user = await User.getUserById(jwt_payload.id);
     try {
         if (user) {
-            console.log('USER RETURNED AND JWT PAYLOAD IS ',jwt_payload);
+            console.log('USER RETURNED AND JWT PAYLOAD IS ', jwt_payload);
             return done(null, user);
         } else {
-            console.log('RETURNED NULL AND JWT PAYLOAD IS ',jwt_payload);
+            console.log('RETURNED NULL AND JWT PAYLOAD IS ', jwt_payload);
             return done(null, false);
         }
     } catch (err) {
@@ -65,11 +63,11 @@ passport.use(new GoogleStrategy({
             } else {
                 return cb(null, user);
             }
-          }
-        } catch (e) {
-            return cb(e);
         }
+    } catch (e) {
+        return cb(e);
     }
+}
 ));
 
 const authGoogle = passport.authenticate("google", { scope: ["profile", "email"] });
@@ -78,12 +76,12 @@ const authGoogleCallback = passport.authenticate("google", {
       successRedirect: "/api/auth/google/sign",
     //   failureFlash: true,
     //   successFlash: "Successfully logged in!",
-    });
+});
 
 const serializeUser = passport.serializeUser((user, done) => {
     done(null, user.id);
 });
-      
+
 const deserializeUser = passport.deserializeUser(async (id, done) => {
     const currentUser = await User.getUserById(id);
     done(null, currentUser);

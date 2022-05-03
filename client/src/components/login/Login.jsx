@@ -43,13 +43,10 @@ export default function Login(props) {
           showConfirmButton: false,
         });
         setTimeout(() => {
-          console.log(res);
-          localStorage.setItem("jwt_token", res.data.accessToken);
           cookies.set("jwt_token", res.data.accessToken, { httpOnly: false });
           props.LoginUser();
         }, 1000);
       })
-
       .catch((e) => {
         console.log(e);
         MySwal.fire({

@@ -1,6 +1,4 @@
 const AuthService = require('./auth.services');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 const sendError = (res, code, message) => {
     return res.status(code).send({
@@ -9,7 +7,7 @@ const sendError = (res, code, message) => {
     });
 };
 
-const register = async (req,res) => {
+const register = async (req, res) => {
     try {
         const newUser = await AuthService.register(req.body);
         return res.status(200).json({ user: newUser, message: "Succesfully user registered" });
@@ -40,7 +38,11 @@ const jwtSign = async (req, res) => {
     }
 };
 
-const logout = async (req,res) => {
+const isLoggedIn = async (_, res) => {
+    return res.status(200).send({ loggedIn: true });
+};
+
+const logout = async (req, res) => {
     req.user = null;
     res.redirect('./api/auth/login');
 };
@@ -49,5 +51,6 @@ module.exports = {
     login,
     register,
     logout,
-    jwtSign
+    jwtSign,
+    isLoggedIn
 };

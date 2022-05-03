@@ -19,7 +19,6 @@ getUsers = async function (query, page, limit) {
 
 getUserById = async function (userId) {
     try {
-        console.log("User Service userId:", userId);
         const user = await UserRepository.getUserById(userId)
         return user;
     } catch (e) {
