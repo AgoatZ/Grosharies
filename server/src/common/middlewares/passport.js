@@ -19,10 +19,8 @@ passport.use(new JwtStrategy(opts, async function (jwt_payload, done) {
     const user = await User.getUserById(jwt_payload.id);
     try {
         if (user) {
-            console.log('USER RETURNED AND JWT PAYLOAD IS ', jwt_payload);
             return done(null, user);
         } else {
-            console.log('RETURNED NULL AND JWT PAYLOAD IS ', jwt_payload);
             return done(null, false);
         }
     } catch (err) {

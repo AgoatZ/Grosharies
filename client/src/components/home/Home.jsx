@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Stack, Typography, Box, Tabs, Tab, Container } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Stack, Box, Tabs, Tab } from '@mui/material';
 import axios from 'axios';
 import Posts from '../posts/Posts';
 
@@ -13,7 +13,6 @@ const Home = () => {
     useEffect(() => { loadPosts(); }, []);
     const loadPosts = () => {
         axios.get('/api/posts/').then(res => {
-            //console.log('data = ' + JSON.stringify(res.data.posts) + ", status = " + res.status);
             console.log(res.status);
             console.log(res.data.posts);
             setPosts(res.data.posts);
