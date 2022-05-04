@@ -7,7 +7,7 @@ import { Container, Typography } from '@mui/material';
 
 const GroceryCard = (props) => {
     return (
-        <Container>
+        <Container sx={{ marginBottom: '20px' }}>
             <Card sx={{ display: 'flex' }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <CardContent sx={{ flex: '1 0 auto' }}>
@@ -24,9 +24,11 @@ const GroceryCard = (props) => {
                     sx={{
                         padding: 1,
                         textAlign: 'center',
-                        borderRadius: "10px"
+                        borderRadius: "10px",
+                        width: "100px",
+                        height: "100px",
                     }}
-                    image="/static/images/cards/live-from-space.jpg"
+                    image="/assets/logo.png"
                     alt="Live from space album cover"
                 />
             </Card>

@@ -5,6 +5,7 @@ import { Button, Container, Box } from '@mui/material';
 import { Grid } from '@mui/material';
 import axios from 'axios';
 import GroceryCard from './GroceryCard';
+import { margin } from '@mui/system';
 
 const Groceries = () => {
   const [groceries, setGroceries] = useState([]);
@@ -43,9 +44,9 @@ const Groceries = () => {
             ),
           }}
         />
-
       </Container>
-      <Box sx={{ display: "flex", flexWrap: "wrap", margin: "0 auto" }}>
+
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'center' }}>
         {groceryList}
       </Box>
     </>
