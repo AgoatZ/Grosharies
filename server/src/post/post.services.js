@@ -5,6 +5,7 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
 const TagService = require('../tag/tag.services');
+const TagRepository = require('../tag/tag.repository');
 const Grocery = require('../grocery/grocery.model');
 const router = express.Router();
 const SuggestionsUtil = require('../common/utils/suggestions-util');
@@ -181,6 +182,20 @@ const pendPost = async (postId, collectorId, groceries) => {
     }
 };
 
+const getPostTags = async (postId) => {
+    try {
+        const post = await PostRepository.getPostById(postId);
+        const tags = [];
+        for (tagId in post.tags) {
+            const tag = await TagRepository.getTagById(post.tags[tagId]);
+            tags.push(tag);
+        }
+        return tags;
+    } catch (e) {
+        throw Error('Error while retrieving tags');
+    }
+};
+
 const getSuggestedPosts = async (userId) => {
     console.log('sugestservice');
     try {
@@ -205,20 +220,6 @@ const getSuggestedPosts = async (userId) => {
     }
 };
 
-const getPostTags = async (postId) => {
-    try {
-        const post = await PostRepository.getPostById(postId);
-        const tags = [];
-        for (tagId in post.tags) {
-            const tag = await TagService.getTagById(post.tags[tagId]);
-            tags.push(tag);
-        }
-        return tags;
-    } catch (e) {
-        throw Error('Error while retrieving tags');
-    }
-};
-
 module.exports = {
     getPosts,
     getPostById,
@@ -227,10 +228,9 @@ module.exports = {
     getPostsByTag,
     getPostsByCollector,
     getPostsByGroceries,
-    getPostTags,
     getSuggestedPosts,
     addPost,
     pendPost,
     deletePost,
     updatePost
-}
+};

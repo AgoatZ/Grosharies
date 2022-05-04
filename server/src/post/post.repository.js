@@ -95,7 +95,6 @@ const getPostsByGroceries = async (groceries) => {
     }
 };
 
-
 const addPost = async (postDetails) => {
     try {
         const post = new Post(postDetails);

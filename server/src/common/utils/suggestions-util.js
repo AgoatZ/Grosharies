@@ -1,6 +1,6 @@
 const CategoryService = require('.././../category/category.services');
 const TagService = require('.././../tag/tag.services');
-const PostService = require('.././../post/post.services');
+const PostRepository = require('.././../post/post.repository');
 
 const calcWeights = async (history) => {
     try {
@@ -11,7 +11,7 @@ const calcWeights = async (history) => {
         for (piece in history) {
             //weigh tags
             console.log(history[piece].sourcePost);
-            const tags = await PostService.getPostTags(history[piece].sourcePost);
+            const tags = await getPostTags(history[piece].sourcePost);
             for (tag in tags) {
                 const tagRank = tagsWeights.get(tags[tag].name);
                 if (!tagRank) {
@@ -45,12 +45,26 @@ const calcWeights = async (history) => {
     }
 };
 
+const getPostTags = async (postId) => {
+    try {
+        const post = await PostRepository.getPostById(postId);
+        const tags = [];
+        for (tagId in post.tags) {
+            const tag = await TagService.getTagById(post.tags[tagId]);
+            tags.push(tag);
+        }
+        return tags;
+    } catch (e) {
+        throw Error('Error while retrieving tags');
+    }
+};
+
 const getPostRelevance = async (history, post) => {
     try {
         const { categoriesWeights, groceriesWeights, tagsWeights } = await calcWeights(history);
 
         //add relevance regarding tags
-        const tags = await PostService.getPostTags(post._id);
+        const tags = await getPostTags(post._id);
         console.log(tags);
         var relevance = 0;
         for (tag in tags) {
@@ -72,7 +86,7 @@ const getPostRelevance = async (history, post) => {
                 relevance += groRank;
             }
         }
-        console.log(relevance);
+        console.log("relevance", relevance);
         return relevance;
     } catch (e) {
         throw Error('Error while determining post relevance');
@@ -80,5 +94,6 @@ const getPostRelevance = async (history, post) => {
 };
 
 module.exports = {
-    getPostRelevance
+    getPostRelevance,
+    getPostTags
 };
