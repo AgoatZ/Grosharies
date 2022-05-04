@@ -15,6 +15,20 @@ const getPosts = async (query) => {
     }
 };
 
+const getRelevantPosts = async () => {
+    try {
+        const posts = await Post.find({}).where('pickUpDates.from').
+        lt(Date.now()).
+        where('pickUpDates.until').
+        gt(Date.now());
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Posts: ' + e.message);
+    }
+};
+
 const getPostById = async (postId) => {
     try {
         const post = await Post.findById(postId);
@@ -134,6 +148,7 @@ module.exports = {
     getPostsByTag,
     getPostsByCollector,
     getPostsByGroceries,
+    getRelevantPosts,
     addPost,
     deletePost,
     updatePost,

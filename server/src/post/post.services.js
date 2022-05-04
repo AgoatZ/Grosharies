@@ -184,22 +184,19 @@ const pendPost = async (postId, collectorId, groceries) => {
 const getSuggestedPosts = async (userId) => {
     console.log('sugestservice');
     try {
-        var posts = await PostRepository.getPosts({
-            'pickUpDates': {
-                'from': { $lt: Date.now() },
-                'until': { $gt: Date.now() }
-            }});
-            console.log(posts);
+        var posts = await PostRepository.getRelevantPosts();
+        console.log(posts);
         const user = await UserService.getUserById(userId);
         const history = [];
         for (pendingId in user.collectedHistory) {
-            const pending = await PendingService.getPendingById(pendingId);
+            console.log(user.collectedHistory[pendingId]);
+            const pending = await PendingService.getPendingById(user.collectedHistory[pendingId]);
             history.push(pending);
         }
         const relevanceMap = new Map();
         for (post in posts) {
-            const postRelevance = await SuggestionsUtil.getPostRelevance(history, post);
-            relevanceMap.set(post, postRelevance);
+            const postRelevance = await SuggestionsUtil.getPostRelevance(history, posts[post]);
+            relevanceMap.set(posts[post], postRelevance);
         }
         console.log(relevanceMap);
         return posts.sort((p1,p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
@@ -213,7 +210,7 @@ const getPostTags = async (postId) => {
         const post = await PostRepository.getPostById(postId);
         const tags = [];
         for (tagId in post.tags) {
-            const tag = await TagService.getTagById(tagId);
+            const tag = await TagService.getTagById(post.tags[tagId]);
             tags.push(tag);
         }
         return tags;
