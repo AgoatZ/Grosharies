@@ -6,7 +6,6 @@ import { PostImage } from '../common/Images';
 const Post = () => {
     //Get post data from passed state
     const post = useLocation().state;
-    console.log('post', post);
 
     return (
         <Container>

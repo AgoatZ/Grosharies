@@ -17,13 +17,13 @@ const cardActionsStyle = {
 
 const PostCard = (props) => {
   let navigate = useNavigate();
-  const toPostPage = () => navigate("./post/" + props.id, { state: props });
+  const toPostPage = () => navigate("/post/" + props.id, { state: props });
 
   return (
     <Card>
       <CardActionArea sx={cardStyle} onClick={toPostPage} >
-        <CardMedia height='128' image='/assets/default-post-image.svg'/>
-          <PostImage height='128'/>
+        <CardMedia height='128' image='/assets/default-post-image.svg' />
+        <PostImage height='128' />
         <CardContent>
           <Typography gutterBottom variant="h5">{props.title}</Typography>
           <Typography variant="body2" color="text.secondary">{props.description}</Typography>

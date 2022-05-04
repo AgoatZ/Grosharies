@@ -5,35 +5,40 @@ import { Button, Container, Box } from '@mui/material';
 import { Grid } from '@mui/material';
 import axios from 'axios';
 import GroceryCard from './GroceryCard';
-import { margin } from '@mui/system';
 
 const Groceries = () => {
+  const [allGroceries, setAllGroceries] = useState([]);
   const [groceries, setGroceries] = useState([]);
   useEffect(() => { loadGroceries(); }, []);
   const loadGroceries = () => {
     axios.get('/api/groceries/').then(res => {
+      setAllGroceries(res.data.groceries);
       setGroceries(res.data.groceries);
     });
   };
 
-  const containerStyle = {
-    margin: "50px auto"
+  const loadFilteredGroceries = (e) => {
+    const searchValue = e.target.value;
+    const filteredGroceries = allGroceries.filter(grocery => {
+      return grocery.name.toLowerCase().includes(searchValue.toLowerCase());
+    });
+    setGroceries(filteredGroceries);
   };
 
   const groceryList = groceries.map(grocery => {
     return (
       <Grid item key={grocery._id}>
-        <GroceryCard id={grocery._id} name={grocery.name} amount={grocery.amount} />
+        <GroceryCard groceryDetails={grocery} />
       </Grid>
     );
   });
 
   return (
     <>
-      <Container sx={containerStyle}>
+      <Container sx={{ margin: "50px auto" }}>
         <TextField
           fullWidth
-          id="standard-bare"
+          id="search"
           variant="outlined"
           placeholder="Search for Grocery..."
           InputProps={{
@@ -43,6 +48,7 @@ const Groceries = () => {
               </Button>
             ),
           }}
+          onChange={loadFilteredGroceries}
         />
       </Container>
 
