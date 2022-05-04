@@ -15,6 +15,10 @@ router.get('/tag=:id', PostController.getPostsByTag);
 
 router.get('/collector=:id', PostController.getPostsByCollector);
 
+router.get('/suggested/:userid', PostController.getSuggestedPosts);
+
+router.post('/bygroceries', PostController.getPostsByGroceries);
+
 router.post('/', PostController.addPost);
 
 router.post('/pend', PostController.pendPost);

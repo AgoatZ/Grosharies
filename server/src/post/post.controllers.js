@@ -1,6 +1,6 @@
 const PostService = require('./post.services');  
 
-getPosts = async function (req, res, next) {
+const getPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
     const page = req.params.page ? req.params.page : 1;
@@ -15,7 +15,7 @@ getPosts = async function (req, res, next) {
     }
 };
 
-getPostById = async function (req, res, next) {
+const getPostById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const post = await PostService.getPostById(req.params.id);
@@ -27,7 +27,7 @@ getPostById = async function (req, res, next) {
     }
 };
 
-getPostsByUser = async function (req, res, next) {
+const getPostsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PostService.getPostsByUser(req.params.id);
@@ -39,7 +39,7 @@ getPostsByUser = async function (req, res, next) {
     }
 };
 
-getPostsByCategory = async function (req, res, next) {
+const getPostsByCategory = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PostService.getPostsByCategory(req.params.id);
@@ -51,7 +51,7 @@ getPostsByCategory = async function (req, res, next) {
     }
 };
 
-getPostsByTag = async function (req, res, next) {
+const getPostsByTag = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PostService.getPostsByTag(req.params.id);
@@ -63,7 +63,7 @@ getPostsByTag = async function (req, res, next) {
     }
 };
 
-getPostsByCollector = async function (req, res, next) {
+const getPostsByCollector = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PostService.getPostsByCollector(req.params.id);
@@ -75,7 +75,32 @@ getPostsByCollector = async function (req, res, next) {
     }
 };
 
-addPost = async function (req, res, next) {
+const getPostsByGroceries = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PostService.getPostsByGroceries(req.body.groceries);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const getSuggestedPosts = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        console.log('getsugcontrol');
+        const posts = await PostService.getSuggestedPosts(req.params.userid);
+        return res.status(200).json({ posts: posts, message: "Succesfully Suggested Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const addPost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
@@ -88,7 +113,7 @@ addPost = async function (req, res, next) {
     }
 };
 
-pendPost = async function (req, res, next) {
+const pendPost = async function (req, res, next) {
     try {
         console.log("controller groceries: ", req.body.groceries);
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.body.collectorId, req.body.groceries);
@@ -102,7 +127,7 @@ pendPost = async function (req, res, next) {
     }
 }
 
-deletePost = async function (req, res, next) {
+const deletePost = async function (req, res, next) {
     try {
         const post = await PostService.deletePost(req.params.id);
         return res.status(200).json({ post: post, message: "Succesfully Posts Deleted" });
@@ -113,7 +138,7 @@ deletePost = async function (req, res, next) {
     }
 }
 
-updatePost = async function (req, res, next) {
+const updatePost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
@@ -133,6 +158,8 @@ module.exports = {
     getPostsByCategory,
     getPostsByTag,
     getPostsByCollector,
+    getPostsByGroceries,
+    getSuggestedPosts,
     addPost,
     pendPost,
     deletePost,

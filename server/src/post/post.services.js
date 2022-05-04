@@ -1,16 +1,18 @@
 const express = require('express');
 const { status } = require('express/lib/response');
-const Repository = require('./post.repository');
+const PostRepository = require('./post.repository');
 const GroceryRepository = require('../grocery/grocery.repository');
 const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
+const TagService = require('../tag/tag.services');
 const Grocery = require('../grocery/grocery.model');
 const router = express.Router();
+const SuggestionsUtil = require('../common/utils/suggestions-util');
 const timeToWait = 3000000;
 
-getPosts = async function (query, page, limit) {
+const getPosts = async (query, page, limit) => {
     try {
-        const posts = await Repository.getPosts(query);
+        const posts = await PostRepository.getPosts(query);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -19,9 +21,9 @@ getPosts = async function (query, page, limit) {
     }
 };
 
-getPostById = async function (postId) {
+const getPostById = async (postId) => {
     try {
-        const post = await Repository.getPostById(postId);
+        const post = await PostRepository.getPostById(postId);
         return post;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -30,9 +32,9 @@ getPostById = async function (postId) {
     }
 };
 
-getPostsByUser = async function (userId) {
+const getPostsByUser = async (userId) => {
     try {
-        const posts = await Repository.getPostsByUser(userId);
+        const posts = await PostRepository.getPostsByUser(userId);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -41,9 +43,9 @@ getPostsByUser = async function (userId) {
     }
 };
 
-getPostsByCategory = async function (categoryId) {
+const getPostsByCategory = async (categoryId) => {
     try {
-        const posts = await Repository.getPostsByCategory(categoryId);
+        const posts = await PostRepository.getPostsByCategory(categoryId);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -52,9 +54,9 @@ getPostsByCategory = async function (categoryId) {
     }
 };
 
-getPostsByTag = async function (tagId) {
+const getPostsByTag = async (tagId) => {
     try {
-        const posts = await Repository.getPostsByTag(tagId);
+        const posts = await PostRepository.getPostsByTag(tagId);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -63,9 +65,9 @@ getPostsByTag = async function (tagId) {
     }
 };
 
-getPostsByCollector = async function (userId) {
+const getPostsByCollector = async (userId) => {
     try {
-        const posts = await Repository.getPostsByCollector(userId);
+        const posts = await PostRepository.getPostsByCollector(userId);
         return posts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -74,9 +76,20 @@ getPostsByCollector = async function (userId) {
     }
 };
 
-addPost = async function (postDetails) {
+const getPostsByGroceries = async (groceries) => {
     try {
-        const post = await Repository.addPost(postDetails);
+        const posts = await PostRepository.getPostsByGroceries(groceries);
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Posts by Collector');
+    }
+};
+
+const addPost = async (postDetails) => {
+    try {
+        const post = await PostRepository.addPost(postDetails);
         console.log('service: ' + post);
 
         return post;
@@ -87,9 +100,9 @@ addPost = async function (postDetails) {
     }
 };
 
-deletePost = async function (postId) {
+const deletePost = async (postId) => {
     try {
-        const deletedPost = await Repository.deletePost(postId);
+        const deletedPost = await PostRepository.deletePost(postId);
         return deletedPost;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -98,9 +111,9 @@ deletePost = async function (postId) {
     }
 };
 
-updatePost = async function (postId, postDetails) {
+const updatePost = async (postId, postDetails) => {
     try {
-        const oldPost = await Repository.updatePost(postId, postDetails);
+        const oldPost = await PostRepository.updatePost(postId, postDetails);
         return oldPost;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -109,9 +122,9 @@ updatePost = async function (postId, postDetails) {
     }
 };
 
-pendPost = async function (postId, collectorId, groceries) {
+const pendPost = async (postId, collectorId, groceries) => {
     try {
-        const post = await Repository.getPostById(postId);
+        const post = await PostRepository.getPostById(postId);
         const updatedContent = [];
         const content = post.content;
 
@@ -120,7 +133,7 @@ pendPost = async function (postId, collectorId, groceries) {
             var isThere = false;
             for (newGrocery in groceries) {
                 console.log("grocery from array: ", groceries[newGrocery]);
-                if(groceries[newGrocery].name === content[grocery].name) {
+                if (groceries[newGrocery].name === content[grocery].name) {
                     //reduce amount and creat json for updating
                     isThere = true;
                     amount = content[grocery].amount - groceries[newGrocery].amount;
@@ -141,9 +154,9 @@ pendPost = async function (postId, collectorId, groceries) {
             }
         }
         console.log(updatedContent);
-        await Repository.updateContent(postId, updatedContent);
+        await PostRepository.updateContent(postId, updatedContent);
 
-        const oneHour = 60*60*1000;
+        const oneHour = 60 * 60 * 1000;
         const pendingPost = await PendingService.addPending({
             "headline": post.headline,
             "address": post.address,
@@ -151,20 +164,61 @@ pendPost = async function (postId, collectorId, groceries) {
             "sourcePost": post._id,
             "publisherId": post.userId,
             "collectorId": collectorId,
-            "pendingTime": { 
+            "pendingTime": {
                 "from": Date.now(),
                 "until": Date.now() + oneHour
-              }
+            }
         });
         const collector = await UserService.addToHistory(collectorId, pendingPost._id);
 
-        const updatedPost = await Repository.getPostById(postId);
+        const updatedPost = await PostRepository.getPostById(postId);
 
         return { updatedPost, pendingPost };
     } catch (e) {
         console.log('service error: ' + e.message);
 
         throw Error('Error while Pending Post');
+    }
+};
+
+const getSuggestedPosts = async (userId) => {
+    console.log('sugestservice');
+    try {
+        var posts = await PostRepository.getPosts({
+            'pickUpDates': {
+                'from': { $lt: Date.now() },
+                'until': { $gt: Date.now() }
+            }});
+            console.log(posts);
+        const user = await UserService.getUserById(userId);
+        const history = [];
+        for (pendingId in user.collectedHistory) {
+            const pending = await PendingService.getPendingById(pendingId);
+            history.push(pending);
+        }
+        const relevanceMap = new Map();
+        for (post in posts) {
+            const postRelevance = await SuggestionsUtil.getPostRelevance(history, post);
+            relevanceMap.set(post, postRelevance);
+        }
+        console.log(relevanceMap);
+        return posts.sort((p1,p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
+    } catch (e) {
+        throw Error('Error while suggesting posts');
+    }
+};
+
+const getPostTags = async (postId) => {
+    try {
+        const post = await PostRepository.getPostById(postId);
+        const tags = [];
+        for (tagId in post.tags) {
+            const tag = await TagService.getTagById(tagId);
+            tags.push(tag);
+        }
+        return tags;
+    } catch (e) {
+        throw Error('Error while retrieving tags');
     }
 };
 
@@ -175,6 +229,9 @@ module.exports = {
     getPostsByCategory,
     getPostsByTag,
     getPostsByCollector,
+    getPostsByGroceries,
+    getPostTags,
+    getSuggestedPosts,
     addPost,
     pendPost,
     deletePost,
