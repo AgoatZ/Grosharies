@@ -12,8 +12,11 @@ router.get('/isLoggedIn', authJwt, AuthController.isLoggedIn);
 
 router.get('/login/federated/google', passportMiddlewares.authGoogle);
 
-router.get('/google/callback', passportMiddlewares.authGoogleCallback);
+router.get('/google', passportMiddlewares.authGoogleCallback);
+
+router.get('/google/sign', AuthController.jwtSign);
 
 router.post('/logout', AuthController.logout);
+
 
 module.exports = router;

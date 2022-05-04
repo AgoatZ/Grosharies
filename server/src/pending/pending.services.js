@@ -225,11 +225,12 @@ const cancelPending = async function (pendingPostId) {
 interrestedUserReminder = async (userId, postId) => {
     try {
         const user = await UserRepository.getUserById(userId);
+        const post = await Repository.getPendingById(postId);
+        const publisher = await UserRepository.getUserById(post.publisherId);
         console.log("ENTERRED REMINDER");
         
         const decide = async function () {
             console.log("ENTERRED DECIDE with id: ", postId);
-            const post = await Repository.getPendingById(postId);
             if(post.status === Status.PENDING) {
                 console.log("status from interrestedUserReminder: ", post.status);
                 console.log("WILL CALL NOW CANCEL PENDING POST");
@@ -238,16 +239,16 @@ interrestedUserReminder = async (userId, postId) => {
             return;
         }
 
-        const remind = async (phoneNumber) => {
+        const remind = async (recieverNumber, publisherNumber, groceries) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
-
-            //sendSMSToNumber('Taken???', phoneNumber);
+            //sendSMSToNumber('Hey from Grosharies! Have you picked up the ${groceries}? Let us know!', recieverNumber);
+            //sendSMSToNumber('Hey from Grosharies! Have you delivered the ${groceries}? Let us know!', publisherNumber);
 
             setTimeout(async function() {await decide()}, oneHour/4);
             return;
         }
 
-        setTimeout(async function() {await remind(user.phone)}, oneHour/4);
+        setTimeout(async function() {await remind(user.phoneNumber, publisher.phoneNumber, post.content)}, oneHour/4);
     } catch (e) {
         console.log('Pending service error from interrestedUserReminder: ', e.message);
 

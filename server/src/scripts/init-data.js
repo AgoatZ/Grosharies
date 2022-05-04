@@ -100,6 +100,14 @@ const init = async () => {
                 }
             });
             pending = await pending.save()
+            await user.update({
+                "firstName": "Jacob" + i,
+                "lastName": "Padre" + i,
+                "emailAddress": "jacob" + i + "@yahoo.com",
+                "password": "123456",
+                "phone": "052373555" + i,
+                "collectedHistory": pending._id
+            });
 
             let event = new Event({
                 "headline": "An Event " + i,

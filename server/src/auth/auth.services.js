@@ -7,6 +7,14 @@ const LocalStrategy = require('passport-local');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const jwtSign = async (id, userType) => await jwt.sign({
+    'id': id,
+    'role': userType
+},
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.JWT_TOKEN_EXPIRATION }
+);
+
 const register = async (user) => {
     try {
         const exists = await UserRepository.getUserByEmail(user.emailAddress);
@@ -26,26 +34,22 @@ const register = async (user) => {
 }
 
 const login = async (email, password) => {
-    if(email == null || password == null) {
-        throw Error('wrong email or password');
+    if (email == null || password == null) {
+        throw Error('missing email or password');
     }
-
-    try{
+    try {
+        //TODO:ADD SOURCE GROSHARIES AND EXCHANGE SWITCH WITH IF
         const user = await UserRepository.getUserByEmail(email);
-        if(user == null) {
+        if (user == null) {
             throw Error('wrong email or password');
         }
-
         const match = await bcrypt.compare(password, user.password);
-        if(!match) {
+        if (!match) {
+            console.log(password);
+            console.log(user.password);
             throw Error('wrong email or password');
         }
-
-        const accessToken = await jwt.sign(
-            {'id': user._id},
-            process.env.ACCESS_TOKEN_SECRET,
-            {expiresIn: process.env.JWT_TOKEN_EXPIRATION}
-        );
+        const accessToken = await jwtSign(user._id, user.userType);
         return accessToken;
     } catch (err) {
         throw Error(err);
@@ -54,5 +58,6 @@ const login = async (email, password) => {
 
 module.exports = {
     register,
-    login
+    login,
+    jwtSign
 };

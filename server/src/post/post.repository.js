@@ -4,7 +4,7 @@ const Post = require('./post.model');
 const router = express.Router();
 const reply = require('../enums/post-reply');
 
-getPosts = async (query) => {
+const getPosts = async (query) => {
     try {
         const posts = await Post.find(query);
         return posts;
@@ -15,7 +15,21 @@ getPosts = async (query) => {
     }
 };
 
-getPostById = async function (postId) {
+const getRelevantPosts = async () => {
+    try {
+        const posts = await Post.find({}).where('pickUpDates.from').
+        lt(Date.now()).
+        where('pickUpDates.until').
+        gt(Date.now());
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Posts: ' + e.message);
+    }
+};
+
+const getPostById = async (postId) => {
     try {
         const post = await Post.findById(postId);
         return post;
@@ -26,7 +40,7 @@ getPostById = async function (postId) {
     }
 };
 
-getPostsByUser = async function (userId) {
+const getPostsByUser = async (userId) => {
     try {
         const posts = await Post.find({ 'userId': userId });
         return posts;
@@ -37,9 +51,9 @@ getPostsByUser = async function (userId) {
     }
 };
 
-getPostsByCategory = async function (categoryId) {
+const getPostsByCategory = async (categoryId) => {
     try {
-        const posts = await Post.find({ 'content': { 'category': categoryId }});
+        const posts = await Post.find({ 'content': { 'category': categoryId } });
         return posts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -48,7 +62,7 @@ getPostsByCategory = async function (categoryId) {
     }
 };
 
-getPostsByTag = async function (tagId) {
+const getPostsByTag = async (tagId) => {
     try {
         const posts = await Post.find({ 'tags': tagId });
         return posts;
@@ -59,9 +73,20 @@ getPostsByTag = async function (tagId) {
     }
 };
 
-getPostsByCollector = async function (userId) {
+const getPostsByCollector = async (userId) => {
     try {
-        const posts = await Post.find({ 'repliers': { 'user': userId, 'reply':  reply.PARTIALLY_TOOK || reply.TOOK } });
+        const posts = await Post.find({ 'repliers': { 'user': userId, 'reply': reply.PARTIALLY_TOOK || reply.TOOK } });
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Post: ' + e.message);
+    }
+};
+
+const getPostsByGroceries = async (groceries) => {
+    try {
+        const posts = await Post.find({}).where('content.name').in(groceries);
         return posts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -71,18 +96,18 @@ getPostsByCollector = async function (userId) {
 };
 
 
-addPost = async function (postDetails) {
+const addPost = async (postDetails) => {
     try {
         const post = new Post(postDetails);
         return await post.save();
     } catch (e) {
         console.log('repository error: ' + e.message);
-        
+
         throw Error('Error while Adding Post: ' + e.message);
     }
 };
 
-deletePost = async function (postId) {
+const deletePost = async (postId) => {
     try {
         const deletedPost = await Post.findByIdAndDelete(postId);
         return deletedPost;
@@ -93,7 +118,7 @@ deletePost = async function (postId) {
     }
 };
 
-updatePost = async function (postId, postDetails) {
+const updatePost = async (postId, postDetails) => {
     try {
         const oldPost = await Post.findByIdAndUpdate(postId, postDetails);
         return oldPost;
@@ -104,9 +129,9 @@ updatePost = async function (postId, postDetails) {
     }
 };
 
-updateContent = async function (postId, content) {
+const updateContent = async (postId, content) => {
     try {
-        const oldPost = await Post.findByIdAndUpdate(postId, {content: content});
+        const oldPost = await Post.findByIdAndUpdate(postId, { content: content });
         return oldPost;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -122,6 +147,8 @@ module.exports = {
     getPostsByCategory,
     getPostsByTag,
     getPostsByCollector,
+    getPostsByGroceries,
+    getRelevantPosts,
     addPost,
     deletePost,
     updatePost,

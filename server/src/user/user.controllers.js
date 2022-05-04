@@ -76,6 +76,16 @@ getPickupHistory = async (req, res, next) => {
     }
 };
 
+getSuggestedPosts = async (req, res, next) => {
+    try{
+
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+}
+
 module.exports = {
     getUsers,
     getUserById,

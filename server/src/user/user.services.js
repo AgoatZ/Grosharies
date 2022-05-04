@@ -3,6 +3,7 @@ const { status } = require('express/lib/response');
 const UserRepository = require('./user.repository');
 const PostRepository = require('../post/post.repository');
 const PendingRepository = require('../pending/pending.repository');
+const AuthService = require('../auth/auth.services');
 const router = express.Router();
 
 getUsers = async function (query, page, limit) {
@@ -58,7 +59,8 @@ const addGoogleUser = async (user) => {
         const exists = await UserRepository.getUserByEmail(user.emailAddress);
         if (exists) return exists;
         else {
-            const googleUser = await UserRepository.addUser(user)
+            //const googleUser = await UserRepository.addUser(user)
+            const googleUser = await AuthService.register(user);
             return googleUser;
         }
     } catch (e) {
