@@ -3,27 +3,29 @@ const TagService = require('.././../tag/tag.services');
 const PostRepository = require('.././../post/post.repository');
 
 const calcWeights = async (history) => {
+    const categoriesWeights = new Map();
+    const groceriesWeights = new Map();
+    const tagsWeights = new Map();
     try {
-        const categoriesWeights = new Map();
-        const groceriesWeights = new Map();
-        const tagsWeights = new Map();
-
         for (piece in history) {
             //weigh tags
-            console.log(history[piece].sourcePost);
-            const tags = await getPostTags(history[piece].sourcePost);
+            let sourceId = await history[piece].sourcePost;
+            const tags = await getPostTags(sourceId);
             for (tag in tags) {
-                const tagRank = tagsWeights.get(tags[tag].name);
+                let tagName = await tags[tag].name;
+                let tagRank = tagsWeights.get(tagName);
                 if (!tagRank) {
-                    tagsWeights.set(tags[tag].name, 1);
+                    tagsWeights.set(tagName, 1);
                 } else {
-                    tagsWeights.set(tags[tag].name, tagRank + 1);
+                    tagsWeights.set(tagName, tagRank + 1);
                 }
             }
             for (grocery in history[piece].content) {
                 //weigh categories
-                const category = await CategoryService.getCategoryById(history[piece].content[grocery].category);
-                const catRank = categoriesWeights.get(category.name);
+                let catId = await history[piece].content[grocery].category
+                let category = await CategoryService.getCategoryById(catId);
+                let catRank = categoriesWeights.get(category.name);
+                console.log('catrank:', catRank);
                 if (!catRank) {
                     categoriesWeights.set(category.name, 1);
                 } else {
@@ -31,11 +33,14 @@ const calcWeights = async (history) => {
                 }
 
                 //weigh groceries
-                const groRank = groceriesWeights.get(history[piece].content[grocery].name);
+                let gro = await history[piece].content[grocery];
+                console.log(gro.name);
+                let groRank = await groceriesWeights.get(gro.name);
+                console.log('grorank:', groRank);
                 if (!groRank) {
-                    groceriesWeights.set(history[piece].content[grocery].name, 1);
+                    groceriesWeights.set(gro.name, gro.amount);
                 } else {
-                    groceriesWeights.set(history[piece].content[grocery].name, groRank + history[piece].content[grocery].amount);
+                    groceriesWeights.set(gro.name, groRank + gro.amount);
                 }
             }
         }
@@ -62,7 +67,7 @@ const getPostTags = async (postId) => {
 const getPostRelevance = async (history, post) => {
     try {
         const { categoriesWeights, groceriesWeights, tagsWeights } = await calcWeights(history);
-
+        console.log('rels:', categoriesWeights, groceriesWeights, tagsWeights);
         //add relevance regarding tags
         const tags = await getPostTags(post._id);
         console.log(tags);
@@ -76,12 +81,14 @@ const getPostRelevance = async (history, post) => {
 
         //add relevance regarding categories and groceries
         for (grocery in post.content) {
-            const category = await CategoryService.getCategoryById(post.content[grocery].category);
-            const catRank = categoriesWeights.get(category);
+            const category = await CategoryService.getCategoryById(await post.content[grocery].category);
+            const catRank = categoriesWeights.get(category.name);
+            console.log('postRel catRank:', catRank);
             if (catRank) {
                 relevance += catRank;
             }
-            const groRank = groceriesWeights.get(post.content[grocery].name);
+            const groRank = groceriesWeights.get(await post.content[grocery].name);
+            console.log('postRel groRank:', groRank);
             if (groRank) {
                 relevance += groRank;
             }

@@ -200,11 +200,9 @@ const getSuggestedPosts = async (userId) => {
     console.log('sugestservice');
     try {
         var posts = await PostRepository.getRelevantPosts();
-        console.log(posts);
         const user = await UserService.getUserById(userId);
         const history = [];
         for (pendingId in user.collectedHistory) {
-            console.log(user.collectedHistory[pendingId]);
             const pending = await PendingService.getPendingById(user.collectedHistory[pendingId]);
             history.push(pending);
         }
@@ -213,7 +211,7 @@ const getSuggestedPosts = async (userId) => {
             const postRelevance = await SuggestionsUtil.getPostRelevance(history, posts[post]);
             relevanceMap.set(posts[post], postRelevance);
         }
-        console.log(relevanceMap);
+        //console.log(relevanceMap);
         return posts.sort((p1,p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
     } catch (e) {
         throw Error('Error while suggesting posts');
