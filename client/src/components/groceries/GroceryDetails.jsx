@@ -141,10 +141,8 @@ const GroceryDetails = () => {
         <Box
           component="img"
           sx={{
-            height: 233,
-            width: 350,
-            maxHeight: { xs: 233, md: 167 },
-            maxWidth: { xs: 350, md: 250 },
+            height: "250px",
+            width: "250px",
             justifyContent: "center",
             alignItems: "center",
           }}
