@@ -9,10 +9,10 @@ const calcWeights = async (history) => {
     try {
         for (piece in history) {
             //weigh tags
-            let sourceId = await history[piece].sourcePost;
+            let sourceId = history[piece].sourcePost;
             const tags = await getPostTags(sourceId);
             for (tag in tags) {
-                let tagName = await tags[tag].name;
+                let tagName = tags[tag].name;
                 let tagRank = tagsWeights.get(tagName);
                 if (!tagRank) {
                     tagsWeights.set(tagName, 1);
@@ -22,7 +22,7 @@ const calcWeights = async (history) => {
             }
             for (grocery in history[piece].content) {
                 //weigh categories
-                let catId = await history[piece].content[grocery].category
+                let catId = history[piece].content[grocery].category
                 let category = await CategoryService.getCategoryById(catId);
                 let catRank = categoriesWeights.get(category.name);
                 console.log('catrank:', catRank);
@@ -33,9 +33,9 @@ const calcWeights = async (history) => {
                 }
 
                 //weigh groceries
-                let gro = await history[piece].content[grocery];
+                let gro = history[piece].content[grocery];
                 console.log(gro.name);
-                let groRank = await groceriesWeights.get(gro.name);
+                let groRank = groceriesWeights.get(gro.name);
                 console.log('grorank:', groRank);
                 if (!groRank) {
                     groceriesWeights.set(gro.name, gro.amount);
@@ -65,6 +65,7 @@ const getPostTags = async (postId) => {
 };
 
 const getPostRelevance = async (history, post) => {
+    console.log('getPostRelevanceUtil');
     try {
         const { categoriesWeights, groceriesWeights, tagsWeights } = await calcWeights(history);
         console.log('rels:', categoriesWeights, groceriesWeights, tagsWeights);
@@ -81,13 +82,13 @@ const getPostRelevance = async (history, post) => {
 
         //add relevance regarding categories and groceries
         for (grocery in post.content) {
-            const category = await CategoryService.getCategoryById(await post.content[grocery].category);
+            const category = await CategoryService.getCategoryById(post.content[grocery].category);
             const catRank = categoriesWeights.get(category.name);
             console.log('postRel catRank:', catRank);
             if (catRank) {
                 relevance += catRank;
             }
-            const groRank = groceriesWeights.get(await post.content[grocery].name);
+            const groRank = groceriesWeights.get(post.content[grocery].name);
             console.log('postRel groRank:', groRank);
             if (groRank) {
                 relevance += groRank;
@@ -102,5 +103,6 @@ const getPostRelevance = async (history, post) => {
 
 module.exports = {
     getPostRelevance,
+    calcWeights,
     getPostTags
 };

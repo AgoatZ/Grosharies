@@ -9,7 +9,6 @@ const TagRepository = require('../tag/tag.repository');
 const Grocery = require('../grocery/grocery.model');
 const router = express.Router();
 const SuggestionsUtil = require('../common/utils/suggestions-util');
-const timeToWait = 3000000;
 
 const getPosts = async (query, page, limit) => {
     try {
@@ -154,7 +153,7 @@ const pendPost = async (postId, collectorId, groceries) => {
                 updatedContent.push(content[grocery]);
             }
         }
-        console.log(updatedContent);
+        console.log('updatedContent',updatedContent);
         await PostRepository.updateContent(postId, updatedContent);
 
         const oneHour = 60 * 60 * 1000;
@@ -203,15 +202,17 @@ const getSuggestedPosts = async (userId) => {
         const user = await UserService.getUserById(userId);
         const history = [];
         for (pendingId in user.collectedHistory) {
-            const pending = await PendingService.getPendingById(user.collectedHistory[pendingId]);
+            let id = user.collectedHistory[pendingId];
+            let pending = await PendingService.getPendingById(id);
             history.push(pending);
         }
         const relevanceMap = new Map();
         for (post in posts) {
-            const postRelevance = await SuggestionsUtil.getPostRelevance(history, posts[post]);
-            relevanceMap.set(posts[post], postRelevance);
+            let rPost = posts[post];
+            let postRelevance = await SuggestionsUtil.getPostRelevance(history, rPost);
+            relevanceMap.set(rPost, postRelevance);
+            console.log(relevanceMap);
         }
-        //console.log(relevanceMap);
         return posts.sort((p1,p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
     } catch (e) {
         throw Error('Error while suggesting posts');
