@@ -5,10 +5,10 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
 const TagService = require('../tag/tag.services');
+const TagRepository = require('../tag/tag.repository');
 const Grocery = require('../grocery/grocery.model');
 const router = express.Router();
 const SuggestionsUtil = require('../common/utils/suggestions-util');
-const timeToWait = 3000000;
 
 const getPosts = async (query, page, limit) => {
     try {
@@ -153,7 +153,7 @@ const pendPost = async (postId, collectorId, groceries) => {
                 updatedContent.push(content[grocery]);
             }
         }
-        console.log(updatedContent);
+        console.log('updatedContent',updatedContent);
         await PostRepository.updateContent(postId, updatedContent);
 
         const oneHour = 60 * 60 * 1000;
@@ -181,41 +181,41 @@ const pendPost = async (postId, collectorId, groceries) => {
     }
 };
 
-const getSuggestedPosts = async (userId) => {
-    console.log('sugestservice');
-    try {
-        var posts = await PostRepository.getRelevantPosts();
-        console.log(posts);
-        const user = await UserService.getUserById(userId);
-        const history = [];
-        for (pendingId in user.collectedHistory) {
-            console.log(user.collectedHistory[pendingId]);
-            const pending = await PendingService.getPendingById(user.collectedHistory[pendingId]);
-            history.push(pending);
-        }
-        const relevanceMap = new Map();
-        for (post in posts) {
-            const postRelevance = await SuggestionsUtil.getPostRelevance(history, posts[post]);
-            relevanceMap.set(posts[post], postRelevance);
-        }
-        console.log(relevanceMap);
-        return posts.sort((p1,p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
-    } catch (e) {
-        throw Error('Error while suggesting posts');
-    }
-};
-
 const getPostTags = async (postId) => {
     try {
         const post = await PostRepository.getPostById(postId);
         const tags = [];
         for (tagId in post.tags) {
-            const tag = await TagService.getTagById(post.tags[tagId]);
+            const tag = await TagRepository.getTagById(post.tags[tagId]);
             tags.push(tag);
         }
         return tags;
     } catch (e) {
         throw Error('Error while retrieving tags');
+    }
+};
+
+const getSuggestedPosts = async (userId) => {
+    console.log('sugestservice');
+    try {
+        var posts = await PostRepository.getRelevantPosts();
+        const user = await UserService.getUserById(userId);
+        const history = [];
+        for (pendingId in user.collectedHistory) {
+            let id = user.collectedHistory[pendingId];
+            let pending = await PendingService.getPendingById(id);
+            history.push(pending);
+        }
+        const relevanceMap = new Map();
+        for (post in posts) {
+            let rPost = posts[post];
+            let postRelevance = await SuggestionsUtil.getPostRelevance(history, rPost);
+            relevanceMap.set(rPost, postRelevance);
+            console.log(relevanceMap);
+        }
+        return posts.sort((p1,p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
+    } catch (e) {
+        throw Error('Error while suggesting posts');
     }
 };
 
@@ -227,10 +227,9 @@ module.exports = {
     getPostsByTag,
     getPostsByCollector,
     getPostsByGroceries,
-    getPostTags,
     getSuggestedPosts,
     addPost,
     pendPost,
     deletePost,
     updatePost
-}
+};

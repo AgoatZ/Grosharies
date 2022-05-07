@@ -8,7 +8,8 @@ const grocery = new mongoose.Schema({
   amount: { type: Number, required: true },
   scale: { type: String, enum: scale, required: true },
   packing: { type: String, enum: packing, required: true },
-  category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" , required: true}
+  category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" , required: true},
+  image: { type: String, required: false }
 });
 
 const Grocery = mongoose.model('Grocery', grocery, 'Grocery');
