@@ -1,4 +1,5 @@
 const GroceryService = require('./grocery.services');  
+const imageUtil = require('../common/middlewares/image-upload');
 
 getGroceries = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
@@ -63,12 +64,27 @@ deleteGrocery = async function (req, res, next) {
     }
 }
 
-updateGrocery = async function (req, res, next) {
+const updateGrocery = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
         const oldGrocery = await GroceryService.updateGrocery(req.params.id, req.body);
         return res.status(200).json({ oldGrocery: oldGrocery, message: "Succesfully Grocery Updated" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const uploadImage = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+
+    try {
+        const answer = await imageUtil.uploadImage(req, res);
+        console.log('answer:', answer.image);
+        return answer;
+        //return res.status(200).json({ image: enc });
     } catch (e) {
         console.log('controller error: ' + e.message);
 
@@ -82,5 +98,6 @@ module.exports = {
     getGroceryByName,
     addGrocery,
     deleteGrocery,
-    updateGrocery
+    updateGrocery,
+    uploadImage
 }

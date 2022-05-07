@@ -15,4 +15,6 @@ router.delete('/:id', GroceryController.deleteGrocery);
 
 router.put('/:id', GroceryController.updateGrocery);
 
+router.post('/uploadImage/:id', GroceryController.uploadImage);
+
 module.exports = router;

@@ -124,17 +124,17 @@ const init = async () => {
 
             if (i < 11) {
                 let grocery = new Grocery({
-                    "name": gross.at(i % 11),
+                    "name": gross[i % 11],
                     "amount": i,
                     "scale": "kg",
-                    "packing": packs.at(i % 10),
-                    "category": cats.at(i % 11)._id
+                    "packing": packs[i % 10],
+                    "category": cats[i % 11]._id
                 });
                 grocery = await grocery.save();
             }
 
             let post = new Post({
-                "headline": "Come and take some " + gross.at(i % 11),
+                "headline": "Come and take some " + gross[i % 11],
                 "userId": user._id,
                 "address": '' + i + " Nowhere Street",
                 "pickUpDates": {
@@ -144,18 +144,18 @@ const init = async () => {
                 "status": "still there",
                 "content": [
                     {
-                        "name": gross.at(i % 11),
+                        "name": gross[i % 11],
                         "amount": i + 10,
                         "scale": "kg",
-                        "packing": packs.at(i % 10),
-                        "category": cats.at(i % 11)._id
+                        "packing": packs[i % 10],
+                        "category": cats[i % 11]._id
                     },
                     {
-                        "name": gross.at((i / 2) % 11),
+                        "name": gross[Math.ceil(i / 2) % 11],
                         "amount": i + 14,
                         "scale": "unit",
-                        "packing": packs.at((i / 2) % 10),
-                        "category": cats.at(i % 11)._id
+                        "packing": packs[Math.ceil(i / 2) % 10],
+                        "category": cats[i % 11]._id
                     }
                 ]
             });
@@ -165,11 +165,11 @@ const init = async () => {
                 "headline": post.headline,
                 "address": post.address,
                 "content": {
-                    "name": gross.at(i % 11),
+                    "name": gross[i % 11],
                     "amount": i + 3,
                     "scale": "kg",
-                    "packing": packs.at(i % 10),
-                    "category": cats.at(i % 11)._id
+                    "packing": packs[i % 10],
+                    "category": cats[i % 11]._id
                 },
                 "sourcePost": post._id,
                 "publisherId": user._id,

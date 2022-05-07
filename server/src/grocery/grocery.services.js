@@ -2,6 +2,7 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./grocery.repository');
 const router = express.Router();
+const imageUtil = require('../common/middlewares/image-upload');
 
 getGroceries = async function (query, page, limit) {
     try {
@@ -69,11 +70,22 @@ updateGrocery = async function (groceryId, groceryDetails) {
     }
 };
 
+const uploadImage = async (req, res) => {
+    try {
+        const a = await imageUtil.uploadImage(req, res);
+        console.log(a);
+        return a;
+    } catch (e) {
+        throw Error('Error while uploading image');
+    }
+}
+
 module.exports = {
     getGroceries,
     getGroceryById,
     getGroceryByName,
     addGrocery,
     deleteGrocery,
-    updateGrocery
+    updateGrocery,
+    uploadImage
 }

@@ -86,6 +86,9 @@ getSuggestedPosts = async (req, res, next) => {
     }
 }
 
+//TODO:getUserProfile Udetails, pendingHistory, createdPosts
+//Post Done
+
 module.exports = {
     getUsers,
     getUserById,
