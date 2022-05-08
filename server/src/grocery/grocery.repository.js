@@ -3,7 +3,7 @@ const { status } = require('express/lib/response');
 const Grocery = require('./grocery.model');
 const router = express.Router();
 
-getGroceries = async function (query) {
+const getGroceries = async function (query) {
     try {
         const groceries = await Grocery.find(query);
         return groceries;
@@ -14,7 +14,7 @@ getGroceries = async function (query) {
     }
 };
 
-getGroceryById = async function (groceryId) {
+const getGroceryById = async function (groceryId) {
     try {
         const grocery = await Grocery.findById(groceryId);
         return grocery;
@@ -25,7 +25,7 @@ getGroceryById = async function (groceryId) {
     }
 };
 
-getGroceryByName = async function (groceryName) {
+const getGroceryByName = async function (groceryName) {
     try {
         const grocery = await Grocery.findOne({ name: groceryName });
         return grocery;
@@ -36,7 +36,7 @@ getGroceryByName = async function (groceryName) {
     }
 };
 
-addGrocery = async function (groceryDetails) {
+const addGrocery = async function (groceryDetails) {
     try {
         const grocery = new Grocery(groceryDetails);
         return await grocery.save();
@@ -47,7 +47,7 @@ addGrocery = async function (groceryDetails) {
     }
 };
 
-deleteGrocery = async function (groceryId) {
+const deleteGrocery = async function (groceryId) {
     try {
         const deletedGrocery = await Grocery.findByIdAndDelete(groceryId);
         return deletedGrocery;
@@ -58,7 +58,7 @@ deleteGrocery = async function (groceryId) {
     }
 };
 
-updateGrocery = async function (groceryId, groceryDetails) {
+const updateGrocery = async function (groceryId, groceryDetails) {
     try {
         const oldGrocery = await Grocery.findByIdAndUpdate(groceryId, groceryDetails);
         return oldGrocery;
@@ -69,7 +69,7 @@ updateGrocery = async function (groceryId, groceryDetails) {
     }
 };
 
-updateAmount = async function (groceryId, amount) {
+const updateAmount = async function (groceryId, amount) {
     try {
         const oldGrocery = await Grocery.findByIdAndUpdate(groceryId, {amount: amount});
         return oldGrocery;

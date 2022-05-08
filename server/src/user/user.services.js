@@ -4,6 +4,7 @@ const UserRepository = require('./user.repository');
 const PostRepository = require('../post/post.repository');
 const PendingRepository = require('../pending/pending.repository');
 const AuthService = require('../auth/auth.services');
+const fs = require('fs');
 const router = express.Router();
 
 getUsers = async function (query, page, limit) {
@@ -121,6 +122,36 @@ getPickupHistory = async function (userId) {
     }
 };
 
+const uploadImage = async (req, res) => {
+  try {
+    const r = "userimgtmp"+Date.now() + Math.round(Math.random() * 1E9);
+    const newFile = fs.createWriteStream(r.toString() + '.txt');
+    const chData = [];
+    req.pipe(newFile, (error) => {
+      throw Error(error);
+    });
+    
+    req.on('data', function (chunk, error) {
+      chData.push(chunk);
+    });
+
+    req.on('end', async (error) => {
+      const enc = Buffer.from(chData.toString()).toString("base64");
+      fs.rm(newFile.path, async (error) => {
+        if (error) {
+          throw Error(error);
+        } else {
+          let user = await UserRepository.updateUser(req.params.id, { image: enc });
+          user = await UserRepository.getUserById(user._id);
+          return res.status(200).json({ user: user, message: 'Successfully uploaded image' });
+        }
+      });
+    });
+  } catch (err) {
+    throw Error(err);
+  }
+};
+
 module.exports = {
     getUsers,
     getUserById,
@@ -130,5 +161,6 @@ module.exports = {
     deleteUser,
     updateUser,
     addToHistory,
-    getPickupHistory
+    getPickupHistory,
+    uploadImage
 };

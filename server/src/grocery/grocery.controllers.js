@@ -81,10 +81,8 @@ const uploadImage = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const answer = await imageUtil.uploadImage(req, res);
-        console.log('answer:', answer.image);
+        const answer = await GroceryService.uploadImage(req, res);
         return answer;
-        //return res.status(200).json({ image: enc });
     } catch (e) {
         console.log('controller error: ' + e.message);
 

@@ -2,9 +2,9 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./grocery.repository');
 const router = express.Router();
-const imageUtil = require('../common/middlewares/image-upload');
+const fs = require('fs');
 
-getGroceries = async function (query, page, limit) {
+const getGroceries = async function (query, page, limit) {
     try {
         const groceries = await Repository.getGroceries(query);
         return groceries;
@@ -15,7 +15,7 @@ getGroceries = async function (query, page, limit) {
     }
 };
 
-getGroceryById = async function (groceryId) {
+const getGroceryById = async function (groceryId) {
     try {
         const grocery = await Repository.getGroceryById(groceryId);
         return grocery;
@@ -26,7 +26,7 @@ getGroceryById = async function (groceryId) {
     }
 };
 
-getGroceryByName = async function (groceryName) {
+const getGroceryByName = async function (groceryName) {
     try {
         const grocery = await Repository.getGroceryByName(groceryName);
         return grocery;
@@ -37,7 +37,7 @@ getGroceryByName = async function (groceryName) {
     }
 };
 
-addGrocery = async function (groceryDetails) {
+const addGrocery = async function (groceryDetails) {
     try {
         const grocery = await Repository.addGrocery(groceryDetails);
         return grocery;
@@ -48,7 +48,7 @@ addGrocery = async function (groceryDetails) {
     }
 };
 
-deleteGrocery = async function (groceryId) {
+const deleteGrocery = async function (groceryId) {
     try {
         const deletedGrocery = await Repository.deleteGrocery(groceryId);
         return deletedGrocery;
@@ -59,7 +59,7 @@ deleteGrocery = async function (groceryId) {
     }
 };
 
-updateGrocery = async function (groceryId, groceryDetails) {
+const updateGrocery = async function (groceryId, groceryDetails) {
     try {
         const oldGrocery = await Repository.updateGrocery(groceryId, groceryDetails);
         return oldGrocery;
@@ -72,13 +72,36 @@ updateGrocery = async function (groceryId, groceryDetails) {
 
 const uploadImage = async (req, res) => {
     try {
-        const a = await imageUtil.uploadImage(req, res);
-        console.log(a);
-        return a;
-    } catch (e) {
-        throw Error('Error while uploading image');
+        const r = Date.now() + Math.round(Math.random() * 1E9);
+        const newFile = fs.createWriteStream(r.toString() + '.txt');
+        const chData = [];
+        newFile.on('open', () => {
+            req.pipe(newFile, (error) => {
+                throw Error(error);
+            });
+
+            req.on('data', function (chunk, error) {
+                chData.push(chunk);
+            });
+
+            req.on('end', async (error) => {
+                const enc = Buffer.from(chData.toString()).toString("base64");
+                fs.rm(newFile.path, async (error) => {
+                    if (error) {
+                        throw Error(error);
+                    } else {
+                        const oldGrocery = await Repository.updateGrocery(req.params.id, { image: enc });
+                        const grocery = await Repository.getGroceryById(oldGrocery._id);
+                        newFile.close();
+                        return res.status(200).json({ grocery: grocery, message: 'Successfully uploaded image' });
+                    }
+                });
+            });
+        });
+    } catch (err) {
+        throw Error(err);
     }
-}
+};
 
 module.exports = {
     getGroceries,

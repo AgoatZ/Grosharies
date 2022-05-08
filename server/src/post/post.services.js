@@ -219,6 +219,17 @@ const getSuggestedPosts = async (userId) => {
     }
 };
 
+const updateImage = async function (postId, encImg) {
+    try {
+        const oldPost = await PostRepository.updatePost(postId, encImg);
+        return oldPost;
+    } catch (e) {
+        console.log('Post service error from updateGrocery: ', e.message);
+
+        throw Error('Error while Updating Post Image');
+    }
+};
+
 module.exports = {
     getPosts,
     getPostById,
@@ -231,5 +242,6 @@ module.exports = {
     addPost,
     pendPost,
     deletePost,
-    updatePost
+    updatePost,
+    updateImage
 };
