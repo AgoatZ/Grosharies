@@ -12,6 +12,7 @@ const Posts = (props) => {
       <Grid item key={post._id}>
         <PostCard
           id={post._id}
+          post={post}
           title={post.headline}
           description={post.description}
         />
