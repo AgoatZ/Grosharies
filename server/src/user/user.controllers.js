@@ -85,7 +85,20 @@ const getSuggestedPosts = async (req, res, next) => {
 
         return res.status(400).json({ message: e.message });
     }
-}
+};
+
+const getUserProfile = async (req, res, next) => {
+    try{
+        const user = await UserService.getUserById(req.params.id);
+        const history = await UserService.getPickupHistory(req.params.id);
+        const posts = await PostService.getPostsByUser(req.params.id);
+        return res.status(200).json({ user: user, history: history, posts: posts, message: "Succesfully History Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
 
 // const updateImage = async (req, res, next) => {
 //     try{
@@ -108,5 +121,6 @@ module.exports = {
     deleteUser,
     updateUser,
     getPickupHistory,
-    getSuggestedPosts
+    getSuggestedPosts,
+    getUserProfile
 }

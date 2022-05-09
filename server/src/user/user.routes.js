@@ -21,4 +21,6 @@ router.get('/pickuphistory/:id', UserController.getPickupHistory);
 
 router.get('/suggested/:userid', PostController.getSuggestedPosts);
 
+router.get('/profile/:id', UserController.getUserProfile);
+
 module.exports = router;
