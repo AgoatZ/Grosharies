@@ -7,7 +7,7 @@ const AuthService = require('../auth/auth.services');
 const fs = require('fs');
 const router = express.Router();
 
-getUsers = async function (query, page, limit) {
+const getUsers = async function (query, page, limit) {
     try {
         const users = await UserRepository.getUsers(query);
         return users;
@@ -18,7 +18,7 @@ getUsers = async function (query, page, limit) {
     }
 };
 
-getUserById = async function (userId) {
+const getUserById = async function (userId) {
     try {
         const user = await UserRepository.getUserById(userId)
         return user;
@@ -29,7 +29,7 @@ getUserById = async function (userId) {
     }
 };
 
-getUserByEmail = async function (userEmail) {
+const getUserByEmail = async function (userEmail) {
     try {
         const user = await UserRepository.getUserByEmail(userEmail)
         return user;
@@ -40,7 +40,7 @@ getUserByEmail = async function (userEmail) {
     }
 };
 
-addUser = async function (userDetails) {
+const addUser = async function (userDetails) {
     try {
         const exists = await UserRepository.getUserByEmail(userDetails.emailAddress);
         if (exists) throw Error('This email address belongs to another user');
@@ -71,7 +71,7 @@ const addGoogleUser = async (user) => {
     }
 };
 
-deleteUser = async function (userId) {
+const deleteUser = async function (userId) {
     try {
         const deletedUser = await UserRepository.deleteUser(userId);
         return deletedUser;
@@ -82,11 +82,15 @@ deleteUser = async function (userId) {
     }
 };
 
-updateUser = async function (userId, userDetails) {
+const updateUser = async function (userId, userDetails) {
     try {
         const exists = await UserRepository.getUserByEmail(userDetails.emailAddress);
         if (exists && exists._id !== userId) throw Error('This email address belongs to another user');
         else {
+            if(userDetails.image) {
+                userDetails.profileImage = userDetails.image;
+                delete userDetails['image'];
+            }
             const oldUser = await UserRepository.updateUser(userId, userDetails);
             return oldUser;
         }
@@ -97,7 +101,7 @@ updateUser = async function (userId, userDetails) {
     }
 };
 
-addToHistory = async function (userId, pendingPostId) {
+const addToHistory = async function (userId, pendingPostId) {
     try {
         let oldUser = await UserRepository.getUserById(userId);
         let history = oldUser.collectedHistory;
@@ -111,7 +115,7 @@ addToHistory = async function (userId, pendingPostId) {
     }
 };
 
-getPickupHistory = async function (userId) {
+const getPickupHistory = async function (userId) {
     try {
         const pendingPosts = await PendingRepository.getPendingsByCollector(userId);
         return pendingPosts;
@@ -122,35 +126,35 @@ getPickupHistory = async function (userId) {
     }
 };
 
-const uploadImage = async (req, res) => {
-  try {
-    const r = "userimgtmp"+Date.now() + Math.round(Math.random() * 1E9);
-    const newFile = fs.createWriteStream(r.toString() + '.txt');
-    const chData = [];
-    req.pipe(newFile, (error) => {
-      throw Error(error);
-    });
+// const updateImage = async (req, res) => {
+//   try {
+//     const r = "userimgtmp"+Date.now() + Math.round(Math.random() * 1E9);
+//     const newFile = fs.createWriteStream(r.toString() + '.txt');
+//     const chData = [];
+//     req.pipe(newFile, (error) => {
+//       throw Error(error);
+//     });
     
-    req.on('data', function (chunk, error) {
-      chData.push(chunk);
-    });
+//     req.on('data', function (chunk, error) {
+//       chData.push(chunk);
+//     });
 
-    req.on('end', async (error) => {
-      const enc = Buffer.from(chData).toString("base64");
-      fs.rm(newFile.path, async (error) => {
-        if (error) {
-          throw Error(error);
-        } else {
-          let user = await UserRepository.updateUser(req.params.id, { image: enc });
-          user = await UserRepository.getUserById(user._id);
-          return res.status(200).json({ user: user, message: 'Successfully uploaded image' });
-        }
-      });
-    });
-  } catch (err) {
-    throw Error(err);
-  }
-};
+//     req.on('end', async (error) => {
+//       const enc = Buffer.from(chData).toString("base64");
+//       fs.rm(newFile.path, async (error) => {
+//         if (error) {
+//           throw Error(error);
+//         } else {
+//           let user = await UserRepository.updateUser(req.params.id, { image: enc });
+//           user = await UserRepository.getUserById(user._id);
+//           return res.status(200).json({ user: user, message: 'Successfully uploaded image' });
+//         }
+//       });
+//     });
+//   } catch (err) {
+//     throw Error(err);
+//   }
+// };
 
 module.exports = {
     getUsers,
@@ -162,5 +166,4 @@ module.exports = {
     updateUser,
     addToHistory,
     getPickupHistory,
-    uploadImage
 };

@@ -113,6 +113,10 @@ const deletePost = async (postId) => {
 
 const updatePost = async (postId, postDetails) => {
     try {
+        if(postDetails.image) {
+            postDetails.images = postDetails.image;
+            delete postDetails['image'];
+        }
         const oldPost = await PostRepository.updatePost(postId, postDetails);
         return oldPost;
     } catch (e) {
@@ -219,38 +223,38 @@ const getSuggestedPosts = async (userId) => {
     }
 };
 
-const updateImage = async (req, res) => {
-    try {
-        const r = Date.now() + Math.round(Math.random() * 1E9);
-        const newFile = fs.createWriteStream(r.toString() + '.txt');
-        const chData = [];
-        newFile.on('open', () => {
-            req.pipe(newFile, (error) => {
-                throw Error(error);
-            });
+// const updateImage = async (req, res) => {
+//     try {
+//         const r = Date.now() + Math.round(Math.random() * 1E9);
+//         const newFile = fs.createWriteStream(r.toString() + '.txt');
+//         const chData = [];
+//         newFile.on('open', () => {
+//             req.pipe(newFile, (error) => {
+//                 throw Error(error);
+//             });
 
-            req.on('data', function (chunk, error) {
-                chData.push(chunk);
-            });
+//             req.on('data', function (chunk, error) {
+//                 chData.push(chunk);
+//             });
 
-            req.on('end', async (error) => {
-                const enc = Buffer.from(chData).toString("base64");
-                fs.rm(newFile.path, async (error) => {
-                    if (error) {
-                        throw Error(error);
-                    } else {
-                        const oldPost = await PostRepository.updatePost(req.params.id, { image: enc });
-                        const updatedPost = await PostRepository.getPostById(oldPost._id);
-                        newFile.close();
-                        return res.status(200).json({ post: updatedPost, message: 'Successfully uploaded image' });
-                    }
-                });
-            });
-        });
-    } catch (err) {
-        throw Error(err);
-    }
-};
+//             req.on('end', async (error) => {
+//                 const enc = Buffer.from(chData).toString("base64");
+//                 fs.rm(newFile.path, async (error) => {
+//                     if (error) {
+//                         throw Error(error);
+//                     } else {
+//                         const oldPost = await PostRepository.updatePost(req.params.id, { image: enc });
+//                         const updatedPost = await PostRepository.getPostById(oldPost._id);
+//                         newFile.close();
+//                         return res.status(200).json({ post: updatedPost, message: 'Successfully uploaded image' });
+//                     }
+//                 });
+//             });
+//         });
+//     } catch (err) {
+//         throw Error(err);
+//     }
+// };
 
 module.exports = {
     getPosts,
@@ -265,5 +269,4 @@ module.exports = {
     pendPost,
     deletePost,
     updatePost,
-    updateImage
 };

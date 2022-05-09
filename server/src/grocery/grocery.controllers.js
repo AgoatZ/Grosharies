@@ -77,18 +77,22 @@ const updateGrocery = async function (req, res, next) {
     }
 };
 
-const uploadImage = async function (req, res, next) {
-    // Validate request parameters, queries using express-validator
+// const updateImage = async function (req, res, next) {
+//     // Validate request parameters, queries using express-validator
 
-    try {
-        const answer = await GroceryService.uploadImage(req, res);
-        return answer;
-    } catch (e) {
-        console.log('controller error: ' + e.message);
+//     try {
+//         await imageUtil.uploadImage(req, res, answer => {
+//             req.body = { image: answer };
+//             next();
+//         });
+//         //const answer = await GroceryService.uploadImage(req, res);
+//         //return answer;
+//     } catch (e) {
+//         console.log('controller error: ' + e.message);
 
-        return res.status(400).json({ message: e.message });
-    }
-};
+//         return res.status(400).json({ message: e.message });
+//     }
+// };
 
 module.exports = {
     getGroceries,
@@ -96,6 +100,5 @@ module.exports = {
     getGroceryByName,
     addGrocery,
     deleteGrocery,
-    updateGrocery,
-    uploadImage
+    updateGrocery
 }
