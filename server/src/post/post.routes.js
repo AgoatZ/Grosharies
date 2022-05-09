@@ -17,6 +17,8 @@ router.get('/collector=:id', PostController.getPostsByCollector);
 
 router.get('/suggested/:userid', PostController.getSuggestedPosts);
 
+router.post('/updateImage/:id', PostController.updateImage);
+
 router.post('/bygroceries', PostController.getPostsByGroceries);
 
 router.post('/', PostController.addPost);

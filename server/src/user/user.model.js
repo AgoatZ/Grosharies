@@ -16,7 +16,6 @@ const user = new mongoose.Schema({
   source: { type: String, enum: userSource, required: true, default: userSource.GROSHARIES },
   collectedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "PendingPost"}]
 });
-//TODO: SUGGESTED POST
 
 const User = mongoose.model('User', user, 'User');
 

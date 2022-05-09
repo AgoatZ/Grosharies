@@ -219,14 +219,36 @@ const getSuggestedPosts = async (userId) => {
     }
 };
 
-const updateImage = async function (postId, encImg) {
+const updateImage = async (req, res) => {
     try {
-        const oldPost = await PostRepository.updatePost(postId, encImg);
-        return oldPost;
-    } catch (e) {
-        console.log('Post service error from updateGrocery: ', e.message);
+        const r = Date.now() + Math.round(Math.random() * 1E9);
+        const newFile = fs.createWriteStream(r.toString() + '.txt');
+        const chData = [];
+        newFile.on('open', () => {
+            req.pipe(newFile, (error) => {
+                throw Error(error);
+            });
 
-        throw Error('Error while Updating Post Image');
+            req.on('data', function (chunk, error) {
+                chData.push(chunk);
+            });
+
+            req.on('end', async (error) => {
+                const enc = Buffer.from(chData).toString("base64");
+                fs.rm(newFile.path, async (error) => {
+                    if (error) {
+                        throw Error(error);
+                    } else {
+                        const oldPost = await PostRepository.updatePost(req.params.id, { image: enc });
+                        const updatedPost = await PostRepository.getPostById(oldPost._id);
+                        newFile.close();
+                        return res.status(200).json({ post: updatedPost, message: 'Successfully uploaded image' });
+                    }
+                });
+            });
+        });
+    } catch (err) {
+        throw Error(err);
     }
 };
 

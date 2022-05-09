@@ -38,7 +38,6 @@ const login = async (email, password) => {
         throw Error('missing email or password');
     }
     try {
-        //TODO:ADD SOURCE GROSHARIES AND EXCHANGE SWITCH WITH IF
         const user = await UserRepository.getUserByEmail(email);
         if (user == null) {
             throw Error('wrong email or password');

@@ -136,7 +136,7 @@ const uploadImage = async (req, res) => {
     });
 
     req.on('end', async (error) => {
-      const enc = Buffer.from(chData.toString()).toString("base64");
+      const enc = Buffer.from(chData).toString("base64");
       fs.rm(newFile.path, async (error) => {
         if (error) {
           throw Error(error);

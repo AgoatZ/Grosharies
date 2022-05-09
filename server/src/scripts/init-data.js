@@ -110,6 +110,11 @@ const init = async () => {
 
         const gross = ['Bananas', 'Melonas', 'Off Bagril', 'Pommes', 'Orange Juice', 'Beer', 'Toblerone', 'Lindt Lindor', 'Raw Cocoa', 'Schnitzel', 'Rice'];
         const cats = [fruits, fruits, meat, junkFood, beverages, alcohol, sweets, sweets, rawFood, meat, dryFood];
+        const desc = ['Just passed by the all mighty Yochananof and saw about a few goodies left alone and ready to be eaten!',
+            'So I have got lots of fresh fruits right from the tree waiting for whoever fancy some Sukariyot Teva, as the beloved by all - Sportacus - used to say...',
+            'Last call for you all, we have got left just a few more boxes of really good food. It will be a shame to throw it all so please come by and take as much as you want.',
+            'Like every sunday, we offer the best cooked meals that you can possibly image, on the house! we also have some natural, raw stuff that you might enjoy',
+            'Zu verschenken! Wir ziehen aus und alles muss weg. Da gibt es Arbeitsmittel aber sehr lecker Essen auch!'];
 
         for (let i = 0; i < 30; i++) {
             let user = new User({
@@ -157,7 +162,8 @@ const init = async () => {
                         "packing": packs[Math.ceil(i / 2) % 10],
                         "category": cats[i % 11]._id
                     }
-                ]
+                ],
+                "description": desc[i % 5]
             });
             post = await post.save();
 
