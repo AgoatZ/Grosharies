@@ -22,6 +22,7 @@ mongoose.set('useFindAndModify', false);
 
 const init = async () => {
     try {
+        await mongoose.connection.dropDatabase();
         let healthy = new Tag({
             "name": "Healthy"
         });
@@ -110,6 +111,11 @@ const init = async () => {
 
         const gross = ['Bananas', 'Melonas', 'Off Bagril', 'Pommes', 'Orange Juice', 'Beer', 'Toblerone', 'Lindt Lindor', 'Raw Cocoa', 'Schnitzel', 'Rice'];
         const cats = [fruits, fruits, meat, junkFood, beverages, alcohol, sweets, sweets, rawFood, meat, dryFood];
+        const desc = ['Just passed by the all mighty Yochananof and saw about a few goodies left alone and ready to be eaten!',
+            'So I have got lots of fresh fruits right from the tree waiting for whoever fancy some Sukariyot Teva, as the beloved by all - Sportacus - used to say...',
+            'Last call for you all, we have got left just a few more boxes of really good food. It will be a shame to throw it all so please come by and take as much as you want.',
+            'Like every sunday, we offer the best cooked meals that you can possibly image, on the house! we also have some natural, raw stuff that you might enjoy',
+            'Zu verschenken! Wir ziehen aus und alles muss weg. Da gibt es Arbeitsmittel aber sehr lecker Essen auch!'];
 
         for (let i = 0; i < 30; i++) {
             let user = new User({
@@ -123,18 +129,24 @@ const init = async () => {
             user = await user.save();
 
             if (i < 11) {
+                let catId = cats[i % 11]._id;
                 let grocery = new Grocery({
-                    "name": gross.at(i % 11),
+                    "name": gross[i % 11],
                     "amount": i,
                     "scale": "kg",
-                    "packing": packs.at(i % 10),
-                    "category": cats.at(i % 11)._id
+                    "packing": packs[i % 10],
+                    "category": catId
                 });
                 grocery = await grocery.save();
+
+                let category = await Category.findById(catId);
+                let categoryGroceries = category.groceries;
+                categoryGroceries.push(grocery._id);
+                await Category.findByIdAndUpdate(catId, { groceries: categoryGroceries });
             }
 
             let post = new Post({
-                "headline": "Come and take some " + gross.at(i % 11),
+                "headline": "Come and take some " + gross[i % 11],
                 "userId": user._id,
                 "address": '' + i + " Nowhere Street",
                 "pickUpDates": {
@@ -144,20 +156,27 @@ const init = async () => {
                 "status": "still there",
                 "content": [
                     {
-                        "name": gross.at(i % 11),
-                        "amount": i + 10,
-                        "scale": "kg",
-                        "packing": packs.at(i % 10),
-                        "category": cats.at(i % 11)._id
+                        "original": {
+                            "name": gross[i % 11],
+                            "amount": i + 10,
+                            "scale": "kg",
+                            "packing": packs[i % 10],
+                            "category": cats[i % 11]._id
+                        },
+                        "left": i + 10
                     },
                     {
-                        "name": gross.at((i / 2) % 11),
-                        "amount": i + 14,
-                        "scale": "unit",
-                        "packing": packs.at((i / 2) % 10),
-                        "category": cats.at(i % 11)._id
+                        "original": {
+                            "name": gross[Math.ceil(i / 2) % 11],
+                            "amount": i + 14,
+                            "scale": "unit",
+                            "packing": packs[Math.ceil(i / 2) % 10],
+                            "category": cats[i % 11]._id
+                        },
+                        "left": i + 14
                     }
-                ]
+                ],
+                "description": desc[i % 5]
             });
             post = await post.save();
 
@@ -165,11 +184,11 @@ const init = async () => {
                 "headline": post.headline,
                 "address": post.address,
                 "content": {
-                    "name": gross.at(i % 11),
+                    "name": gross[i % 11],
                     "amount": i + 3,
                     "scale": "kg",
-                    "packing": packs.at(i % 10),
-                    "category": cats.at(i % 11)._id
+                    "packing": packs[i % 10],
+                    "category": cats[i % 11]._id
                 },
                 "sourcePost": post._id,
                 "publisherId": user._id,

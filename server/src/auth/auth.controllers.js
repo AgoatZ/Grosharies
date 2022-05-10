@@ -19,7 +19,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const accessToken = await AuthService.login(req.body.emailAddress, req.body.password, req.body.source);
-        return res.status(200).send({ message: 'Connected successfully', accessToken });
+        return res.status(200).send({ accessToken: accessToken, message: 'Connected successfully' });
     } catch (err) {
         return sendError(res, 400, err.message);
     }
@@ -28,7 +28,7 @@ const login = async (req, res) => {
 const jwtSign = async (req, res) => {
     try {
         const accessToken = await AuthService.jwtSign(req.user._id, req.user.userType);
-        return res.status(200).send({ message: 'Connected successfully', accessToken });
+        return res.status(200).send({ accessToken: accessToken, message: 'Connected successfully' });
     } catch (err) {
         return sendError(res, 400, err.message);
     }

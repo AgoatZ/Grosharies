@@ -151,6 +151,19 @@ const updatePost = async function (req, res, next) {
     }
 };
 
+// const updateImage = async function (req, res, next) {
+//     // Validate request parameters, queries using express-validator
+
+//     try {
+//         const answer = await PostService.updateImage(req, res);
+//         return answer;
+//     } catch (e) {
+//         console.log('controller error: ' + e.message);
+
+//         return res.status(400).json({ message: e.message });
+//     }
+// };
+
 module.exports = {
     getPosts,
     getPostById,

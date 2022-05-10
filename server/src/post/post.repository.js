@@ -119,8 +119,10 @@ const deletePost = async (postId) => {
 
 const updatePost = async (postId, postDetails) => {
     try {
-        const oldPost = await Post.findByIdAndUpdate(postId, postDetails);
-        return oldPost;
+        console.log('repo update post', postDetails);
+        let post = await Post.findByIdAndUpdate(postId, postDetails);
+        post = await Post.findById(postId);
+        return post;
     } catch (e) {
         console.log('repository error: ' + e.message);
 

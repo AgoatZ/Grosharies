@@ -1,6 +1,7 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const PostController = require('./post.controllers');
+const imageUtil = require('../common/middlewares/image-upload');
 const router = express.Router();
 
 router.get('/', PostController.getPosts);
@@ -16,6 +17,8 @@ router.get('/tag=:id', PostController.getPostsByTag);
 router.get('/collector=:id', PostController.getPostsByCollector);
 
 router.get('/suggested/:userid', PostController.getSuggestedPosts);
+
+router.post('/updateImage/:id', imageUtil.uploadImage, PostController.updatePost);
 
 router.post('/bygroceries', PostController.getPostsByGroceries);
 

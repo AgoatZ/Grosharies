@@ -9,6 +9,7 @@ const TagRepository = require('../tag/tag.repository');
 const Grocery = require('../grocery/grocery.model');
 const router = express.Router();
 const SuggestionsUtil = require('../common/utils/suggestions-util');
+const PendingStatus = require('../enums/pending-status');
 
 const getPosts = async (query, page, limit) => {
     try {
@@ -89,6 +90,7 @@ const getPostsByGroceries = async (groceries) => {
 
 const addPost = async (postDetails) => {
     try {
+        postDetails.content.left = postDetails.content.original.amount;
         const post = await PostRepository.addPost(postDetails);
         console.log('service: ' + post);
 
@@ -113,6 +115,10 @@ const deletePost = async (postId) => {
 
 const updatePost = async (postId, postDetails) => {
     try {
+        if(postDetails.image) {
+            postDetails.images = postDetails.image;
+            delete postDetails['image'];
+        }
         const oldPost = await PostRepository.updatePost(postId, postDetails);
         return oldPost;
     } catch (e) {
@@ -128,33 +134,34 @@ const pendPost = async (postId, collectorId, groceries) => {
         const updatedContent = [];
         const content = post.content;
 
-        for (grocery in content) {
-            console.log("grocery from post: ", content[grocery]);
-            var isThere = false;
-            for (newGrocery in groceries) {
-                console.log("grocery from array: ", groceries[newGrocery]);
-                if (groceries[newGrocery].name === content[grocery].name) {
+        for (groceryIndex in content) {
+            let grocery = content[groceryIndex];
+            console.log("grocery from post: ", grocery);
+            let isThere = false;
+            for (wantedGroceryIndex in groceries) {
+                let wantedGrocery = groceries[wantedGroceryIndex];
+                console.log("grocery from array: ", wantedGrocery);
+                console.log("grocery name original: ", wantedGrocery.name);
+                console.log("grocery name wanted: ", grocery.original.name);
+                if (wantedGrocery.name === grocery.original.name) {
                     //reduce amount and creat json for updating
                     isThere = true;
-                    amount = content[grocery].amount - groceries[newGrocery].amount;
-                    if (amount < 0) {
+                    let left = grocery.left - wantedGrocery.amount;
+                    if (left < 0) {
                         throw Error('Requested amount is higher than available');
                     }
                     updatedContent.push({
-                        "name": content[grocery].name,
-                        "amount": amount,
-                        "scale": content[grocery].scale,
-                        "packing": content[grocery].packing,
-                        "category": content[grocery].category
+                        original: grocery.original,
+                        left: left
                     });
                 }
             }
             if (!isThere) {
-                updatedContent.push(content[grocery]);
+                updatedContent.push(grocery);
             }
         }
         console.log('updatedContent',updatedContent);
-        await PostRepository.updateContent(postId, updatedContent);
+        await PostRepository.updatePost(postId, { content: updatedContent });
 
         const oneHour = 60 * 60 * 1000;
         const pendingPost = await PendingService.addPending({
@@ -231,5 +238,5 @@ module.exports = {
     addPost,
     pendPost,
     deletePost,
-    updatePost
+    updatePost,
 };
