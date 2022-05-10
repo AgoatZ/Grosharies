@@ -86,7 +86,7 @@ const getPostsByCollector = async (userId) => {
 
 const getPostsByGroceries = async (groceries) => {
     try {
-        const posts = await Post.find({}).where('content.name').in(groceries);
+        const posts = await Post.find({}).where('content.original.name').in(groceries);
         return posts;
     } catch (e) {
         console.log('repository error: ' + e.message);

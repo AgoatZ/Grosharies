@@ -167,10 +167,10 @@ const init = async () => {
                     },
                     {
                         "original": {
-                            "name": gross[Math.ceil(i / 2) % 11],
+                            "name": gross[(i +1) % 11],
                             "amount": i + 14,
                             "scale": "unit",
-                            "packing": packs[Math.ceil(i / 2) % 10],
+                            "packing": packs[(i +1) % 10],
                             "category": cats[i % 11]._id
                         },
                         "left": i + 14
