@@ -163,14 +163,15 @@ const finishPending = async function (pendingPostId) {
         }
         const trafficGroceries = [];
         const content = pendingPost.content;        
-        for (grocery in content) {
-            let trafficGrocery = await GroceryRepository.getGroceryByName(content[grocery].name);
-            let newAmount = content[grocery].amount + trafficGrocery.amount;
-            await GroceryRepository.updateAmount(trafficGrocery._id, newAmount);
-            trafficGrocery = await GroceryRepository.getGroceryByName(content[grocery].name);
+        for (groceryIndex in content) {
+            let grocery = content[groceryIndex];
+            let trafficGrocery = await GroceryRepository.getGroceryByName(grocery.name);
+            let newAmount = grocery.amount + trafficGrocery.amount;
+            await GroceryRepository.updateGrocery(trafficGrocery._id, { amount: newAmount });
+            trafficGrocery = await GroceryRepository.getGroceryByName(grocery.name);
             trafficGroceries.push(trafficGrocery);
         }
-        await Repository.updatePendingStatus(pendingPostId, Status.COLLECTED);
+        await Repository.updatePending(pendingPostId, { status: Status.COLLECTED });
 
         const finishedPost = await Repository.getPendingById(pendingPostId);
 
@@ -199,32 +200,34 @@ const cancelPending = async function (pendingPostId) {
         const content = originalPost.content;
         const updatedContent = [];
         const groceries = pendingPost.content;        
-        for (grocery in content) {
-            console.log("grocery from post: ", content[grocery]);
-            var isThere = false;
-            for (newGrocery in groceries) {
-                console.log("grocery from array: ", groceries[newGrocery]);
-                if(groceries[newGrocery].name === content[grocery].name) {
+        for (groceryIndex in content) {
+            let grocery = content[groceryIndex];
+            console.log("grocery from post: ", grocery);
+            let isThere = false;
+            for (wantedGroceryIndex in groceries) {
+                let wantedGrocery = groceries[wantedGroceryIndex];
+                console.log("grocery from array: ", wantedGrocery);
+                if(wantedGrocery.name === grocery.name) {
                     isThere = true;
-                    amount = content[grocery].amount + groceries[newGrocery].amount;
+                    let left = grocery.left + wantedGrocery.amount;
+                    if (left > grocery.original.amount) {
+                        throw Error('Left is higher than original');
+                    }
                     updatedContent.push({
-                        "name": content[grocery].name,
-                        "amount": amount,
-                        "scale": content[grocery].scale,
-                        "packing": content[grocery].packing,
-                        "category": content[grocery].category
+                        original: grocery.original,
+                        left: left
                     });
                 }
             }
             if (!isThere) {
-                updatedContent.push(content[grocery]);
+                updatedContent.push(grocery);
             }
         }
         console.log(updatedContent);
-        await PostRepository.updateContent(originalPost._id, updatedContent);
+        await PostRepository.updatePost(originalPost._id, { content: updatedContent });
         const updatedPost = await PostRepository.getPostById(pendingPost.sourcePost);
 
-        await Repository.updatePendingStatus(pendingPostId, Status.CANCELLED);
+        await Repository.updatePending(pendingPostId, { status: Status.CANCELLED });
 
         const cancelledPost = await Repository.getPendingById(pendingPostId);
 

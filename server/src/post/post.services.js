@@ -147,7 +147,6 @@ const pendPost = async (postId, collectorId, groceries) => {
                     //reduce amount and creat json for updating
                     isThere = true;
                     let left = grocery.left - wantedGrocery.amount;
-                    console.log(grocery.left + '-' + wantedGrocery.amount + '=' + left);
                     if (left < 0) {
                         throw Error('Requested amount is higher than available');
                     }
