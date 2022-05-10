@@ -156,18 +156,24 @@ const init = async () => {
                 "status": "still there",
                 "content": [
                     {
-                        "name": gross[i % 11],
-                        "amount": i + 10,
-                        "scale": "kg",
-                        "packing": packs[i % 10],
-                        "category": cats[i % 11]._id
+                        "original": {
+                            "name": gross[i % 11],
+                            "amount": i + 10,
+                            "scale": "kg",
+                            "packing": packs[i % 10],
+                            "category": cats[i % 11]._id
+                        },
+                        "left": i + 10
                     },
                     {
-                        "name": gross[Math.ceil(i / 2) % 11],
-                        "amount": i + 14,
-                        "scale": "unit",
-                        "packing": packs[Math.ceil(i / 2) % 10],
-                        "category": cats[i % 11]._id
+                        "original": {
+                            "name": gross[Math.ceil(i / 2) % 11],
+                            "amount": i + 14,
+                            "scale": "unit",
+                            "packing": packs[Math.ceil(i / 2) % 10],
+                            "category": cats[i % 11]._id
+                        },
+                        "left": i + 14
                     }
                 ],
                 "description": desc[i % 5]

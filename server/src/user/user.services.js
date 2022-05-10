@@ -105,11 +105,13 @@ const addToHistory = async function (userId, pendingPostId) {
     try {
         let oldUser = await UserRepository.getUserById(userId);
         let history = oldUser.collectedHistory;
+        console.log(history);
+        console.log(oldUser);
         history = history.concat(pendingPostId);
         oldUser = await UserRepository.addToHistory(userId, history);
         return oldUser;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Service error from addToHistory: ' + e.message);
 
         throw Error('Error while Updating User');
     }

@@ -45,7 +45,7 @@ const getPendingsByCollector = async function (userId) {
     } catch (e) {
         console.log('Pending repository error from getPendingsByCollector: ', e.message);
 
-        throw Error('Error while Retrieving Post');
+        throw Error('Error while Retrieving Posts');
     }
 };
 
@@ -56,7 +56,7 @@ const getPendingsByCategory = async function (categoryId) {
     } catch (e) {
         console.log('Pending repository error from getPendingsByCategory: ', e.message);
 
-        throw Error('Error while Retrieving Post');
+        throw Error('Error while Retrieving Posts');
     }
 };
 
@@ -67,7 +67,18 @@ const getPendingsByTag = async function (tagId) {
     } catch (e) {
         console.log('Pending repository error from getPendingsByTag: ', e.message);
 
-        throw Error('Error while Retrieving Post');
+        throw Error('Error while Retrieving Posts');
+    }
+};
+
+const getPendingsByPost = async function (postId) {
+    try {
+        const pendingPosts = await Pending.find({ 'sourcePost': postId });
+        return pendingPosts;
+    } catch (e) {
+        console.log('Pending repository error from getPendingsByPost: ', e.message);
+
+        throw Error('Error while Retrieving Posts');
     }
 };
 
@@ -155,6 +166,7 @@ module.exports = {
     getPendingsByCategory,
     getPendingsByTag,
     getPendingsByCollector,
+    getPendingsByPost,
     getAllFinishedPosts,
     getAllPendingPosts,
     getAllCancelledPosts,

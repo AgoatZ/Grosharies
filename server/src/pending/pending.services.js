@@ -5,12 +5,12 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const router = express.Router();
-const oneHour = 60*60*1000;
+const oneHour = 60*60*60*1000;
 const Status = require('../enums/pending-status');
 const { PublishCommand } = require ('@aws-sdk/client-sns');
 const { snsClient } = require ('../common/utils/sns-client');
 
-getPendings = async function (query, page, limit) {
+const getPendings = async function (query, page, limit) {
     try {
         const posts = await Repository.getPendings(query);
         return posts;
@@ -21,7 +21,7 @@ getPendings = async function (query, page, limit) {
     }
 };
 
-getPendingById = async function (postId) {
+const getPendingById = async function (postId) {
     try {
         const post = await Repository.getPendingById(postId);
         return post;
@@ -32,7 +32,7 @@ getPendingById = async function (postId) {
     }
 };
 
-getPendingsByUser = async function (userId) {
+const getPendingsByUser = async function (userId) {
     try {
         const posts = await Repository.getPendingsByUser(userId);
         return posts;
@@ -43,7 +43,7 @@ getPendingsByUser = async function (userId) {
     }
 };
 
-getPendingsByCollector = async function (userId) {
+const getPendingsByCollector = async function (userId) {
     try {
         const pendingPosts = await Repository.getPendingsByCollector(userId);
         return pendingPosts;
@@ -54,7 +54,7 @@ getPendingsByCollector = async function (userId) {
     }
 };
 
-getPendingsByCategory = async function (categoryId) {
+const getPendingsByCategory = async function (categoryId) {
     try {
         const posts = await Repository.getPendingsByCategory(categoryId);
         return posts;
@@ -65,7 +65,7 @@ getPendingsByCategory = async function (categoryId) {
     }
 };
 
-getPendingsByTag = async function (tagId) {
+const getPendingsByTag = async function (tagId) {
     try {
         const posts = await Repository.getPendingsByTag(tagId);
         return posts;
@@ -76,7 +76,18 @@ getPendingsByTag = async function (tagId) {
     }
 };
 
-addPending = async function (postDetails) {
+const getPendingsByPost = async function (postId) {
+    try {
+        const posts = await Repository.getPendingsByPost(postId);
+        return posts;
+    } catch (e) {
+        console.log('Pending service error from getPendingsByPost: ', e.message);
+
+        throw Error('Error while Retrieving Pendings by Tag');
+    }
+};
+
+const addPending = async function (postDetails) {
     try {
         const pendingPost = await Repository.addPending(postDetails);
         await interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
@@ -89,7 +100,7 @@ addPending = async function (postDetails) {
     }
 };
 
-deletePending = async function (postId) {
+const deletePending = async function (postId) {
     try {
         const deletedPost = await Repository.deletePending(postId);
         return deletedPost;
@@ -100,7 +111,7 @@ deletePending = async function (postId) {
     }
 };
 
-getAllPendingPosts = async function () {
+const getAllPendingPosts = async function () {
     try {
         const pendingPosts = await Repository.getAllPendingPosts();
         return pendingPosts;
@@ -111,7 +122,7 @@ getAllPendingPosts = async function () {
     }
 };
 
-getAllFinishedPosts = async function () {
+const getAllFinishedPosts = async function () {
     try {
         const finishedPosts = await Repository.getAllFinishedPosts();
         return finishedPosts;
@@ -122,7 +133,7 @@ getAllFinishedPosts = async function () {
     }
 };
 
-getAllCancelledPosts = async function () {
+const getAllCancelledPosts = async function () {
     try {
         const finishedPosts = await Repository.getAllCancelledPosts();
         return finishedPosts;
@@ -133,7 +144,7 @@ getAllCancelledPosts = async function () {
     }
 };
 
-updatePending = async function (postId, postDetails) {
+const updatePending = async function (postId, postDetails) {
     try {
         const oldPost = await Repository.updatePending(postId, postDetails);
         return oldPost;
@@ -144,7 +155,7 @@ updatePending = async function (postId, postDetails) {
     }
 };
 
-finishPending = async function (pendingPostId) {
+const finishPending = async function (pendingPostId) {
     try {
         let pendingPost = await Repository.getPendingById(pendingPostId);
         if (pendingPost.status !== Status.PENDING) {
@@ -163,6 +174,9 @@ finishPending = async function (pendingPostId) {
 
         const finishedPost = await Repository.getPendingById(pendingPostId);
 
+        if (isPostDone(pendingPost.sourcePost)) {
+            PostRepository.updatePost({ status: 'still there'})
+        }
         return {finishedPost, trafficGroceries};
     } catch (e) {
         console.log('Pending service error from finishPending: ', e.message);
@@ -222,7 +236,7 @@ const cancelPending = async function (pendingPostId) {
     }
 };
 
-interrestedUserReminder = async (userId, postId) => {
+const interrestedUserReminder = async (userId, postId) => {
     try {
         const user = await UserRepository.getUserById(userId);
         const post = await Repository.getPendingById(postId);
@@ -272,7 +286,26 @@ const sendSMSToNumber = async (message, phoneNumber) => {
         }
     };
     run();
-}
+};
+
+const evaluatePostStatus = async (postId) => {
+    const post = await PostRepository.getPostById(postId);
+    const pendings = await getPendingsByPost(postId);
+
+    for (grocery in post.content) {
+        if (post.content[grocery].amount != 0) {
+            return false;
+        }
+    }
+
+    for (pended in pendings) {
+        if (pendings[pended].status == PendingStatus.PENDING) {
+            return false;
+        }
+    }
+
+    return true;
+};
 
 module.exports = {
     getPendings,
@@ -280,6 +313,7 @@ module.exports = {
     getPendingsByUser,
     getPendingsByCategory,
     getPendingsByTag,
+    getPendingsByPost,
     getPendingsByCollector,
     getAllFinishedPosts,
     getAllPendingPosts,
@@ -289,5 +323,6 @@ module.exports = {
     finishPending,
     cancelPending,
     deletePending,
-    updatePending
+    updatePending,
+    evaluatePostStatus
 }
