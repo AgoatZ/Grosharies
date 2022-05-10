@@ -111,8 +111,7 @@ const getUserProfile = async (req, res, next) => {
 //     }
 // }
 
-//TODO:getUserProfile Udetails, pendingHistory, createdPosts
-//Post Done
+//TODO: Post Done
 
 module.exports = {
     getUsers,

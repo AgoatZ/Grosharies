@@ -22,6 +22,7 @@ mongoose.set('useFindAndModify', false);
 
 const init = async () => {
     try {
+        await mongoose.connection.dropDatabase();
         let healthy = new Tag({
             "name": "Healthy"
         });
@@ -128,14 +129,20 @@ const init = async () => {
             user = await user.save();
 
             if (i < 11) {
+                let catId = cats[i % 11]._id;
                 let grocery = new Grocery({
                     "name": gross[i % 11],
                     "amount": i,
                     "scale": "kg",
                     "packing": packs[i % 10],
-                    "category": cats[i % 11]._id
+                    "category": catId
                 });
                 grocery = await grocery.save();
+
+                let category = await Category.findById(catId);
+                let categoryGroceries = category.groceries;
+                categoryGroceries.push(grocery._id);
+                await Category.findByIdAndUpdate(catId, { groceries: categoryGroceries });
             }
 
             let post = new Post({
