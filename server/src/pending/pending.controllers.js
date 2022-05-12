@@ -150,8 +150,9 @@ updatePending = async function (req, res, next) {
 
 finishPending = async function (req, res, next) {
     try {
-        const {finishedPost, trafficGroceries} = await PendingService.finishPending(req.params.id);
-        return res.status(200).json({ post: finishedPost, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
+        console.log('Enterred finishPending Controller');
+        const {finishedPending, trafficGroceries} = await PendingService.finishPending(req.params.id);
+        return res.status(200).json({ post: finishedPending, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
     } catch (e) {
         console.log('Pending controller error from finishPending: ' + e.message);
 

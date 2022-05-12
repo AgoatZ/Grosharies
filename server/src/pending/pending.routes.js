@@ -19,11 +19,11 @@ router.get('/:pendings', PendingController.getAllPendingPosts);
 
 router.get('/:finished', PendingController.getAllFinishedPosts);
 
-router.use('/:cancelled', PendingController.getAllCancelledPosts);
+router.get('/:cancelled', PendingController.getAllCancelledPosts);
 
-router.post('/', PendingController.addPending);
+router.post('/add', PendingController.addPending);
 
-router.post('/finish=:id', PendingController.finishPending);
+router.post('/finish/:id', PendingController.finishPending);
 
 router.post('/cancel=:id', PendingController.cancelPending);
 

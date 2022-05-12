@@ -5,10 +5,11 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const router = express.Router();
-const oneHour = 60*60*60*1000;
+const oneHour = 60 * 60 * 60 * 1000;
 const Status = require('../enums/pending-status');
-const { PublishCommand } = require ('@aws-sdk/client-sns');
-const { snsClient } = require ('../common/utils/sns-client');
+const postStatus = require('../enums/post-status');
+const { PublishCommand } = require('@aws-sdk/client-sns');
+const { snsClient } = require('../common/utils/sns-client');
 
 const getPendings = async function (query, page, limit) {
     try {
@@ -162,7 +163,7 @@ const finishPending = async function (pendingPostId) {
             throw Error('Pending Post is not pending anymore!');
         }
         const trafficGroceries = [];
-        const content = pendingPost.content;        
+        const content = pendingPost.content;
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
             let trafficGrocery = await GroceryRepository.getGroceryByName(grocery.name);
@@ -173,14 +174,13 @@ const finishPending = async function (pendingPostId) {
         }
         await Repository.updatePending(pendingPostId, { status: Status.COLLECTED });
 
-        const finishedPost = await Repository.getPendingById(pendingPostId);
+        const postCurrentStatus = await evaluatePostStatus(pendingPost.sourcePost);
+        await PostRepository.updatePost(pendingPost.sourcePost, { status: postCurrentStatus });
+        const finishedPending = await Repository.getPendingById(pendingPostId);
 
-        if (isPostDone(pendingPost.sourcePost)) {
-            PostRepository.updatePost({ status: 'still there'})
-        }
-        return {finishedPost, trafficGroceries};
+        return { finishedPending, trafficGroceries };
     } catch (e) {
-        console.log('Pending service error from finishPending: ', e.message);
+        console.log('Pending service error from finishPending:', e.message);
 
         throw Error('Error while Finnishing Pending');
     }
@@ -199,7 +199,7 @@ const cancelPending = async function (pendingPostId) {
         const originalPost = await PostRepository.getPostById(pendingPost.sourcePost);
         const content = originalPost.content;
         const updatedContent = [];
-        const groceries = pendingPost.content;        
+        const groceries = pendingPost.content;
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
             console.log("grocery from post: ", grocery);
@@ -207,7 +207,7 @@ const cancelPending = async function (pendingPostId) {
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
                 console.log("grocery from array: ", wantedGrocery);
-                if(wantedGrocery.name === grocery.name) {
+                if (wantedGrocery.name === grocery.name) {
                     isThere = true;
                     let left = grocery.left + wantedGrocery.amount;
                     if (left > grocery.original.amount) {
@@ -231,7 +231,7 @@ const cancelPending = async function (pendingPostId) {
 
         const cancelledPost = await Repository.getPendingById(pendingPostId);
 
-        return {cancelledPost, updatedPost};
+        return { cancelledPost, updatedPost };
     } catch (e) {
         console.log('Pending service error from cancelPending: ', e.message);
 
@@ -245,13 +245,13 @@ const interrestedUserReminder = async (userId, postId) => {
         const post = await Repository.getPendingById(postId);
         const publisher = await UserRepository.getUserById(post.publisherId);
         console.log("ENTERRED REMINDER");
-        
+
         const decide = async function () {
             console.log("ENTERRED DECIDE with id: ", postId);
-            if(post.status === Status.PENDING) {
+            if (post.status === Status.PENDING) {
                 console.log("status from interrestedUserReminder: ", post.status);
                 console.log("WILL CALL NOW CANCEL PENDING POST");
-                let {cancelledPost, updatedPost} = await cancelPending(postId);
+                let { cancelledPost, updatedPost } = await cancelPending(postId);
             }
             return;
         }
@@ -261,11 +261,11 @@ const interrestedUserReminder = async (userId, postId) => {
             //sendSMSToNumber('Hey from Grosharies! Have you picked up the ${groceries}? Let us know!', recieverNumber);
             //sendSMSToNumber('Hey from Grosharies! Have you delivered the ${groceries}? Let us know!', publisherNumber);
 
-            setTimeout(async function() {await decide()}, oneHour/4);
+            setTimeout(async function () { await decide() }, oneHour / 4);
             return;
         }
 
-        setTimeout(async function() {await remind(user.phoneNumber, publisher.phoneNumber, post.content)}, oneHour/4);
+        setTimeout(async function () { await remind(user.phoneNumber, publisher.phoneNumber, post.content) }, oneHour / 4);
     } catch (e) {
         console.log('Pending service error from interrestedUserReminder: ', e.message);
 
@@ -278,36 +278,56 @@ const sendSMSToNumber = async (message, phoneNumber) => {
         Message: message,
         PhoneNumber: phoneNumber
     };
-  
+
     const run = async () => {
         try {
-        const data = await snsClient.send(new PublishCommand(params));
-        console.log("Success.",  data);
-        return data; // For unit tests.
+            const data = await snsClient.send(new PublishCommand(params));
+            console.log("Success sending SMS.", data);
+            return data; // For unit tests.
         } catch (err) {
-        console.log("Error", err.stack);
+            console.log("Error sending SMS", err.stack);
         }
     };
     run();
 };
 
 const evaluatePostStatus = async (postId) => {
-    const post = await PostRepository.getPostById(postId);
-    const pendings = await getPendingsByPost(postId);
-
-    for (grocery in post.content) {
-        if (post.content[grocery].amount != 0) {
-            return false;
+    try {
+        const post = await PostRepository.getPostById(postId);
+        const pendings = await getPendingsByPost(postId);
+        let empty = true;
+        let full = true;
+        for (groceryIndex in post.content) {
+            let grocery = post.content[groceryIndex];
+            if (grocery.left != grocery.original.amount) {
+                full = false;
+            }
+            if (grocery.left != 0) {
+                empty = false;
+            }
         }
-    }
 
-    for (pended in pendings) {
-        if (pendings[pended].status == PendingStatus.PENDING) {
-            return false;
+        if (!empty && !full) {
+            return postStatus.PARTIALLY_COLLECTED;
         }
-    }
 
-    return true;
+        else if (full) {
+            return postStatus.STILL_THERE;
+        }
+
+        else { //if empty, check whether all pendings have finished
+            for (pended in pendings) {
+                if (pendings[pended].status == Status.PENDING) {
+                    return postStatus.PARTIALLY_COLLECTED;
+                }
+            }
+            return postStatus.COLLECTED;
+        }
+    } catch (e) {
+        console.log('Pending service error from evaluatePostStatus:', e.message);
+
+        throw Error('Error while evaluating post status');
+    }
 };
 
 module.exports = {
