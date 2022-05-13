@@ -1,18 +1,35 @@
 import { useForm, Controller } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import Slider from "react-input-slider"
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Button, Slider } from '@mui/material';
 import CardMedia from "@mui/material/CardMedia";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ImageGallery from 'react-image-gallery';
 import "react-image-gallery/styles/css/image-gallery.css";
+import serverRoutes from "../../utils/server-routes";
+import axios from "../../utils/axios";
 
 const Post = () => {
     const res = useLocation().state;
-    console.log(res.post);
+    console.log(JSON.stringify(res));
     const { handleSubmit, control } = useForm();
-    const onSubmit = (data) => console.log(JSON.stringify(data));
+    const onSubmit = (data) => {
+        console.log('data = ' + JSON.stringify(data));
 
+        const updatedGroceries = res.post.content.map(groceryWrapper => {
+            groceryWrapper.original.amount = data[groceryWrapper.original.name];
+            return groceryWrapper;
+        });
+
+        axios
+            .post(serverRoutes.ApplyPost, {
+                postId: res.post._id,
+                collectorId: '',
+                groceries: updatedGroceries,
+            })
+            .then((res) => {
+                console.log(res.data);
+            });
+    };
 
     const imagesAndVideos = [
         {
@@ -55,36 +72,39 @@ const Post = () => {
                     <Typography component="div" variant="h6" mb='2%' fontFamily='Roboto'>
                         {`Total Amount: ${grocery.amount} ${grocery.scale}`}
                     </Typography>
-                    <Typography
-                        variant="h6"
-                        color="text.secondary"
-                        component="div"
-                    >
-                        {`Your Amount: `}
-                        <Box sx={{ width: '300px' }}>
-                            <Controller
-                                control={control}
-                                name={grocery.name}
-                                defaultValue={0}
-                                render={({ field: { value, onChange } }) => (
+
+                    <Box sx={{ width: '300px' }}>
+                        <Controller
+                            control={control}
+                            name={grocery.name}
+                            defaultValue={0}
+                            render={({ field: { value, onChange } }) => (
+                                <Typography
+                                    variant="h6"
+                                    color="red"
+                                    component="div"
+                                >
+                                    {`Your Amount: ${value} ${grocery.scale}`}
                                     <Slider
                                         aria-label="Small steps"
-                                        axis="x"
-                                        xstep={1}
+                                        step={1}
                                         marks
-                                        xmin={0}
-                                        xmax={grocery.amount}
+                                        min={0}
+                                        max={grocery.amount}
                                         valueLabelDisplay="auto"
-                                        onChange={({ x }) => onChange(x)}
+                                        onChange={(e) => {
+                                            onChange(e.target.value);
+                                        }}
                                         name={grocery.name}
-                                        x={value}
+                                        value={value}
                                     />
-                                )}
-                            />
-                        </Box>
-                    </Typography>
+
+                                </Typography>
+                            )}
+                        />
+                    </Box>
                 </Box>
-            </Box >);
+            </Box>);
     });
 
     return (
@@ -126,9 +146,14 @@ const Post = () => {
 
             <Typography gutterBottom fontSize='25px' fontWeight='bold' color="text.secondary">Products</Typography>
             <form onSubmit={handleSubmit(onSubmit)}>
-                {products}
-                <input type="submit" />
+                <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                    {products}
+                </Box>
+                <Button sx={{ ml: '10%' }} variant="contained" disableElevation type="submit">
+                    Apply
+                </Button>
             </form>
+
         </Box >
     );
 }

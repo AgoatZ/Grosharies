@@ -3,6 +3,7 @@ const { status } = require('express/lib/response');
 const PostController = require('./post.controllers');
 const imageUtil = require('../common/middlewares/image-upload');
 const router = express.Router();
+const { authJwt } = require('../common/middlewares/passport');
 
 router.get('/', PostController.getPosts);
 
@@ -24,7 +25,7 @@ router.post('/bygroceries', PostController.getPostsByGroceries);
 
 router.post('/', PostController.addPost);
 
-router.post('/pend', PostController.pendPost);
+router.post('/pend', authJwt, PostController.pendPost);
 
 router.delete('/:id', PostController.deletePost);
 
