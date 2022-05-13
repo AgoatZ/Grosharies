@@ -1,14 +1,6 @@
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
+import { Link, Grid, Box, Typography, Container, TextField, CssBaseline, Avatar, Button } from "@mui/material";
 import VerifiedUserOutlined from "@mui/icons-material/VerifiedUserRounded";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import validator from "validator";
 import axios from "../../utils/axios";
@@ -16,6 +8,7 @@ import serverRoutes from "../../utils/server-routes";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Cookies from "universal-cookie";
+import { GoogleLogin } from 'react-google-login';
 
 const theme = createTheme();
 const MySwal = withReactContent(Swal);
@@ -56,30 +49,69 @@ export default function Login(props) {
       });
   };
 
+  // const responseGoogle = (response) => {
+  //   console.log(response);
+  //   axios
+  //     .get(serverRoutes.Google)
+  //     .then((res) => {
+  //       MySwal.fire({
+  //         text: "Signed in Successfully",
+  //         icon: "success",
+  //         showConfirmButton: false,
+  //       });
+  //       setTimeout(() => {
+  //         cookies.set("jwt_token", res.data.accessToken, { httpOnly: false });
+  //         // props.LoginUser();
+  //         window.location.replace('/');
+  //       }, 1000);
+  //     })
+  //     .catch((e) => {
+  //       console.log('error: ' + e);
+  //     });
+  // }
+
+  const onSuccess = (res) => {
+    console.log('[Login Success] res: ', res);
+    console.log('[Login Success] currentUser: ', res.profileObj);
+    setTimeout(() => {
+      cookies.set("jwt_token", res.tokenId, { httpOnly: false });
+      // props.LoginUser();
+    }, 1000);
+  };
+
+  const onFailure = (res) => {
+    console.log('[Login Failure] res: ', res);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="md" sx={{ width: "400px" }}>
         <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <VerifiedUserOutlined />
-          </Avatar>
-          <Typography component="h1" variant="h5">
+
+        <Box sx={{ marginTop: 8, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Typography component="h1" variant="h3">
             Sign In
           </Typography>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
-          >
+
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+
+            <Box sx={{ margin: '30px auto' }}>
+              <GoogleLogin
+                clientId='371023795781-dm935fqefbjar2dvpt5fb5tq229qdjrl.apps.googleusercontent.com'
+                buttonText='Continue With Google'
+                onSuccess={onSuccess}
+                onFailure={onFailure}
+                cookiePolicy={'single_host_origin'}
+              />
+            </Box>
+
+            <Typography variant="h5" sx={{ margin: '20px 43%' }}>
+              Or
+            </Typography>
+
+            <Avatar sx={{ m: '20px auto', bgcolor: "secondary.main" }}>
+              <VerifiedUserOutlined />
+            </Avatar>
             <Grid item xs={12} sx={{ mb: 2 }}>
               <TextField
                 required

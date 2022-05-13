@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -41,8 +41,9 @@ app.use(function(req, res, next) {
 });
 app.use(
   cors({
-    origin: [`http://localhost:3000`, `https://localhost:3000`],
-    credentials: "true",
+    origin: 'http://localhost:3000',
+    credentials: true,
+    optionSuccessStatus: 200
   })
 );
 app.use(
