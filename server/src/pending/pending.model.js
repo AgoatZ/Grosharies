@@ -9,7 +9,11 @@ const pending = new mongoose.Schema({
   sourcePost: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
   publisherId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   collectorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  status: { type: String, enum: status, required: true, default: status.PENDING },
+  status: { 
+    publisherStatement: { type: String, enum: status, required: true, default: status.PENDING },
+    collectorStatement: { type: String, enum: status, required: true, default: status.PENDING },
+    finalStatus: { type: String, enum: status, required: true, default: status.PENDING }
+  },
   pendingTime: { 
     from: { type: Date },
     until: { type: Date }
