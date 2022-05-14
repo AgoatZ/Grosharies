@@ -1,23 +1,27 @@
 import { useForm, Controller } from "react-hook-form";
-import { useLocation } from "react-router-dom";
-import { Typography, Box, Button, Slider } from '@mui/material';
-import CardMedia from "@mui/material/CardMedia";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Typography, Box, Button, Slider, CardMedia } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ImageGallery from 'react-image-gallery';
 import "react-image-gallery/styles/css/image-gallery.css";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
 import serverRoutes from "../../utils/server-routes";
 import axios from "../../utils/axios";
 
+const MySwal = withReactContent(Swal);
+
 const Post = () => {
+
     const res = useLocation().state;
+    let navigate = useNavigate();
     console.log(JSON.stringify(res));
     const { handleSubmit, control } = useForm();
     const onSubmit = (data) => {
-        console.log('data = ' + JSON.stringify(data));
-
         const updatedGroceries = res.post.content.map(groceryWrapper => {
             groceryWrapper.original.amount = data[groceryWrapper.original.name];
-            return groceryWrapper;
+            return groceryWrapper.original;
         });
 
         axios
@@ -28,6 +32,16 @@ const Post = () => {
             })
             .then((res) => {
                 console.log(res.data);
+                MySwal.fire({
+                    title: "Successfully Apply Your Order!",
+                    text: "You can now go and take your donation",
+                    icon: "success",
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
+                setTimeout(() => {
+                    navigate("/myOrders", {});
+                }, 1000);
             });
     };
 
@@ -45,11 +59,6 @@ const Post = () => {
             thumbnail: 'https://picsum.photos/id/1019/250/150/',
         },
     ];
-
-    // const getAmount = (event) => {
-    //     console.log('name: ' + event.target.name + ', value: ' + event.target.value);
-    //     return { name: event.target.name, value: event.target.value };
-    // }
 
     const products = res.post.content.map((groceryWrapper) => {
         const grocery = groceryWrapper.original

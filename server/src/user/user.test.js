@@ -11,32 +11,32 @@ const emailAddress = 'test@mail.com';
 const password = "12345678";
 const phone = '0523666666';
 
-beforeAll(done=>{
-    User.remove({ 'emailAddress' : emailAddress }, (err)=>{
+beforeAll(done => {
+    User.remove({ 'emailAddress': emailAddress }, (err) => {
         done();
     });
 });
 
-afterAll(done=>{
-    User.remove({ 'emailAddress' : emailAddress }, (err)=>{
+afterAll(done => {
+    User.remove({ 'emailAddress': emailAddress }, (err) => {
         mongoosse.connection.close();
         done();
     });
 });
 
 
-describe('Testing User API',()=>{
+describe('Testing User API', () => {
     let newUser;
 
-    test('add new user',async ()=>{
+    test('add new user', async () => {
         const response = await request(app).post('/api/users')
-        .send({
+            .send({
                 "firstName": firstName,
                 "lastName": lastName,
                 "emailAddress": emailAddress,
                 "password": password,
                 "phone": phone
-        });
+            });
         expect(response.statusCode).toEqual(200);
         newUser = response.body.user;
         expect(newUser.firstName).toEqual(firstName);
@@ -66,11 +66,11 @@ describe('Testing User API',()=>{
 
     test('update user', async () => {
         const response = await request(app).put('/api/users/' + newUser._id)
-        .send({
-            "firstName": firstName + 'update',
-            "lastName": lastName + 'update',
-            "accountType": AccountType.ADMIN
-        });
+            .send({
+                "firstName": firstName + 'update',
+                "lastName": lastName + 'update',
+                "accountType": AccountType.ADMIN
+            });
         expect(response.statusCode).toEqual(200);
         const response2 = await request(app).get('/api/users/' + newUser._id);
         const updatedUser = response2.body.user;

@@ -141,12 +141,12 @@ const pendPost = async (postId, collectorId, groceries) => {
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
                 console.log("grocery from array: ", wantedGrocery);
-                console.log("grocery name original: ", wantedGrocery.original.name);
+                console.log("grocery name original: ", wantedGrocery.name);
                 console.log("grocery name wanted: ", grocery.original.name);
-                if (wantedGrocery.original.name === grocery.original.name) {
+                if (wantedGrocery.name === grocery.original.name) {
                     //reduce amount and creat json for updating
                     isThere = true;
-                    let left = grocery.left - wantedGrocery.original.amount;
+                    let left = grocery.left - wantedGrocery.amount;
                     if (left < 0) {
                         throw Error('Requested amount is higher than available');
                     }
@@ -160,7 +160,7 @@ const pendPost = async (postId, collectorId, groceries) => {
                 updatedContent.push(grocery);
             }
         }
-        console.log('updatedContent: ', updatedContent);
+        console.log('updatedContent', updatedContent);
         await PostRepository.updatePost(postId, { content: updatedContent });
 
         const oneHour = 60 * 60 * 1000;

@@ -13,7 +13,7 @@ import About from "./components/about/About";
 import Groceries from "./components/groceries/Groceries";
 import Events from "./components/events/Events";
 import Profile from "./components/profile/Profile";
-import Account from "./components/account/Account";
+import MyOrders from "./components/myOrders/MyOrders";
 import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
@@ -53,7 +53,7 @@ const App = () => {
           <Route path="events" element={<Events />} />
           <Route path="groceries/:name" element={<GroceryDetails />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="account" element={<Account />} />
+          <Route path="myOrders" element={<MyOrders />} />
           <Route path="about" element={<About />} />
           <Route path="login" element={<Login LoginUser={LoginUser} />} />
           <Route path="register" element={<Register />} />

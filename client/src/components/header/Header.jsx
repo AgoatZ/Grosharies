@@ -23,7 +23,7 @@ import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 const pages = ["Groceries", "Events"];
-const userOptions = ["Profile", "Account", "Logout"];
+const userOptions = ["Profile", "My Orders", "Logout"];
 
 //props - noUser(Boolean) userData(DB User Schema)
 const Header = ({ loggedIn, userData, logoutUser }) => {

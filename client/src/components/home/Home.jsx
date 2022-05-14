@@ -13,8 +13,6 @@ const Home = () => {
     useEffect(() => { loadPosts(); }, []);
     const loadPosts = () => {
         axios.get('/api/posts/').then(res => {
-            console.log(res.status);
-            console.log(res.data.posts);
             setPosts(res.data.posts);
         });
     };
