@@ -53,7 +53,7 @@ const App = () => {
           <Route path="events" element={<Events />} />
           <Route path="groceries/:name" element={<GroceryDetails />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="myOrders" element={<MyOrders />} />
+          <Route path="my-orders" element={<MyOrders />} />
           <Route path="about" element={<About />} />
           <Route path="login" element={<Login LoginUser={LoginUser} />} />
           <Route path="register" element={<Register />} />

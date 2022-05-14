@@ -40,7 +40,7 @@ const Post = () => {
                     showConfirmButton: false,
                 });
                 setTimeout(() => {
-                    navigate("/myOrders", {});
+                    navigate("/my-orders", {});
                 }, 1000);
             });
     };
@@ -155,7 +155,7 @@ const Post = () => {
 
             <Typography gutterBottom fontSize='25px' fontWeight='bold' color="text.secondary">Products</Typography>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                     {products}
                 </Box>
                 <Button sx={{ ml: '10%' }} variant="contained" disableElevation type="submit">

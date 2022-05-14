@@ -22,16 +22,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
-const pages = ["Groceries", "Events"];
-const userOptions = ["Profile", "My Orders", "Logout"];
+const pages = [{ name: "Groceries", path: "groceries" }, { name: "Events", path: "events" }];
+const userOptions = [{
+  name: "Profile",
+  path: 'profile'
+}, {
+  name: "My Orders",
+  path: 'my-orders'
+}, {
+  name: "Logout",
+  path: 'logout'
+}
+];
 
-//props - noUser(Boolean) userData(DB User Schema)
 const Header = ({ loggedIn, userData, logoutUser }) => {
   //Generic item click navigation
   let navigate = useNavigate();
-  const navigateToPage = (event) => {
-    const target = event.currentTarget.innerText.toLowerCase();
-    navigate("./" + target, {});
+  const navigateToPage = (path) => {
+    navigate("./" + path, {});
   };
   const logout = () => {
     cookies.remove("jwt_token");
@@ -42,7 +50,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
   const NavigationBar = () => {
     return (
       <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-        <MenuItem key={pages[0]} onClick={navigateToPage}>
+        <MenuItem key={pages[0].name} onClick={navigateToPage.bind(this, pages[0].path)}>
           <ListItemIcon>
             <FontAwesomeIcon
               icon="fa-solid fa-apple-whole"
@@ -50,9 +58,9 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
               color="white"
             />
           </ListItemIcon>
-          <ListItemText primary={pages[0]} />
+          <ListItemText primary={pages[0].name} />
         </MenuItem>
-        <MenuItem key={pages[1]} onClick={navigateToPage}>
+        <MenuItem key={pages[1].name} onClick={navigateToPage.bind(this, pages[1].path)}>
           <ListItemIcon>
             <FontAwesomeIcon
               icon="fa-solid fa-calendar"
@@ -60,9 +68,9 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
               color="white"
             />
           </ListItemIcon>
-          <ListItemText primary={pages[1]} />
+          <ListItemText primary={pages[1].name} />
         </MenuItem>
-      </Box>
+      </Box >
     );
   };
 
@@ -93,17 +101,17 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
             onKeyDown={toggleNavDrawer(false)}
           >
             <List>
-              <MenuItem key={pages[0]} onClick={navigateToPage}>
+              <MenuItem key={pages[0].name} onClick={navigateToPage.bind(this, pages[0].path)}>
                 <ListItemIcon>
                   <FontAwesomeIcon icon="fa-solid fa-apple-whole" size="lg" />
                 </ListItemIcon>
-                <ListItemText primary={pages[0]} />
+                <ListItemText primary={pages[0].name} />
               </MenuItem>
-              <MenuItem key={pages[1]} onClick={navigateToPage}>
+              <MenuItem key={pages[1].name} onClick={navigateToPage.bind(this, pages[1].path)}>
                 <ListItemIcon>
                   <FontAwesomeIcon icon="fa-solid fa-calendar" size="lg" />
                 </ListItemIcon>
-                <ListItemText primary={pages[1]} />
+                <ListItemText primary={pages[1].name} />
               </MenuItem>
             </List>
           </Box>
@@ -145,18 +153,18 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
           open={Boolean(userMenuAnchorEl)}
           onClose={handleCloseUserMenu}
         >
-          <MenuItem key={userOptions[0]} onClick={navigateToPage}>
-            <ListItemText primary={userOptions[0]} />
+          <MenuItem key={userOptions[0].name} onClick={navigateToPage.bind(this, userOptions[0].path)}>
+            <ListItemText primary={userOptions[0].name} />
           </MenuItem>
-          <MenuItem key={userOptions[1]} onClick={navigateToPage}>
-            <ListItemText primary={userOptions[1]} />
+          <MenuItem key={userOptions[1].name} onClick={navigateToPage.bind(this, userOptions[1].path)} >
+            <ListItemText primary={userOptions[1].name} />
           </MenuItem>
           <Divider />
-          <MenuItem key={userOptions[2]} onClick={logout}>
-            <ListItemText primary={userOptions[2]} />
+          <MenuItem key={userOptions[2].name} onClick={logout}>
+            <ListItemText primary={userOptions[2].name} />
           </MenuItem>
         </Menu>
-      </Box>
+      </Box >
     );
   };
 
