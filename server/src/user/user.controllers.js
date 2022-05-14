@@ -100,17 +100,6 @@ const getUserProfile = async (req, res, next) => {
     }
 };
 
-// const updateImage = async (req, res, next) => {
-//     try{
-//         const answer = await UserService.updateImage(req, res);
-//         return answer;
-//     } catch (e) {
-//         console.log('controller error: ' + e.message);
-
-//         return res.status(400).json({ message: e.message });
-//     }
-// }
-
 //TODO: Post Done
 
 module.exports = {
