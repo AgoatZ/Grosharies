@@ -17,6 +17,7 @@ import Account from "./components/account/Account";
 import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
+import GroceryDetails from "./components/groceries/GroceryDetails";
 
 iconsLibrary.add(fas, far);
 
@@ -50,6 +51,7 @@ const App = () => {
           <Route path="post/:id" element={<Post />} />
           <Route path="groceries" element={<Groceries />} />
           <Route path="events" element={<Events />} />
+          <Route path="groceries/:name" element={<GroceryDetails />} />
           <Route path="profile" element={<Profile />} />
           <Route path="account" element={<Account />} />
           <Route path="about" element={<About />} />

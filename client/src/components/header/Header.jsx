@@ -34,7 +34,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
     navigate("./" + target, {});
   };
   const logout = () => {
-    cookies.remove('jwt_token');
+    cookies.remove("jwt_token");
     logoutUser();
     navigate("./", {});
   };
@@ -152,7 +152,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
             <ListItemText primary={userOptions[1]} />
           </MenuItem>
           <Divider />
-          <MenuItem key={userOptions[2]} onClick={(logout)}>
+          <MenuItem key={userOptions[2]} onClick={logout}>
             <ListItemText primary={userOptions[2]} />
           </MenuItem>
         </Menu>

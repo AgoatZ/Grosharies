@@ -38,7 +38,7 @@ const Layout = (props) => {
   const [userData, setUser] = useState(() => {
     //TODO: add request to get user's status and data
 
-    const fakeUser = {
+    return {
       firstName: "Ilan",
       lastName: "Rozenfeld",
       emailAddress: "Ilan@Walla.com",
@@ -49,8 +49,6 @@ const Layout = (props) => {
       profileImage: "/assets/ohad.png",
       collectedHistory: [],
     };
-
-    return fakeUser;
   });
 
   return (

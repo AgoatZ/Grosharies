@@ -5,7 +5,10 @@ const status = require('../enums/pending-status');
 const pending = new mongoose.Schema({
   headline: { type: String, required: true },
   address: { type: String, required: true },
-  content: [{ type: Grocery.schema, required: true , default: []}],
+  content: [{
+    original: { type: Grocery.schema, required: true },
+    left: { type: Number, required: true }
+  }],
   sourcePost: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
   publisherId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   collectorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

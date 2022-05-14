@@ -18,9 +18,9 @@ const getPosts = async (query) => {
 const getRelevantPosts = async () => {
     try {
         const posts = await Post.find({}).where('pickUpDates.from').
-        lt(Date.now()).
-        where('pickUpDates.until').
-        gt(Date.now());
+            lt(Date.now()).
+            where('pickUpDates.until').
+            gt(Date.now());
         return posts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -119,7 +119,7 @@ const deletePost = async (postId) => {
 
 const updatePost = async (postId, postDetails) => {
     try {
-        console.log('repo update post', postDetails);
+        console.log('repo update post: ', JSON.stringify(postDetails));
         let post = await Post.findByIdAndUpdate(postId, postDetails);
         post = await Post.findById(postId);
         return post;
