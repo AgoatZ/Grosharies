@@ -172,7 +172,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
     return (
       <Box sx={{ flexGrow: 0 }} hidden={loggedIn}>
         <Button
-          onClick={navigateToPage}
+          onClick={navigateToPage.bind(this, 'login')}
           size="small"
           variant="outlined"
           sx={{ color: "white", border: "1px solid white" }}

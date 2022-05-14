@@ -2,12 +2,13 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const PendingController = require('./pending.controllers');
 const router = express.Router();
+const { authJwt } = require('../common/middlewares/passport');
 
 router.get('/', PendingController.getPendings);
 
-router.get('/:id', PendingController.getPendingById);
+router.get('/post/:id', PendingController.getPendingById);
 
-router.get('/user=:id', PendingController.getPendingsByUser);
+router.get('/byUserId', authJwt, PendingController.getPendingsByUser);
 
 router.get('/category=:id', PendingController.getPendingsByCategory);
 

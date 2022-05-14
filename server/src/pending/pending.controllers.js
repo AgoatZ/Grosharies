@@ -1,8 +1,8 @@
-const PendingService = require('./pending.services');  
+const PendingService = require('./pending.services');
 
 getPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
-    
+
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
@@ -30,7 +30,7 @@ getPendingById = async function (req, res, next) {
 getPendingsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getPendingsByUser(req.params.id);
+        const posts = await PendingService.getPendingsByUser(req.user._id);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByUser: ' + e.message);
@@ -151,7 +151,7 @@ updatePending = async function (req, res, next) {
 finishPending = async function (req, res, next) {
     try {
         console.log('Enterred finishPending Controller');
-        const {finishedPending, trafficGroceries} = await PendingService.finishPending(req.params.id);
+        const { finishedPending, trafficGroceries } = await PendingService.finishPending(req.params.id);
         return res.status(200).json({ post: finishedPending, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
     } catch (e) {
         console.log('Pending controller error from finishPending: ' + e.message);
@@ -162,7 +162,7 @@ finishPending = async function (req, res, next) {
 
 cancelPending = async function (req, res, next) {
     try {
-        const {cancelledPost, updatedPost} = await PendingService.cancelPending(req.params.id);
+        const { cancelledPost, updatedPost } = await PendingService.cancelPending(req.params.id);
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
