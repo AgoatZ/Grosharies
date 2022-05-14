@@ -165,15 +165,15 @@ const pendPost = async (postId, collectorId, groceries) => {
 
         const oneHour = 60 * 60 * 1000;
         const pendingPost = await PendingService.addPending({
-            "headline": post.headline,
-            "address": post.address,
-            "content": groceries,
-            "sourcePost": post._id,
-            "publisherId": post.userId,
-            "collectorId": collectorId,
-            "pendingTime": {
-                "from": Date.now(),
-                "until": Date.now() + oneHour
+            headline: post.headline,
+            address: post.address,
+            content: groceries,
+            sourcePost: post._id,
+            publisherId: post.userId,
+            collectorId: collectorId,
+            pendingTime: {
+                from: Date.now(),
+                until: Date.now() + oneHour
             }
         });
         const collector = await UserService.addToHistory(collectorId, pendingPost._id);

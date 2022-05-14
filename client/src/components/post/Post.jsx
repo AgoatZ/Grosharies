@@ -70,7 +70,7 @@ const Post = () => {
                         {`Name: ${grocery.name}`}
                     </Typography>
                     <Typography component="div" variant="h6" mb='2%' fontFamily='Roboto'>
-                        {`Total Amount: ${grocery.amount} ${grocery.scale}`}
+                        {`Total Amount: ${groceryWrapper.left} ${grocery.scale}`}
                     </Typography>
 
                     <Box sx={{ width: '300px' }}>
@@ -90,7 +90,7 @@ const Post = () => {
                                         step={1}
                                         marks
                                         min={0}
-                                        max={grocery.amount}
+                                        max={groceryWrapper.left}
                                         valueLabelDisplay="auto"
                                         onChange={(e) => {
                                             onChange(e.target.value);
