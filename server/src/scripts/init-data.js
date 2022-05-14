@@ -174,6 +174,36 @@ const init = async () => {
                             "category": cats[(i + 1) % 11]._id
                         },
                         "left": i + 14
+                    },
+                    {
+                        "original": {
+                            "name": gross[(i + 2) % 11],
+                            "amount": i + 14,
+                            "scale": "unit",
+                            "packing": packs[(i + 2) % 10],
+                            "category": cats[(i + 2) % 11]._id
+                        },
+                        "left": i + 14
+                    },
+                    {
+                        "original": {
+                            "name": gross[(i + 3) % 11],
+                            "amount": i + 14,
+                            "scale": "unit",
+                            "packing": packs[(i + 3) % 10],
+                            "category": cats[(i + 3) % 11]._id
+                        },
+                        "left": i + 14
+                    },
+                    {
+                        "original": {
+                            "name": gross[(i + 4) % 11],
+                            "amount": i + 14,
+                            "scale": "unit",
+                            "packing": packs[(i + 4) % 10],
+                            "category": cats[(i + 4) % 11]._id
+                        },
+                        "left": i + 14
                     }
                 ],
                 "description": desc[i % 5]
