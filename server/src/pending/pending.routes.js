@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.get('/', PendingController.getPendings);
 
+router.get('/grouped', PendingController.getGroupedPendings);
+
 router.get('/:id', PendingController.getPendingById);
 
 router.get('/user=:id', PendingController.getPendingsByUser);
@@ -25,7 +27,7 @@ router.post('/add', PendingController.addPending);
 
 router.post('/finish/:id', PendingController.finishPending);
 
-router.post('/cancel=:id', PendingController.cancelPending);
+router.post('/cancel/:id', PendingController.cancelPending);
 
 router.delete('/:id', PendingController.deletePending);
 
