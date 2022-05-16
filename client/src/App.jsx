@@ -18,6 +18,7 @@ import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import GroceryDetails from "./components/groceries/GroceryDetails";
+import MyOrderDetails from "./components/myOrders/MyOrderDetails";
 
 iconsLibrary.add(fas, far);
 
@@ -54,6 +55,7 @@ const App = () => {
           <Route path="groceries/:name" element={<GroceryDetails />} />
           <Route path="profile" element={<Profile />} />
           <Route path="my-orders" element={<MyOrders />} />
+          <Route path="my-order-details" element={<MyOrderDetails />} />
           <Route path="about" element={<About />} />
           <Route path="login" element={<Login LoginUser={LoginUser} />} />
           <Route path="register" element={<Register />} />
