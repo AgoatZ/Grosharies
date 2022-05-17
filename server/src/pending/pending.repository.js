@@ -29,8 +29,11 @@ const getPendingById = async function (postId) {
 
 const getPendingsByPublisher = async function (userId) {
     try {
-        const pendingPosts = await Pending.find({ 'publisherId': userId });
-        return pendingPosts;
+        console.log("bypublisher userId:", userId);
+        const cancelledPendings = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.CANCELLED });
+        const finishedPendings = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.COLLECTED });
+        const pendingPosts = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.PENDING });
+        return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending repository error from getPendingsByPublisher: ', e.message);
 
@@ -40,8 +43,11 @@ const getPendingsByPublisher = async function (userId) {
 
 const getPendingsByCollector = async function (userId) {
     try {
-        const pendingPosts = await Pending.find({ 'collectorId': userId });
-        return pendingPosts;
+        console.log("bycollector userId:", userId)
+        const cancelledPendings = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.CANCELLED });
+        const finishedPendings = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.COLLECTED });
+        const pendingPosts = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.PENDING });
+        return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending repository error from getPendingsByCollector: ', e.message);
 

@@ -39,18 +39,6 @@ const getPendingById = async function (req, res, next) {
     }
 };
 
-const getPendingsByUser = async function (req, res, next) {
-    // Validate request parameters, queries using express-validator
-    try {
-        const posts = await PendingService.getPendingsByUser(req.params.id);
-        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
-    } catch (e) {
-        console.log('Pending controller error from getPendingsByUser: ' + e.message);
-
-        return res.status(400).json({ message: e.message });
-    }
-};
-
 const getPendingsByCategory = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
@@ -78,10 +66,22 @@ const getPendingsByTag = async function (req, res, next) {
 const getPendingsByCollector = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getPendingsByCollector(req.params.id);
+        const posts = await PendingService.getPendingsByCollector(req);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByCollector: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const getPendingsByPublisher = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PendingService.getPendingsByPublisher(req);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('Pending controller error from getPendingsByUser: ' + e.message);
 
         return res.status(400).json({ message: e.message });
     }
@@ -187,7 +187,7 @@ module.exports = {
     getPendings,
     getGroupedPendings,
     getPendingById,
-    getPendingsByUser,
+    getPendingsByPublisher,
     getPendingsByCategory,
     getPendingsByTag,
     getPendingsByCollector,
