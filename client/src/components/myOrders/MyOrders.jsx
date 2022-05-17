@@ -16,6 +16,18 @@ const MyOrders = () => {
     loadPendingPosts();
   }, []);
 
+  const approveOrderComplete = (postId) => {
+    console.log("inn");
+
+    axios.post("pendings/finish/" + postId).then((res) => {
+      console.log(res.data);
+    });
+  }
+  const cancelOrder = (postId) => {
+    axios.post("pendings/cancel/" + postId).then((res) => {
+      console.log(res.data);
+    });
+  }
   const loadPendingPosts = () => {
     axios.get("pendings/collector/current").then((res) => {
       console.log(res.data);
@@ -55,37 +67,41 @@ const MyOrders = () => {
     navigate("/my-order-details", { state: orderDetails });
   };
 
-  const approveOrCancelSection = (
-    <>
-      <Divider color="black" sx={{ width: "1px" }} />
+  const approveOrCancelSection = (postId) => {
+    return (
+      <>
+        <Divider color="black" sx={{ width: "1px" }} />
 
-      <Box sx={{ width: "30%" }}>
-        <Button
-          sx={{
-            flexDirection: "row",
-            display: "flex",
-            width: "100%",
-            height: "50%",
-          }}
-        >
-          <CheckIcon fontSize="large" sx={{ color: "green", mr: "10px" }} />
-          <Typography fontSize="25px">I Picked Up the Order</Typography>
-        </Button>
-        <Divider color="black" sx={{ width: "100%" }} />
-        <Button
-          sx={{
-            flexDirection: "row",
-            display: "flex",
-            width: "100%",
-            height: "50%",
-          }}
-        >
-          <CloseIcon fontSize="large" sx={{ color: "red", mr: "10px" }} />
-          <Typography fontSize="25px">I Want to Cancel</Typography>
-        </Button>
-      </Box>
-    </>
-  );
+        <Box sx={{ width: "30%" }}>
+          <Button
+            onClick={() => approveOrderComplete(postId)}
+            sx={{
+              flexDirection: "row",
+              display: "flex",
+              width: "100%",
+              height: "50%",
+            }}
+          >
+            <CheckIcon fontSize="large" sx={{ color: "green", mr: "10px" }} />
+            <Typography fontSize="25px">I Picked Up the Order</Typography>
+          </Button>
+          <Divider color="black" sx={{ width: "100%" }} />
+          <Button
+            onClick={() => cancelOrder(postId)}
+            sx={{
+              flexDirection: "row",
+              display: "flex",
+              width: "100%",
+              height: "50%",
+            }}
+          >
+            <CloseIcon fontSize="large" sx={{ color: "red", mr: "10px" }} />
+            <Typography fontSize="25px">I Want to Cancel</Typography>
+          </Button>
+        </Box>
+      </>
+    );
+  }
 
 
   const RenderPosts = ({ posts, isFinished }) => posts.map((post) => {
@@ -163,7 +179,7 @@ const MyOrders = () => {
             </Box>
           </Box>
 
-          {timeLeft !== `Time's Up!` ? approveOrCancelSection : null}
+          {timeLeft !== `Time's Up!` ? approveOrCancelSection(post._id) : null}
         </Box>
       </Box>
     );

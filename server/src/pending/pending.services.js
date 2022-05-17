@@ -184,6 +184,7 @@ const updatePending = async function (postId, postDetails) {
 
 const finishPending = async function (pendingPostId) {
     try {
+        console.log(pendingPostId)
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
         if (pendingPost.status.finalStatus !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
@@ -203,6 +204,7 @@ const finishPending = async function (pendingPostId) {
         const postCurrentStatus = await evaluatePostStatus(pendingPost.sourcePost);
         await PostRepository.updatePost(pendingPost.sourcePost, { status: postCurrentStatus });
         const finishedPending = await PendingRepository.getPendingById(pendingPostId);
+        await PendingRepository.deletePending(pendingPostId)
 
         return { finishedPending, trafficGroceries };
     } catch (e) {
@@ -233,7 +235,7 @@ const cancelPending = async function (pendingPostId) {
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
                 console.log("grocery from array: ", wantedGrocery);
-                if (wantedGrocery.name === grocery.name) {
+                if (wantedGrocery.name === grocery.original.name) {
                     isThere = true;
                     let left = grocery.left + wantedGrocery.amount;
                     if (left > grocery.original.amount) {
@@ -256,7 +258,7 @@ const cancelPending = async function (pendingPostId) {
         await PendingRepository.updatePending(pendingPostId, { status: { finalStatus: Status.CANCELLED }});
 
         const cancelledPost = await PendingRepository.getPendingById(pendingPostId);
-
+        await PendingRepository.deletePending(pendingPostId)
         return { cancelledPost, updatedPost };
     } catch (e) {
         console.log('Pending service error from cancelPending: ', e.message);
