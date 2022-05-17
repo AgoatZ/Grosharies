@@ -34,6 +34,7 @@ const register = async (user) => {
 }
 
 const login = async (email, password) => {
+    console.log('Email:', email, 'Password:', password);
     if (email == null || password == null) {
         throw Error('missing email or password');
     }

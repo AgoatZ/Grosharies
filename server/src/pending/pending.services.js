@@ -43,10 +43,18 @@ const getPendingById = async function (postId) {
     }
 };
 
-const getPendingsByUser = async function (userId) {
+const getPendingsByPublisher = async function (req) {
     try {
-        const posts = await PendingRepository.getPendingsByCollector(userId);
-        return posts;
+        let userId;
+        if (req.params.id == 'current') {
+            userId = req.user._id;
+            console.log("Service bypublisher from user._id userId:", userId)
+        } else {
+            userId = req.params.id;
+            console.log("Service bypublisher from params userId:", userId)
+        }
+        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByPublisher(userId);
+        return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending service error from getPendingsByUser: ', e.message);
 
@@ -54,10 +62,18 @@ const getPendingsByUser = async function (userId) {
     }
 };
 
-const getPendingsByCollector = async function (userId) {
+const getPendingsByCollector = async function (req) {
     try {
-        const pendingPosts = await PendingRepository.getPendingsByCollector(userId);
-        return pendingPosts;
+        let userId;
+        if (req.params.id == 'current') {
+            userId = req.user._id;
+            console.log("Service bycollector from user._id userId:", userId);
+        } else {
+            userId = req.params.id;
+            console.log("Service bycollector from params userId:", userId);
+        }
+        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByCollector(userId);
+        return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending service error from getPendingsByCollector: ', e.message);
 
@@ -353,7 +369,7 @@ module.exports = {
     getPendings,
     getGroupedPendings,
     getPendingById,
-    getPendingsByUser,
+    getPendingsByPublisher,
     getPendingsByCategory,
     getPendingsByTag,
     getPendingsByPost,
