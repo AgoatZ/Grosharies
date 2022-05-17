@@ -1,8 +1,5 @@
 const express = require('express');
-const { status } = require('express/lib/response');
 const Pending = require('./pending.model');
-const router = express.Router();
-const reply = require('../enums/post-reply');
 const Status = require('../enums/pending-status');
 
 const getPendings = async (query) => {
@@ -84,7 +81,7 @@ const getPendingsByPost = async function (postId) {
 
 const getAllPendingPosts = async function () {
     try {
-        const pendingPosts = await Pending.find({ 'status': { 'finalStatus': Status.PENDING }});
+        const pendingPosts = await Pending.find({ 'status.finalStatus': Status.PENDING });
         return pendingPosts;
     } catch (e) {
         console.log('Pending repository error from getAllPendingPosts: ', e.message);
@@ -95,7 +92,7 @@ const getAllPendingPosts = async function () {
 
 const getAllFinishedPosts = async function () {
     try {
-        const finishedPosts = await Pending.find({ 'status': { 'finalStatus':Status.COLLECTED }});
+        const finishedPosts = await Pending.find({ 'status.finalStatus': Status.COLLECTED });
         return finishedPosts;
     } catch (e) {
         console.log('Pending repository error from getAllFinishedPosts: ', e.message);
@@ -106,8 +103,8 @@ const getAllFinishedPosts = async function () {
 
 const getAllCancelledPosts = async function () {
     try {
-        const finishedPosts = await Pending.find({ 'status': { 'finalStatus':Status.CANCELLED }});
-        return finishedPosts;
+        const cancelledPosts = await Pending.find({ 'status.finalStatus': Status.CANCELLED });
+        return cancelledPosts;
     } catch (e) {
         console.log('Pending repository error from getAllCancellededPosts: ', e.message);
 

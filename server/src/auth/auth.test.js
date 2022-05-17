@@ -47,7 +47,6 @@ describe('Testing Auth API',()=>{
             "password": password
         });
         accessToken = response.body.accessToken;
-        console.log('ACCESSTOKEN IS: '+accessToken);
         expect(response.statusCode).toEqual(200);
     });
 

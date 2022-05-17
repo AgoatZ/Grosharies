@@ -6,9 +6,11 @@ const { authJwt } = require('../common/middlewares/passport');
 
 router.get('/', PendingController.getPendings);
 
-router.get('/post/:id', PendingController.getPendingById);
+router.get('/grouped', PendingController.getGroupedPendings);
 
 router.get('/byUserId', authJwt, PendingController.getPendingsByUser);
+
+router.get('/:id', PendingController.getPendingById);
 
 router.get('/category=:id', PendingController.getPendingsByCategory);
 
@@ -22,11 +24,11 @@ router.get('/:finished', PendingController.getAllFinishedPosts);
 
 router.get('/:cancelled', PendingController.getAllCancelledPosts);
 
-router.post('/add', PendingController.addPending);
+router.post('/', PendingController.addPending);
 
 router.post('/finish/:id', PendingController.finishPending);
 
-router.post('/cancel=:id', PendingController.cancelPending);
+router.post('/cancel/:id', PendingController.cancelPending);
 
 router.delete('/:id', PendingController.deletePending);
 

@@ -1,6 +1,6 @@
 const PendingService = require('./pending.services');
 
-getPendings = async function (req, res, next) {
+const getPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     const page = req.params.page ? req.params.page : 1;
@@ -15,7 +15,19 @@ getPendings = async function (req, res, next) {
     }
 };
 
-getPendingById = async function (req, res, next) {
+const getGroupedPendings = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getGroupedPendings();
+        return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Succesfully Post Retrieved" });
+    } catch (e) {
+        console.log('Pending controller error from getGroupedPendings: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const getPendingById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const post = await PendingService.getPendingById(req.params.id);
@@ -27,7 +39,7 @@ getPendingById = async function (req, res, next) {
     }
 };
 
-getPendingsByUser = async function (req, res, next) {
+const getPendingsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PendingService.getPendingsByUser(req.user._id);
@@ -39,7 +51,7 @@ getPendingsByUser = async function (req, res, next) {
     }
 };
 
-getPendingsByCategory = async function (req, res, next) {
+const getPendingsByCategory = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PendingService.getPendingsByCategory(req.params.id);
@@ -51,7 +63,7 @@ getPendingsByCategory = async function (req, res, next) {
     }
 };
 
-getPendingsByTag = async function (req, res, next) {
+const getPendingsByTag = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PendingService.getPendingsByTag(req.params.id);
@@ -63,7 +75,7 @@ getPendingsByTag = async function (req, res, next) {
     }
 };
 
-getPendingsByCollector = async function (req, res, next) {
+const getPendingsByCollector = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PendingService.getPendingsByCollector(req.params.id);
@@ -75,7 +87,7 @@ getPendingsByCollector = async function (req, res, next) {
     }
 };
 
-getAllPendingPosts = async function (req, res, next) {
+const getAllPendingPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PendingService.getAllPendingPosts();
@@ -87,7 +99,7 @@ getAllPendingPosts = async function (req, res, next) {
     }
 };
 
-getAllFinishedPosts = async function (req, res, next) {
+const getAllFinishedPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PendingService.getAllFinishedPosts();
@@ -99,7 +111,7 @@ getAllFinishedPosts = async function (req, res, next) {
     }
 };
 
-getAllCancelledPosts = async function (req, res, next) {
+const getAllCancelledPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PendingService.getAllCancelledPosts();
@@ -111,7 +123,7 @@ getAllCancelledPosts = async function (req, res, next) {
     }
 };
 
-addPending = async function (req, res, next) {
+const addPending = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
@@ -124,7 +136,7 @@ addPending = async function (req, res, next) {
     }
 };
 
-deletePending = async function (req, res, next) {
+const deletePending = async function (req, res, next) {
     try {
         const post = await PendingService.deletePending(req.params.id);
         return res.status(200).json({ post: post, message: "Succesfully Posts Deleted" });
@@ -135,7 +147,7 @@ deletePending = async function (req, res, next) {
     }
 }
 
-updatePending = async function (req, res, next) {
+const updatePending = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
@@ -148,7 +160,7 @@ updatePending = async function (req, res, next) {
     }
 };
 
-finishPending = async function (req, res, next) {
+const finishPending = async function (req, res, next) {
     try {
         console.log('Enterred finishPending Controller');
         const { finishedPending, trafficGroceries } = await PendingService.finishPending(req.params.id);
@@ -160,7 +172,7 @@ finishPending = async function (req, res, next) {
     }
 };
 
-cancelPending = async function (req, res, next) {
+const cancelPending = async function (req, res, next) {
     try {
         const { cancelledPost, updatedPost } = await PendingService.cancelPending(req.params.id);
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
@@ -173,6 +185,7 @@ cancelPending = async function (req, res, next) {
 
 module.exports = {
     getPendings,
+    getGroupedPendings,
     getPendingById,
     getPendingsByUser,
     getPendingsByCategory,

@@ -1,10 +1,7 @@
-const express = require('express');
-const { status } = require('express/lib/response');
-const Repository = require('./pending.repository');
+const PendingRepository = require('./pending.repository');
 const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
-const router = express.Router();
 const oneHour = 60 * 60 * 60 * 1000;
 const Status = require('../enums/pending-status');
 const postStatus = require('../enums/post-status');
@@ -13,7 +10,7 @@ const { snsClient } = require('../common/utils/sns-client');
 
 const getPendings = async function (query, page, limit) {
     try {
-        const posts = await Repository.getPendings(query);
+        const posts = await PendingRepository.getPendings(query);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendings: ', e.message);
@@ -22,9 +19,22 @@ const getPendings = async function (query, page, limit) {
     }
 };
 
+const getGroupedPendings = async function () {
+    try {
+        const cancelledPendings = await PendingRepository.getAllCancelledPosts();
+        const finishedPendings = await PendingRepository.getAllFinishedPosts();
+        const pendingPosts = await PendingRepository.getAllPendingPosts();
+        return { pendingPosts, finishedPendings, cancelledPendings };
+    } catch (e) {
+        console.log('Pending service error from getGropuedPendings: ', e.message);
+
+        throw Error('Error while Retrieving Pendings');
+    }
+};
+
 const getPendingById = async function (postId) {
     try {
-        const post = await Repository.getPendingById(postId);
+        const post = await PendingRepository.getPendingById(postId);
         return post;
     } catch (e) {
         console.log('Pending service error from getPendingById: ', e.message);
@@ -35,7 +45,7 @@ const getPendingById = async function (postId) {
 
 const getPendingsByUser = async function (userId) {
     try {
-        const posts = await Repository.getPendingsByCollector(userId);
+        const posts = await PendingRepository.getPendingsByCollector(userId);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendingsByUser: ', e.message);
@@ -46,7 +56,7 @@ const getPendingsByUser = async function (userId) {
 
 const getPendingsByCollector = async function (userId) {
     try {
-        const pendingPosts = await Repository.getPendingsByCollector(userId);
+        const pendingPosts = await PendingRepository.getPendingsByCollector(userId);
         return pendingPosts;
     } catch (e) {
         console.log('Pending service error from getPendingsByCollector: ', e.message);
@@ -57,7 +67,7 @@ const getPendingsByCollector = async function (userId) {
 
 const getPendingsByCategory = async function (categoryId) {
     try {
-        const posts = await Repository.getPendingsByCategory(categoryId);
+        const posts = await PendingRepository.getPendingsByCategory(categoryId);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendingsByCategory: ', e.message);
@@ -68,7 +78,7 @@ const getPendingsByCategory = async function (categoryId) {
 
 const getPendingsByTag = async function (tagId) {
     try {
-        const posts = await Repository.getPendingsByTag(tagId);
+        const posts = await PendingRepository.getPendingsByTag(tagId);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendingsByTag: ', e.message);
@@ -79,7 +89,7 @@ const getPendingsByTag = async function (tagId) {
 
 const getPendingsByPost = async function (postId) {
     try {
-        const posts = await Repository.getPendingsByPost(postId);
+        const posts = await PendingRepository.getPendingsByPost(postId);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendingsByPost: ', e.message);
@@ -90,7 +100,7 @@ const getPendingsByPost = async function (postId) {
 
 const addPending = async function (postDetails) {
     try {
-        const pendingPost = await Repository.addPending(postDetails);
+        const pendingPost = await PendingRepository.addPending(postDetails);
         await interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
 
         return pendingPost;
@@ -103,7 +113,7 @@ const addPending = async function (postDetails) {
 
 const deletePending = async function (postId) {
     try {
-        const deletedPost = await Repository.deletePending(postId);
+        const deletedPost = await PendingRepository.deletePending(postId);
         return deletedPost;
     } catch (e) {
         console.log('Pending service error from deletePending: ', e.message);
@@ -114,7 +124,7 @@ const deletePending = async function (postId) {
 
 const getAllPendingPosts = async function () {
     try {
-        const pendingPosts = await Repository.getAllPendingPosts();
+        const pendingPosts = await PendingRepository.getAllPendingPosts();
         return pendingPosts;
     } catch (e) {
         console.log('Pending service error from getAllPendingPosts: ', e.message);
@@ -125,7 +135,7 @@ const getAllPendingPosts = async function () {
 
 const getAllFinishedPosts = async function () {
     try {
-        const finishedPosts = await Repository.getAllFinishedPosts();
+        const finishedPosts = await PendingRepository.getAllFinishedPosts();
         return finishedPosts;
     } catch (e) {
         console.log('Pending service error from getAllFinishedPosts: ', e.message);
@@ -136,7 +146,7 @@ const getAllFinishedPosts = async function () {
 
 const getAllCancelledPosts = async function () {
     try {
-        const finishedPosts = await Repository.getAllCancelledPosts();
+        const finishedPosts = await PendingRepository.getAllCancelledPosts();
         return finishedPosts;
     } catch (e) {
         console.log('Pending service error from getAllCancelledPosts: ', e.message);
@@ -147,7 +157,7 @@ const getAllCancelledPosts = async function () {
 
 const updatePending = async function (postId, postDetails) {
     try {
-        const oldPost = await Repository.updatePending(postId, postDetails);
+        const oldPost = await PendingRepository.updatePending(postId, postDetails);
         return oldPost;
     } catch (e) {
         console.log('Pending service error from updatePending: ', e.message);
@@ -158,7 +168,7 @@ const updatePending = async function (postId, postDetails) {
 
 const finishPending = async function (pendingPostId) {
     try {
-        let pendingPost = await Repository.getPendingById(pendingPostId);
+        let pendingPost = await PendingRepository.getPendingById(pendingPostId);
         if (pendingPost.status.finalStatus !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
         }
@@ -172,11 +182,11 @@ const finishPending = async function (pendingPostId) {
             trafficGrocery = await GroceryRepository.getGroceryByName(grocery.name);
             trafficGroceries.push(trafficGrocery);
         }
-        await Repository.updatePending(pendingPostId, { status: { finalStatus: Status.COLLECTED } });
+        await PendingRepository.updatePending(pendingPostId, { status: { finalStatus: Status.COLLECTED }});
 
         const postCurrentStatus = await evaluatePostStatus(pendingPost.sourcePost);
         await PostRepository.updatePost(pendingPost.sourcePost, { status: postCurrentStatus });
-        const finishedPending = await Repository.getPendingById(pendingPostId);
+        const finishedPending = await PendingRepository.getPendingById(pendingPostId);
 
         return { finishedPending, trafficGroceries };
     } catch (e) {
@@ -190,7 +200,7 @@ const cancelPending = async function (pendingPostId) {
     console.log("ENTERRED CANCEL PENDING FIRST");
     try {
         console.log("cacncelling ID: ", pendingPostId);
-        let pendingPost = await Repository.getPendingById(pendingPostId);
+        let pendingPost = await PendingRepository.getPendingById(pendingPostId);
         console.log("pendingPost at service from repository: ", pendingPost);
         if (pendingPost.status.finalStatus !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
@@ -227,9 +237,9 @@ const cancelPending = async function (pendingPostId) {
         await PostRepository.updatePost(originalPost._id, { content: updatedContent });
         const updatedPost = await PostRepository.getPostById(pendingPost.sourcePost);
 
-        await Repository.updatePending(pendingPostId, { status: { finalStatus: Status.CANCELLED } });
+        await PendingRepository.updatePending(pendingPostId, { status: { finalStatus: Status.CANCELLED }});
 
-        const cancelledPost = await Repository.getPendingById(pendingPostId);
+        const cancelledPost = await PendingRepository.getPendingById(pendingPostId);
 
         return { cancelledPost, updatedPost };
     } catch (e) {
@@ -242,7 +252,7 @@ const cancelPending = async function (pendingPostId) {
 const interrestedUserReminder = async (userId, pendingId) => {
     try {
         const user = await UserRepository.getUserById(userId);
-        const pending = await Repository.getPendingById(pendingId);
+        const pending = await PendingRepository.getPendingById(pendingId);
         const publisher = await UserRepository.getUserById(pending.publisherId);
         console.log("ENTERRED REMINDER");
 
@@ -341,6 +351,7 @@ const evaluatePostStatus = async (postId) => {
 
 module.exports = {
     getPendings,
+    getGroupedPendings,
     getPendingById,
     getPendingsByUser,
     getPendingsByCategory,
