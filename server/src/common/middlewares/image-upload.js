@@ -5,27 +5,6 @@ const EventService = require('.././../event/event.services');
 const UserService = require('.././../user/user.services');
 
 const uploadImage = async (req, res, next) => {
-    // let service;
-    // switch (type) {
-    //   case 'grocery':
-    //     service = GroceryService;
-    //     break;
-
-    //   case 'post':
-    //     service = PostService;
-    //     break;
-
-    //   case 'event':
-    //     service = EventService;
-    //     break;
-
-    //   case 'user':
-    //     service = UserService;
-    //     break;
-
-    //   default:
-    //     break;
-    // }
     try {
       const r = Date.now() + Math.round(Math.random() * 1E9);
       const newFile = fs.createWriteStream(r.toString() + '.txt');
