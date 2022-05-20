@@ -222,8 +222,6 @@ const updatePending = async function (pendingId, pendingDetails) {
         //console.log('updatedContent: ', updatedContent);
         await PostRepository.updatePost(post._id, { content: updatedContent });
 
-        const collector = await UserService.addToHistory(updatedPending.collectorId, pendingId);
-
         const updatedPost = await PostRepository.getPostById(post._id);
 
         return oldPending;
