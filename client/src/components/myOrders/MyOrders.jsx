@@ -4,6 +4,10 @@ import axios from "../../utils/axios";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 const MyOrders = () => {
   let navigate = useNavigate();
@@ -11,29 +15,50 @@ const MyOrders = () => {
   const [finishedPendings, setFinishedPendings] = useState([]);
   const [cancelledPendings, setCancelledPendings] = useState([]);
 
-
   useEffect(() => {
     loadPendingPosts();
   }, []);
 
   const approveOrderComplete = (postId) => {
-    console.log("inn");
-
-    axios.post("pendings/finish/" + postId).then((res) => {
-      console.log(res.data);
+    MySwal.fire({
+      title: <strong>Are you sure you picked up the order?</strong>,
+      icon: "info",
+      showCancelButton: true,
+      cancelButtonText: "no",
+      showConfirmButton: true,
+      confirmButtonText: "yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.post("pendings/finish/" + postId).then((res) => {
+          console.log(res.data);
+          window.location.reload();
+        });
+      }
     });
-  }
+  };
   const cancelOrder = (postId) => {
-    axios.post("pendings/cancel/" + postId).then((res) => {
-      console.log(res.data);
+    MySwal.fire({
+      title: <strong>Are you sure you want to cancel the order?</strong>,
+      icon: "info",
+      showCancelButton: true,
+      cancelButtonText: "no",
+      showConfirmButton: true,
+      confirmButtonText: "yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.post("pendings/cancel/" + postId).then((res) => {
+          console.log(res.data);
+          window.location.reload();
+        });
+      }
     });
-  }
+  };
   const loadPendingPosts = () => {
     axios.get("pendings/collector/current").then((res) => {
       console.log(res.data);
       setPendingsPosts(res.data.pendingPosts);
       setFinishedPendings(res.data.finishedPendings);
-      setCancelledPendings(res.data.cancelledPendings)
+      setCancelledPendings(res.data.cancelledPendings);
     });
   };
 
@@ -54,13 +79,13 @@ const MyOrders = () => {
     return today.getTime() > untilDate.getTime()
       ? `Time's Up!`
       : ("0" + days).slice(-2) +
-      ":" +
-      ("0" + hours).slice(-2) +
-      ":" +
-      ("0" + minutes).slice(-2) +
-      ":" +
-      ("0" + seconds).slice(-2) +
-      " left for the order";
+          ":" +
+          ("0" + hours).slice(-2) +
+          ":" +
+          ("0" + minutes).slice(-2) +
+          ":" +
+          ("0" + seconds).slice(-2) +
+          " left for the order";
   };
 
   const myOrderDetails = (orderDetails) => {
@@ -83,7 +108,7 @@ const MyOrders = () => {
             }}
           >
             <CheckIcon fontSize="large" sx={{ color: "green", mr: "10px" }} />
-            <Typography fontSize="25px">I Picked Up the Order</Typography>
+            <Typography fontSize="18px">I Picked Up the Order</Typography>
           </Button>
           <Divider color="black" sx={{ width: "100%" }} />
           <Button
@@ -96,105 +121,208 @@ const MyOrders = () => {
             }}
           >
             <CloseIcon fontSize="large" sx={{ color: "red", mr: "10px" }} />
-            <Typography fontSize="25px">I Want to Cancel</Typography>
+            <Typography fontSize="18px">I Want to Cancel</Typography>
           </Button>
         </Box>
       </>
     );
-  }
+  };
 
-
-  const RenderPosts = ({ posts, isFinished }) => posts.map((post) => {
-    const timeLeft = calculateTimeLeft(post);
-    return (
+  const handleFinishedOrCanceled = (isFinished) => {
+    return isFinished ? (
       <Box
-        key={post._id}
         sx={{
+          width: "30%",
+          m: "0 auto",
+          height: "100%",
+          alignItems: "center",
           display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          m: "5%",
-          backgroundColor: "whitesmoke",
-          borderRadius: "20px",
+          flexDirection: "column",
+          pt: "3%",
         }}
       >
-        <Box sx={{ display: "flex", width: "100%" }}>
-          <Box
-            onClick={() => myOrderDetails(post)}
-            sx={{
-              display: "flex",
-              width: timeLeft !== `Time's Up!` ? "70%" : "100%",
-              ":hover": {
-                cursor: "pointer",
-                bgcolor: "lightgray",
-                borderRadius: timeLeft !== `Time's Up!` ? null : "20px",
-              },
-            }}
-          >
-            <CardMedia
-              component="img"
-              sx={{
-                padding: 1,
-                borderRadius: "10px",
-                height: "250px",
-                width: "auto",
-                mr: "3%",
-              }}
-              image="/assets/default-post-image.svg"
-            />
-            <Box
-              sx={{
-                flexDirection: "column",
-                margin: "auto 10% auto 0",
-                width: "70%",
-              }}
-            >
-              <Typography
-                component="div"
-                variant="h4"
-                mb="2%"
-                fontFamily="Roboto"
-              >
-                Title: {post.headline}
-              </Typography>
-              <Typography
-                component="div"
-                variant="h6"
-                mb="2%"
-                fontFamily="Roboto"
-              >
-                Address: {post.address}
-              </Typography>
-              <Typography
-                component="div"
-                variant="h6"
-                mb="2%"
-                fontFamily="Roboto"
-                sx={{ display: "flex" }}
-              >
-                <Typography sx={{ color: "red", mr: "2%" }}>
-                  {timeLeft}
-                </Typography>
-              </Typography>
-            </Box>
-          </Box>
-
-          {timeLeft !== `Time's Up!` ? approveOrCancelSection(post._id) : null}
-        </Box>
+        <CheckIcon
+          sx={{
+            color: "green",
+            m: "0 auto",
+            height: "50%",
+            width: "50%",
+            fontSize: "20px",
+          }}
+        />
+        <Typography
+          component="div"
+          variant="h6"
+          fontFamily="Roboto"
+          sx={{ color: "green" }}
+        >
+          Order Picked up
+        </Typography>
+      </Box>
+    ) : (
+      <Box
+        sx={{
+          width: "30%",
+          m: "0 auto",
+          height: "100%",
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          pt: "3%",
+        }}
+      >
+        <CloseIcon
+          sx={{
+            color: "red",
+            m: "0 auto",
+            height: "50%",
+            width: "50%",
+            fontSize: "20px",
+          }}
+        />
+        <Typography
+          component="div"
+          variant="h6"
+          fontFamily="Roboto"
+          sx={{ color: "red" }}
+        >
+          Order was canceled
+        </Typography>
       </Box>
     );
-  })
+  };
 
+  const RenderPosts = ({ posts, isFinished, isCanceled }) =>
+    posts.map((post) => {
+      const timeLeft =
+        !isFinished && !isCanceled ? calculateTimeLeft(post) : null;
+      return (
+        <Box
+          key={post._id}
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            m: "5%",
+            width: "70%",
+            backgroundColor: "whitesmoke",
+            borderRadius: "20px",
+          }}
+        >
+          <Box sx={{ display: "flex", width: "100%" }}>
+            <Box
+              onClick={() => myOrderDetails(post)}
+              sx={{
+                display: "flex",
+                width: "100%",
+                ":hover": {
+                  cursor: "pointer",
+                  bgcolor: "#F2FCF8",
+                  borderRadius: "10px",
+                },
+              }}
+            >
+              <CardMedia
+                component="img"
+                sx={{
+                  padding: 1,
+                  borderRadius: "10px",
+                  height: "250px",
+                  width: "auto",
+                  mr: "3%",
+                }}
+                image="/assets/default-post-image.svg"
+              />
+              <Box
+                sx={{
+                  flexDirection: "column",
+                  margin: "auto 10% auto 0",
+                  width: "70%",
+                }}
+              >
+                <Typography
+                  component="div"
+                  variant="h4"
+                  mb="2%"
+                  fontFamily="Roboto"
+                >
+                  Title: {post.headline}
+                </Typography>
+                <Typography
+                  component="div"
+                  variant="h6"
+                  mb="2%"
+                  fontFamily="Roboto"
+                >
+                  Address: {post.address}
+                </Typography>
+                <Typography
+                  component="div"
+                  variant="h6"
+                  mb="2%"
+                  fontFamily="Roboto"
+                  sx={{ display: "flex" }}
+                >
+                  {timeLeft ? (
+                    <Typography sx={{ color: "red", mr: "2%" }}>
+                      {timeLeft}
+                    </Typography>
+                  ) : null}
+                </Typography>
+              </Box>
+              {!timeLeft
+                ? handleFinishedOrCanceled(
+                    isFinished && !isCanceled
+                  ) /* returns true if finished, and false if canceled*/
+                : null}
+            </Box>
+
+            {!isFinished && !isCanceled
+              ? approveOrCancelSection(post._id)
+              : null}
+          </Box>
+        </Box>
+      );
+    });
 
   return (
     <>
       <Box sx={{ m: "5%", mb: "1%" }}>
-        <Typography component="div" variant="h3" fontFamily="Roboto">
+        <Typography
+          component="div"
+          variant="h3"
+          fontFamily="Roboto"
+          sx={{ mb: "5%" }}
+        >
           My Orders
         </Typography>
-        <RenderPosts posts={pendingsPosts} />
-        <RenderPosts posts={finishedPendings} />
-        <RenderPosts posts={cancelledPendings} />
+
+        {pendingsPosts.length > 0 ? (
+          <>
+            <Typography component="div" variant="h4" fontFamily="Roboto">
+              Pending
+            </Typography>
+            <RenderPosts posts={pendingsPosts} />
+          </>
+        ) : null}
+
+        {finishedPendings.length > 0 ? (
+          <>
+            <Typography component="div" variant="h4" fontFamily="Roboto">
+              Finished
+            </Typography>
+            <RenderPosts posts={finishedPendings} isFinished />
+          </>
+        ) : null}
+
+        {cancelledPendings.length > 0 ? (
+          <>
+            <Typography component="div" variant="h4" fontFamily="Roboto">
+              Canceled
+            </Typography>
+            <RenderPosts posts={cancelledPendings} isCanceled />
+          </>
+        ) : null}
       </Box>
     </>
   );

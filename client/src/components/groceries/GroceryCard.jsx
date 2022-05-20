@@ -20,7 +20,7 @@ const GroceryCard = ({ groceryDetails }) => {
           display: "flex",
           justifyContent: "space-between",
           cursor: "pointer",
-          ":hover": { backgroundColor: "gray" },
+          ":hover": { backgroundColor: "#F2FCF8" },
           height: "100%",
         }}
       >
