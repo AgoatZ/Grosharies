@@ -44,6 +44,25 @@ const getPostsByUser = async (userId) => {
     }
 };
 
+const getPublisherOpenPosts = async (req) => {
+    try {
+        let userId;
+        if (req.params.id == 'current') {
+            userId = req.user._id;
+            console.log("Service bycollector from user._id userId:", userId);
+        } else {
+            userId = req.params.id;
+            console.log("Service bycollector from params userId:", userId);
+        }
+        const posts = await PostRepository.getPublisherOpenPosts(userId);
+        return posts;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error('Error while Retrieving Posts by User');
+    }
+};
+
 const getPostsByCategory = async (categoryId) => {
     try {
         const posts = await PostRepository.getPostsByCategory(categoryId);
@@ -235,6 +254,7 @@ module.exports = {
     getPostsByCollector,
     getPostsByGroceries,
     getSuggestedPosts,
+    getPublisherOpenPosts,
     addPost,
     pendPost,
     deletePost,

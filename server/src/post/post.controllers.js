@@ -39,6 +39,18 @@ const getPostsByUser = async function (req, res, next) {
     }
 };
 
+const getPublisherOpenPosts = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PostService.getPublisherOpenPosts(req);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 const getPostsByCategory = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
@@ -174,6 +186,7 @@ module.exports = {
     getPostsByCollector,
     getPostsByGroceries,
     getSuggestedPosts,
+    getPublisherOpenPosts,
     addPost,
     pendPost,
     deletePost,

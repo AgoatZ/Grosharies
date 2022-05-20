@@ -1,7 +1,7 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const PendingController = require('./pending.controllers');
-const passport = require('../common/middlewares/passport');
+const { authJwt } = require('../common/middlewares/passport');
 const router = express.Router();
 
 router.get('/', PendingController.getPendings);
@@ -10,13 +10,13 @@ router.get('/grouped', PendingController.getGroupedPendings);
 
 router.get('/:id', PendingController.getPendingById);
 
-router.get('/publisher/:id', passport.authJwt, PendingController.getPendingsByPublisher);
+router.get('/publisher/:id', authJwt, PendingController.getPendingsByPublisher);
 
 router.get('/category/:id', PendingController.getPendingsByCategory);
 
 router.get('/tag/:id', PendingController.getPendingsByTag);
 
-router.get('/collector/:id', PendingController.getPendingsByCollector);
+router.get('/collector/:id', authJwt, PendingController.getPendingsByCollector);
 
 router.get('/pendings', PendingController.getAllPendingPosts);
 
