@@ -1,36 +1,38 @@
-const express = require('express');
-const PendingController = require('./pending.controllers');
+const express = require("express");
+const PendingController = require("./pending.controllers");
+
+const { authJwt } = require("../common/middlewares/passport");
+
 const router = express.Router();
-const { authJwt } = require('../common/middlewares/passport');
 
-router.get('/', PendingController.getPendings);
+router.get("/", PendingController.getPendings);
 
-router.get('/grouped', authJwt,PendingController.getGroupedPendings);
+router.get("/grouped", authJwt, PendingController.getGroupedPendings);
 
-router.get('/:id',authJwt ,PendingController.getPendingById);
+router.get("/:id", authJwt, PendingController.getPendingById);
 
-router.get('/publisher/:id', authJwt, PendingController.getPendingsByPublisher);
+router.get("/publisher/:id", authJwt, PendingController.getPendingsByPublisher);
 
-router.get('/category/:id', authJwt, PendingController.getPendingsByCategory);
+router.get("/category/:id", authJwt, PendingController.getPendingsByCategory);
 
-router.get('/tag/:id',authJwt, PendingController.getPendingsByTag);
+router.get("/tag/:id", authJwt, PendingController.getPendingsByTag);
 
-router.get('/collector/:id',authJwt, PendingController.getPendingsByCollector);
+router.get("/collector/:id", authJwt, PendingController.getPendingsByCollector);
 
-router.get('/pendings', authJwt, PendingController.getAllPendingPosts);
+router.get("/pendings", authJwt, PendingController.getAllPendingPosts);
 
-router.get('/finished',authJwt,PendingController.getAllFinishedPosts);
+router.get("/finished", authJwt, PendingController.getAllFinishedPosts);
 
-router.get('/cancelled', authJwt,PendingController.getAllCancelledPosts);
+router.get("/cancelled", authJwt, PendingController.getAllCancelledPosts);
 
-router.post('/', authJwt,PendingController.addPending);
+router.post("/", authJwt, PendingController.addPending);
 
-router.post('/finish/:id',authJwt, PendingController.finishPending);
+router.post("/finish/:id", authJwt, PendingController.finishPending);
 
-router.post('/cancel/:id', authJwt,PendingController.cancelPending);
+router.post("/cancel/:id", authJwt, PendingController.cancelPending);
 
-router.delete('/:id',authJwt, PendingController.deletePending);
+router.delete("/:id", authJwt, PendingController.deletePending);
 
-router.put('/:id', authJwt,PendingController.updatePending);
+router.put("/:id", authJwt, PendingController.updatePending);
 
 module.exports = router;

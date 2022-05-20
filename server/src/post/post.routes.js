@@ -11,6 +11,8 @@ router.get("/:id", PostController.getPostById);
 
 router.get("/user=:id", PostController.getPostsByUser);
 
+router.get("/openPosts/:id", authJwt, PostController.getPublisherOpenPosts);
+
 router.get("/category=:id", PostController.getPostsByCategory);
 
 router.get("/tag=:id", PostController.getPostsByTag);

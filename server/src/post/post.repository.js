@@ -3,6 +3,7 @@ const { status } = require('express/lib/response');
 const Post = require('./post.model');
 const router = express.Router();
 const reply = require('../enums/post-reply');
+const postStatus = require('../enums/post-status');
 
 const getPosts = async (query) => {
     try {
@@ -21,6 +22,19 @@ const getRelevantPosts = async () => {
             lt(Date.now()).
             where('pickUpDates.until').
             gt(Date.now());
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Posts: ' + e.message);
+    }
+};
+
+const getPublisherOpenPosts = async (publisherId) => {
+    try {
+        const posts = await Post.find({ userId: publisherId }).
+        where('status').
+        in([postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE]);
         return posts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -150,6 +164,7 @@ module.exports = {
     getPostsByCollector,
     getPostsByGroceries,
     getRelevantPosts,
+    getPublisherOpenPosts,
     addPost,
     deletePost,
     updatePost,
