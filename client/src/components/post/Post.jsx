@@ -14,6 +14,8 @@ const MySwal = withReactContent(Swal);
 
 const Post = () => {
   const res = useLocation().state;
+  const isEdit = res.isEdit;
+  console.log("isEdit=" + isEdit);
   let navigate = useNavigate();
   console.log(JSON.stringify(res));
   const { handleSubmit, control } = useForm();
@@ -23,25 +25,45 @@ const Post = () => {
       return groceryWrapper.original;
     });
 
-    axios
-      .post(serverRoutes.ApplyPost, {
-        postId: res.post._id,
-        collectorId: "",
-        groceries: updatedGroceries,
-      })
-      .then((res) => {
-        console.log(res.data);
-        MySwal.fire({
-          title: "Successfully Apply Your Order!",
-          text: "You can now go and take your donation",
-          icon: "success",
-          timer: 1000,
-          showConfirmButton: false,
+    if (!isEdit) {
+      axios
+        .post(serverRoutes.ApplyPost, {
+          postId: res.post._id,
+          collectorId: "",
+          groceries: updatedGroceries,
+        })
+        .then((res) => {
+          console.log(res.data);
+          MySwal.fire({
+            title: "Successfully Apply Your Order!",
+            text: "You can now go and take your donation",
+            icon: "success",
+            timer: 1000,
+            showConfirmButton: false,
+          });
+          setTimeout(() => {
+            navigate("/my-orders", {});
+          }, 1000);
         });
-        setTimeout(() => {
-          navigate("/my-orders", {});
-        }, 1000);
-      });
+    } else {
+      axios
+        .put("/pendings/" + res.post._id, {
+          data,
+        })
+        .then((res) => {
+          console.log(res.data);
+          MySwal.fire({
+            title: "Successfully Edited Your Order!",
+            text: "You can now go and take your donation",
+            icon: "success",
+            timer: 1000,
+            showConfirmButton: false,
+          });
+          setTimeout(() => {
+            navigate("/my-orders", {});
+          }, 1000);
+        });
+    }
   };
 
   const imagesAndVideos = [
@@ -60,7 +82,9 @@ const Post = () => {
   ];
 
   const products = res.post.content.map((groceryWrapper) => {
-    const grocery = groceryWrapper.original;
+    const grocery = groceryWrapper.original
+      ? groceryWrapper.original
+      : groceryWrapper;
     return (
       <Box
         sx={{
@@ -91,14 +115,18 @@ const Post = () => {
             {`Name: ${grocery.name}`}
           </Typography>
           <Typography component="div" variant="h6" mb="2%" fontFamily="Roboto">
-            {`Total Amount: ${groceryWrapper.left} ${grocery.scale}`}
+            {`Total Amount: ${
+              isEdit
+                ? groceryWrapper.amount + groceryWrapper.left
+                : groceryWrapper.left
+            }  ${grocery.scale}`}
           </Typography>
 
           <Box sx={{ width: "300px" }}>
             <Controller
               control={control}
               name={grocery.name}
-              defaultValue={0}
+              defaultValue={isEdit ? groceryWrapper.amount : 0}
               render={({ field: { value, onChange } }) => (
                 <Typography variant="h6" color="red" component="div">
                   {`Your Amount: ${value} ${grocery.scale}`}
@@ -107,7 +135,11 @@ const Post = () => {
                     step={1}
                     marks
                     min={0}
-                    max={groceryWrapper.left}
+                    max={
+                      isEdit
+                        ? groceryWrapper.amount + groceryWrapper.left
+                        : groceryWrapper.left
+                    }
                     valueLabelDisplay="auto"
                     onChange={(e) => {
                       onChange(e.target.value);
@@ -200,7 +232,7 @@ const Post = () => {
           disableElevation
           type="submit"
         >
-          Apply
+          {isEdit ? "Edit" : "Apply"}
         </Button>
       </form>
     </Box>

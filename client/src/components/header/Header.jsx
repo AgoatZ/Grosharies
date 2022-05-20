@@ -22,17 +22,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
-const pages = [{ name: "Groceries", path: "groceries" }, { name: "Events", path: "events" }];
-const userOptions = [{
-  name: "Profile",
-  path: 'profile'
-}, {
-  name: "My Orders",
-  path: 'my-orders'
-}, {
-  name: "Logout",
-  path: 'logout'
-}
+const pages = [
+  { name: "Groceries", path: "groceries" },
+  { name: "Events", path: "events" },
+];
+const userOptions = [
+  {
+    name: "Profile",
+    path: "profile",
+  },
+  {
+    name: "My Posts",
+    path: "my-posts",
+  },
+  {
+    name: "My Orders",
+    path: "my-orders",
+  },
+  {
+    name: "Logout",
+    path: "logout",
+  },
 ];
 
 const Header = ({ loggedIn, userData, logoutUser }) => {
@@ -50,7 +60,10 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
   const NavigationBar = () => {
     return (
       <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-        <MenuItem key={pages[0].name} onClick={navigateToPage.bind(this, pages[0].path)}>
+        <MenuItem
+          key={pages[0].name}
+          onClick={navigateToPage.bind(this, pages[0].path)}
+        >
           <ListItemIcon>
             <FontAwesomeIcon
               icon="fa-solid fa-apple-whole"
@@ -60,7 +73,10 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
           </ListItemIcon>
           <ListItemText primary={pages[0].name} />
         </MenuItem>
-        <MenuItem key={pages[1].name} onClick={navigateToPage.bind(this, pages[1].path)}>
+        <MenuItem
+          key={pages[1].name}
+          onClick={navigateToPage.bind(this, pages[1].path)}
+        >
           <ListItemIcon>
             <FontAwesomeIcon
               icon="fa-solid fa-calendar"
@@ -70,7 +86,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
           </ListItemIcon>
           <ListItemText primary={pages[1].name} />
         </MenuItem>
-      </Box >
+      </Box>
     );
   };
 
@@ -101,13 +117,19 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
             onKeyDown={toggleNavDrawer(false)}
           >
             <List>
-              <MenuItem key={pages[0].name} onClick={navigateToPage.bind(this, pages[0].path)}>
+              <MenuItem
+                key={pages[0].name}
+                onClick={navigateToPage.bind(this, pages[0].path)}
+              >
                 <ListItemIcon>
                   <FontAwesomeIcon icon="fa-solid fa-apple-whole" size="lg" />
                 </ListItemIcon>
                 <ListItemText primary={pages[0].name} />
               </MenuItem>
-              <MenuItem key={pages[1].name} onClick={navigateToPage.bind(this, pages[1].path)}>
+              <MenuItem
+                key={pages[1].name}
+                onClick={navigateToPage.bind(this, pages[1].path)}
+              >
                 <ListItemIcon>
                   <FontAwesomeIcon icon="fa-solid fa-calendar" size="lg" />
                 </ListItemIcon>
@@ -153,18 +175,30 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
           open={Boolean(userMenuAnchorEl)}
           onClose={handleCloseUserMenu}
         >
-          <MenuItem key={userOptions[0].name} onClick={navigateToPage.bind(this, userOptions[0].path)}>
+          <MenuItem
+            key={userOptions[0].name}
+            onClick={navigateToPage.bind(this, userOptions[0].path)}
+          >
             <ListItemText primary={userOptions[0].name} />
           </MenuItem>
-          <MenuItem key={userOptions[1].name} onClick={navigateToPage.bind(this, userOptions[1].path)} >
+          <MenuItem
+            key={userOptions[1].name}
+            onClick={navigateToPage.bind(this, userOptions[1].path)}
+          >
             <ListItemText primary={userOptions[1].name} />
           </MenuItem>
-          <Divider />
-          <MenuItem key={userOptions[2].name} onClick={logout}>
+          <MenuItem
+            key={userOptions[2].name}
+            onClick={navigateToPage.bind(this, userOptions[2].path)}
+          >
             <ListItemText primary={userOptions[2].name} />
           </MenuItem>
+          <Divider />
+          <MenuItem key={userOptions[3].name} onClick={logout}>
+            <ListItemText primary={userOptions[3].name} />
+          </MenuItem>
         </Menu>
-      </Box >
+      </Box>
     );
   };
 
@@ -172,7 +206,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
     return (
       <Box sx={{ flexGrow: 0 }} hidden={loggedIn}>
         <Button
-          onClick={navigateToPage.bind(this, 'login')}
+          onClick={navigateToPage.bind(this, "login")}
           size="small"
           variant="outlined"
           sx={{ color: "white", border: "1px solid white" }}

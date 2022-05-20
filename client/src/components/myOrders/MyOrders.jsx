@@ -89,7 +89,16 @@ const MyOrders = () => {
   };
 
   const myOrderDetails = (orderDetails) => {
-    navigate("/my-order-details", { state: orderDetails });
+    console.log(orderDetails);
+    axios.get("posts/" + orderDetails.sourcePost).then((res) => {
+      console.log("asldfkjas;ldfkja;lsdfkj " + JSON.stringify(res.data));
+      res.data.post.content.forEach((grocery, i) => {
+        orderDetails.content[i].left = grocery.left;
+      });
+      navigate("/post/" + orderDetails._id, {
+        state: { post: orderDetails, isEdit: true },
+      });
+    });
   };
 
   const approveOrCancelSection = (postId) => {

@@ -14,6 +14,7 @@ import Groceries from "./components/groceries/Groceries";
 import Events from "./components/events/Events";
 import Profile from "./components/profile/Profile";
 import MyOrders from "./components/myOrders/MyOrders";
+import MyPosts from "./components/myPosts/MyPosts";
 import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
@@ -26,34 +27,41 @@ const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    axios.get('auth/isLoggedIn').then(() => {
-      setLoggedIn(true);
-    }).catch(() => {
-      setLoggedIn(false);
-    });
+    axios
+      .get("auth/isLoggedIn")
+      .then(() => {
+        setLoggedIn(true);
+      })
+      .catch(() => {
+        setLoggedIn(false);
+      });
   }, []);
 
   const LoginUser = () => {
     setLoggedIn(true);
-    window.location.replace('/');
+    window.location.replace("/");
   };
 
   const logoutUser = () => {
     setLoggedIn(false);
-    window.location.replace('/');
+    window.location.replace("/");
   };
 
   //All Routes Componentes are nested under Layout->Outlet
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout loggedIn={loggedIn} logoutUser={logoutUser} />}>
+        <Route
+          path="/"
+          element={<Layout loggedIn={loggedIn} logoutUser={logoutUser} />}
+        >
           <Route index element={<Home />} />
           <Route path="post/:id" element={<Post />} />
           <Route path="groceries" element={<Groceries />} />
           <Route path="events" element={<Events />} />
           <Route path="groceries/:name" element={<GroceryDetails />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="my-posts" element={<MyPosts />} />
           <Route path="my-orders" element={<MyOrders />} />
           <Route path="my-order-details" element={<MyOrderDetails />} />
           <Route path="about" element={<About />} />
