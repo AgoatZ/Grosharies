@@ -120,6 +120,7 @@ const getPendingsByPost = async function (postId) {
 
 const addPending = async function (postDetails) {
     try {
+        console.log(postDetails);
         const pendingPost = await PendingRepository.addPending(postDetails);
         await interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
 
@@ -267,7 +268,7 @@ const cancelPending = async function (pendingPostId) {
     try {
         console.log("cacncelling ID: ", pendingPostId);
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
-        console.log("pendingPost at service from repository: ", pendingPost);
+        //console.log("pendingPost at service from repository: ", pendingPost);
         if (pendingPost.status.finalStatus !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
         }
@@ -278,11 +279,11 @@ const cancelPending = async function (pendingPostId) {
         const groceries = pendingPost.content;
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
-            console.log("grocery from post: ", grocery);
+            //console.log("grocery from post: ", grocery);
             let isThere = false;
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
-                console.log("grocery from array: ", wantedGrocery);
+                //console.log("grocery from array: ", wantedGrocery);
                 if (wantedGrocery.name === grocery.name) {
                     isThere = true;
                     let left = grocery.left + wantedGrocery.amount;
@@ -299,7 +300,7 @@ const cancelPending = async function (pendingPostId) {
                 updatedContent.push(grocery);
             }
         }
-        console.log(updatedContent);
+        //console.log(updatedContent);
         await PostRepository.updatePost(originalPost._id, { content: updatedContent });
         const updatedPost = await PostRepository.getPostById(pendingPost.sourcePost);
 

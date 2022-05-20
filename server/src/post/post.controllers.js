@@ -102,7 +102,6 @@ const getPostsByGroceries = async function (req, res, next) {
 const getSuggestedPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        console.log('getsugcontrol');
         const posts = await PostService.getSuggestedPosts(req.params.userid);
         return res.status(200).json({ posts: posts, message: "Succesfully Suggested Posts Retrieved" });
     } catch (e) {
@@ -127,11 +126,11 @@ const addPost = async function (req, res, next) {
 
 const pendPost = async function (req, res, next) {
     try {
-        console.log("controller groceries: ", req.body.groceries);
+        //console.log("controller groceries: ", req.body.groceries);
         console.log('req.user = ' + req.user);
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
-        console.log("FINISHED PENDING WITH UPDATED POST: ", updatedPost);
-        console.log("FINISHED PENDING FROM PENDING POST: ", pendingPost);
+        //console.log("FINISHED PENDING WITH UPDATED POST: ", updatedPost);
+        //console.log("FINISHED PENDING FROM PENDING POST: ", pendingPost);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {
         console.log('controller error from pendPost: ' + e.message);

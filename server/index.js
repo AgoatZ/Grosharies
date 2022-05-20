@@ -23,7 +23,7 @@ const routeTags = require('./src/tag/tag.routes');
 const routeAuth = require('./src/auth/auth.routes');
 
 app.use(express.static(path.join(__dirname, 'client/build')));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '16mb'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(function(req, res, next) {
