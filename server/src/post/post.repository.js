@@ -133,7 +133,7 @@ const deletePost = async (postId) => {
 
 const updatePost = async (postId, postDetails) => {
     try {
-        console.log('repo update post: ', JSON.stringify(postDetails));
+        //console.log('repo update post: ', JSON.stringify(postDetails));
         let post = await Post.findByIdAndUpdate(postId, postDetails);
         post = await Post.findById(postId);
         return post;

@@ -4,6 +4,7 @@ const PendingRepository = require('./pending.repository');
 const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
+const UserService = require('../user/user.services');
 const router = express.Router();
 const oneHour = 60 * 60 * 60 * 1000;
 const Status = require('../enums/pending-status');
@@ -174,10 +175,58 @@ const getAllCancelledPosts = async function () {
     }
 };
 
-const updatePending = async function (postId, postDetails) {
+//TODO: update all relevant data in db
+const updatePending = async function (pendingId, pendingDetails) {
     try {
-        const oldPost = await PendingRepository.updatePending(postId, postDetails);
-        return oldPost;
+        const oldPending = await PendingRepository.updatePending(pendingId, pendingDetails);
+        const updatedPending = await PendingRepository.getPendingById(pendingId);
+        const post = await PostRepository.getPostById(oldPending.sourcePost);
+        const updatedContent = [];
+        const content = post.content;
+        const groceries = updatedPending.content;
+        const amountsToReduce = new Map();
+        for (let i in groceries) {
+            for (let j in oldPending.content) {
+                if (groceries[i].name === oldPending.content[j].name) {
+                    amountsToReduce.set(groceries[i].name, groceries[i].amount - oldPending.content[j].amount);
+                }
+            }
+        }
+
+        for (groceryIndex in content) {
+            let grocery = content[groceryIndex];
+            //console.log("grocery from post: ", grocery);
+            let isThere = false;
+            for (wantedGroceryIndex in groceries) {
+                let wantedGrocery = groceries[wantedGroceryIndex];
+                //console.log("grocery from array: ", wantedGrocery);
+                console.log("grocery name original: ", wantedGrocery.name);
+                console.log("grocery name wanted: ", grocery.original.name);
+                if (wantedGrocery.name === grocery.original.name) {
+                    //reduce amount and creat json for updating
+                    isThere = true;
+                    let left = grocery.left - amountsToReduce.get(wantedGrocery.name);
+                    if (left < 0 || left > grocery.original.amount) {
+                        throw Error('Requested amount is higher than available');
+                    }
+                    updatedContent.push({
+                        original: grocery.original,
+                        left: left
+                    });
+                }
+            }
+            if (!isThere) {
+                updatedContent.push(grocery);
+            }
+        }
+        //console.log('updatedContent: ', updatedContent);
+        await PostRepository.updatePost(post._id, { content: updatedContent });
+
+        const collector = await UserService.addToHistory(updatedPending.collectorId, pendingId);
+
+        const updatedPost = await PostRepository.getPostById(post._id);
+
+        return oldPending;
     } catch (e) {
         console.log('Pending service error from updatePending: ', e.message);
 
