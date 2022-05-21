@@ -8,9 +8,18 @@ const Pending = require('../pending/pending.model');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
+
 const packing = require('../enums/packing');
 const packs = Object.values(packing);
-const imgsFolderPath = path.join(path.resolve(), 'src', 'common', 'imgs');
+let a =path.resolve().split('\\');
+
+let folderPath='';
+a.splice(a.length-1,1);
+a.forEach(element => {
+    folderPath+=element+'\\'
+});
+
+const imgsFolderPath = path.join(folderPath, 'common', 'imgs');
 const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;
 
@@ -166,11 +175,11 @@ const init = async () => {
                 "firstName": "Jacob" + i,
                 "lastName": "Padre" + i,
                 "emailAddress": "jacob" + i + "@yahoo.com",
-                "password": "a1234567",
+                "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
                 "phone": "052373555" + i,
                 "source": "grosharies"
             });
-            user = await user.save();
+            await user.save();
 
             let postImg1 = fs.readFileSync(postImgPaths[i % 6], "base64");
             let postImg2 = fs.readFileSync(postImgPaths[(i+1) % 6], "base64");
@@ -272,7 +281,7 @@ const init = async () => {
                 "firstName": "Jacob" + i,
                 "lastName": "Padre" + i,
                 "emailAddress": "jacob" + i + "@yahoo.com",
-                "password": "123456",
+                "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
                 "phone": "052373555" + i,
                 "collectedHistory": pending._id
             });
