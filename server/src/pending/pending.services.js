@@ -52,10 +52,10 @@ const getPendingsByPublisher = async function (req) {
         let userId;
         if (req.params.id == 'current') {
             userId = req.user._id;
-            console.log("Service bypublisher from user._id userId:", userId)
+            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
             userId = req.params.id;
-            console.log("Service bypublisher from params userId:", userId)
+            //console.log("Service bypublisher from params userId:", userId)
         }
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByPublisher(userId);
         return { pendingPosts, finishedPendings, cancelledPendings };
@@ -120,7 +120,7 @@ const getPendingsByPost = async function (postId) {
 
 const addPending = async function (postDetails) {
     try {
-        console.log(postDetails);
+        //console.log(postDetails);
         const pendingPost = await PendingRepository.addPending(postDetails);
         await interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
 
@@ -201,8 +201,8 @@ const updatePending = async function (pendingId, pendingDetails) {
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
                 //console.log("grocery from array: ", wantedGrocery);
-                console.log("grocery name original: ", wantedGrocery.name);
-                console.log("grocery name wanted: ", grocery.original.name);
+                //console.log("grocery name original: ", wantedGrocery.name);
+                //console.log("grocery name wanted: ", grocery.original.name);
                 if (wantedGrocery.name === grocery.original.name) {
                     //reduce amount and creat json for updating
                     isThere = true;
@@ -285,9 +285,8 @@ const finishPending = async function (pendingPostId, user) {
 };
 
 const cancelPending = async function (pendingPostId) {
-    console.log("ENTERRED CANCEL PENDING FIRST");
     try {
-        console.log("cacncelling ID: ", pendingPostId);
+        //console.log("cacncelling ID: ", pendingPostId);
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
         //console.log("pendingPost at service from repository: ", pendingPost);
         if (pendingPost.status.finalStatus !== Status.PENDING) {

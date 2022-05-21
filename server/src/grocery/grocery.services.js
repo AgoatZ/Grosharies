@@ -74,39 +74,6 @@ const updateGrocery = async function (groceryId, groceryDetails) {
     }
 };
 
-// const updateImage = async (req, res) => {
-//     try {
-//         const r = Date.now() + Math.round(Math.random() * 1E9);
-//         const newFile = fs.createWriteStream(r.toString() + '.txt');
-//         const chData = [];
-//         newFile.on('open', () => {
-//             req.pipe(newFile, (error) => {
-//                 throw Error(error);
-//             });
-
-//             req.on('data', function (chunk, error) {
-//                 chData.push(chunk);
-//             });
-
-//             req.on('end', async (error) => {
-//                 const enc = Buffer.from(chData).toString("base64");
-//                 fs.rm(newFile.path, async (error) => {
-//                     if (error) {
-//                         throw Error(error);
-//                     } else {
-//                         const oldGrocery = await GroceryRepository.updateGrocery(req.params.id, { image: enc });
-//                         const grocery = await GroceryRepository.getGroceryById(oldGrocery._id);
-//                         newFile.close();
-//                         return res.status(200).json({ grocery: grocery, message: 'Successfully uploaded image' });
-//                     }
-//                 });
-//             });
-//         });
-//     } catch (err) {
-//         throw Error(err);
-//     }
-// };
-
 module.exports = {
     getGroceries,
     getGroceryById,
