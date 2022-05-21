@@ -18,5 +18,4 @@ router.get('/google/sign', AuthController.jwtSign);
 
 router.post('/logout', AuthController.logout);
 
-
 module.exports = router;
