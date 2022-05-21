@@ -1,6 +1,7 @@
-const UserService = require('./user.services');  
+const UserService = require('./user.services');
+const PostService = require('../post/post.services');
 
-getUsers = async function (req, res, next) {
+const getUsers = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
     const page = req.params.page ? req.params.page : 1;
@@ -16,7 +17,7 @@ getUsers = async function (req, res, next) {
 };
 
 
-getUserById = async function (req, res, next) {
+const getUserById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const user = await UserService.getUserById(req.params.id)
@@ -28,7 +29,7 @@ getUserById = async function (req, res, next) {
     }
 };
 
-addUser = async function (req, res, next) {
+const addUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
@@ -41,7 +42,7 @@ addUser = async function (req, res, next) {
     }
 };
 
-deleteUser = async function (req, res, next) {
+const deleteUser = async function (req, res, next) {
     try {
         const user = await UserService.deleteUser(req.params.id);
         return res.status(200).json({ user: user, message: "Succesfully User Deleted" });
@@ -52,7 +53,7 @@ deleteUser = async function (req, res, next) {
     }
 }
 
-updateUser = async function (req, res, next) {
+const updateUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
@@ -65,7 +66,7 @@ updateUser = async function (req, res, next) {
     }
 };
 
-getPickupHistory = async (req, res, next) => {
+const getPickupHistory = async (req, res, next) => {
     try{
         const history = await UserService.getPickupHistory(req.params.id);
         return res.status(200).json({ history: history, message: "Succesfully History Retrieved" });
@@ -76,15 +77,30 @@ getPickupHistory = async (req, res, next) => {
     }
 };
 
-getSuggestedPosts = async (req, res, next) => {
+const getSuggestedPosts = async (req, res, next) => {
     try{
-
+        const posts = await PostService.getSuggestedPosts(req.params.id);
     } catch (e) {
         console.log('controller error: ' + e.message);
 
         return res.status(400).json({ message: e.message });
     }
-}
+};
+
+const getUserProfile = async (req, res, next) => {
+    try{
+        const user = await UserService.getUserById(req.params.id);
+        const history = await UserService.getPickupHistory(req.params.id);
+        const posts = await PostService.getPostsByUser(req.params.id);
+        return res.status(200).json({ user: user, history: history, posts: posts, message: "Succesfully History Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+//TODO: Post Done
 
 module.exports = {
     getUsers,
@@ -92,5 +108,7 @@ module.exports = {
     addUser,
     deleteUser,
     updateUser,
-    getPickupHistory
+    getPickupHistory,
+    getSuggestedPosts,
+    getUserProfile
 }

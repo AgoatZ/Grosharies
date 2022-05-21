@@ -14,7 +14,10 @@ const post = new mongoose.Schema({
 }],
   status: { type: String, enum: status, required: true },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }], //TAG IS ALSO A MODEL, FUNCTIONS SIMILAR TO A CATEGORY
-  content: [{ type: Grocery.schema, required: true , default: []}],
+  content: [{
+    original: { type: Grocery.schema, required: true },
+    left: { type: Number, required: true }
+  }],
   description: String,
   images: [{ type: String, default: [] }],
   videos: [{ type: String, default: [] }],

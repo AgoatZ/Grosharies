@@ -9,7 +9,7 @@ const grocery = new mongoose.Schema({
   scale: { type: String, enum: scale, required: true },
   packing: { type: String, enum: packing, required: true },
   category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" , required: true},
-  image: { type: String, required: false }
+  images: { type: String, required: false , default: ''}
 });
 //
 

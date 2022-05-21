@@ -1,6 +1,7 @@
 const GroceryService = require('./grocery.services');  
+const imageUtil = require('../common/middlewares/image-upload');
 
-getGroceries = async function (req, res, next) {
+const getGroceries = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
     const page = req.params.page ? req.params.page : 1;
@@ -15,7 +16,7 @@ getGroceries = async function (req, res, next) {
     }
 };
 
-getGroceryById = async function (req, res, next) {
+const getGroceryById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const grocery = await GroceryService.getGroceryById(req.params.id)
@@ -27,7 +28,7 @@ getGroceryById = async function (req, res, next) {
     }
 };
 
-getGroceryByName = async function (req, res, next) {
+const getGroceryByName = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const grocery = await GroceryService.getGroceryByName(req.params.name);
@@ -39,7 +40,7 @@ getGroceryByName = async function (req, res, next) {
     }
 };
 
-addGrocery = async function (req, res, next) {
+const addGrocery = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
@@ -52,7 +53,7 @@ addGrocery = async function (req, res, next) {
     }
 };
 
-deleteGrocery = async function (req, res, next) {
+const deleteGrocery = async function (req, res, next) {
     try {
         const grocery = await GroceryService.deleteGrocery(req.params.id);
         return res.status(200).json({ grocery: grocery, message: "Succesfully grocery Deleted" });
@@ -63,7 +64,7 @@ deleteGrocery = async function (req, res, next) {
     }
 }
 
-updateGrocery = async function (req, res, next) {
+const updateGrocery = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
@@ -75,6 +76,23 @@ updateGrocery = async function (req, res, next) {
         return res.status(400).json({ message: e.message });
     }
 };
+
+// const updateImage = async function (req, res, next) {
+//     // Validate request parameters, queries using express-validator
+
+//     try {
+//         await imageUtil.uploadImage(req, res, answer => {
+//             req.body = { image: answer };
+//             next();
+//         });
+//         //const answer = await GroceryService.uploadImage(req, res);
+//         //return answer;
+//     } catch (e) {
+//         console.log('controller error: ' + e.message);
+
+//         return res.status(400).json({ message: e.message });
+//     }
+// };
 
 module.exports = {
     getGroceries,

@@ -5,146 +5,152 @@ const router = express.Router();
 const reply = require('../enums/post-reply');
 const Status = require('../enums/pending-status');
 
-getPendings = async (query) => {
+const getPendings = async (query) => {
     try {
         const pendingPosts = await Pending.find(query);
         return pendingPosts;
     } catch (e) {
         console.log('Pending repository error from getPendings: ', e.message);
 
-        throw Error('Error while Retrieving Posts: ' + e.message);
+        throw Error('Error while Retrieving Posts');
     }
 };
 
-getPendingById = async function (postId) {
+const getPendingById = async function (postId) {
     try {
         const pendingPost = await Pending.findById(postId);
         return pendingPost;
     } catch (e) {
         console.log('Pending repository error from getPendingById: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Post');
     }
 };
 
-getPendingsByPublisher = async function (userId) {
+const getPendingsByPublisher = async function (userId) {
     try {
-        const pendingPosts = await Pending.find({ 'publisherId': userId });
-        return pendingPosts;
+        console.log("bypublisher userId:", userId);
+        const cancelledPendings = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.CANCELLED });
+        const finishedPendings = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.COLLECTED });
+        const pendingPosts = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.PENDING });
+        return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending repository error from getPendingsByPublisher: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Post');
     }
 };
 
-getPendingsByCollector = async function (userId) {
+const getPendingsByCollector = async function (userId) {
     try {
-        const pendingPosts = await Pending.find({ 'collectorId': userId });
-        return pendingPosts;
+        console.log("bycollector userId:", userId)
+        const cancelledPendings = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.CANCELLED });
+        const finishedPendings = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.COLLECTED });
+        const pendingPosts = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.PENDING });
+        return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending repository error from getPendingsByCollector: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Posts');
     }
 };
 
-getPendingsByCategory = async function (categoryId) {
+const getPendingsByCategory = async function (categoryId) {
     try {
         const pendingPosts = await Pending.find({ 'content': { 'category': categoryId }});
         return pendingPosts;
     } catch (e) {
         console.log('Pending repository error from getPendingsByCategory: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Posts');
     }
 };
 
-getPendingsByTag = async function (tagId) {
+const getPendingsByTag = async function (tagId) {
     try {
         const pendingPosts = await Pending.find({ 'tags': tagId });
         return pendingPosts;
     } catch (e) {
         console.log('Pending repository error from getPendingsByTag: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Posts');
     }
 };
 
-getAllPendingPosts = async function () {
+const getPendingsByPost = async function (postId) {
     try {
-        const pendingPosts = await Pending.find({ 'status': Status.PENDING });
+        const pendingPosts = await Pending.find({ 'sourcePost': postId });
+        return pendingPosts;
+    } catch (e) {
+        console.log('Pending repository error from getPendingsByPost: ', e.message);
+
+        throw Error('Error while Retrieving Posts');
+    }
+};
+
+const getAllPendingPosts = async function () {
+    try {
+        const pendingPosts = await Pending.find({ 'status.finalStatus': Status.PENDING });
         return pendingPosts;
     } catch (e) {
         console.log('Pending repository error from getAllPendingPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Post');
     }
 };
 
-getAllFinishedPosts = async function () {
+const getAllFinishedPosts = async function () {
     try {
-        const finishedPosts = await Pending.find({ 'status': Status.COLLECTED });
+        const finishedPosts = await Pending.find({ 'status.finalStatus': Status.COLLECTED });
         return finishedPosts;
     } catch (e) {
         console.log('Pending repository error from getAllFinishedPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Post');
     }
 };
 
-getAllCancelledPosts = async function () {
+const getAllCancelledPosts = async function () {
     try {
-        const finishedPosts = await Pending.find({ 'status': Status.CANCELLED });
-        return finishedPosts;
+        const cancelledPosts = await Pending.find({ 'status.finalStatus': Status.CANCELLED });
+        return cancelledPosts;
     } catch (e) {
         console.log('Pending repository error from getAllCancellededPosts: ', e.message);
 
-        throw Error('Error while Retrieving Post: ' + e.message);
+        throw Error('Error while Retrieving Post');
     }
 };
 
-addPending = async function (postDetails) {
+const addPending = async function (postDetails) {
     try {
         const pendingPost = new Pending(postDetails);
         return await pendingPost.save();
     } catch (e) {
         console.log('Pending repository error from addPending: ', e.message);
         
-        throw Error('Error while Adding Post: ' + e.message);
+        throw Error('Error while Adding Post');
     }
 };
 
-deletePending = async function (postId) {
+const deletePending = async function (postId) {
     try {
         const deletedPendingPost = await Pending.findByIdAndDelete(postId);
         return deletedPendingPost;
     } catch (e) {
         console.log('Pending repository error from deletePending: ', e.message);
 
-        throw Error('Error while Deleting Post: ' + e.message);
+        throw Error('Error while Deleting Post');
     }
 };
 
-updatePending = async function (postId, postDetails) {
+const updatePending = async function (postId, postDetails) {
     try {
         const oldPendingPost = await Pending.findByIdAndUpdate(postId, postDetails);
         return oldPendingPost;
     } catch (e) {
         console.log('Pending repository error from updatePending: ', e.message);
 
-        throw Error('Error while Updating Post: ' + e.message);
-    }
-};
-
-const updatePendingStatus = async function (postId, updatedStatus) {
-    try {
-        const oldPost = await Pending.findByIdAndUpdate(postId, {status: updatedStatus});
-        return oldPost;
-    } catch (e) {
-        console.log('Pending repository error from updatePendingStatus: ', e.message);
-
-        throw Error(e);
+        throw Error('Error while Updating Post');
     }
 };
 
@@ -155,11 +161,11 @@ module.exports = {
     getPendingsByCategory,
     getPendingsByTag,
     getPendingsByCollector,
+    getPendingsByPost,
     getAllFinishedPosts,
     getAllPendingPosts,
     getAllCancelledPosts,
     addPending,
     deletePending,
     updatePending,
-    updatePendingStatus
 }

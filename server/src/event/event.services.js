@@ -71,6 +71,10 @@ deleteEvent = async function (eventId) {
 
 updateEvent = async function (eventId, eventDetails) {
     try {
+        if(eventDetails.image) {
+            eventDetails.images = eventDetails.image;
+            delete eventDetails['image'];
+        }
         const oldEvent = await Repository.updateEvent(eventId, eventDetails);
         return oldEvent;
     } catch (e) {

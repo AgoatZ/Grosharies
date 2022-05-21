@@ -34,11 +34,11 @@ const register = async (user) => {
 }
 
 const login = async (email, password) => {
+    console.log('Email:', email, 'Password:', password);
     if (email == null || password == null) {
         throw Error('missing email or password');
     }
     try {
-        //TODO:ADD SOURCE GROSHARIES AND EXCHANGE SWITCH WITH IF
         const user = await UserRepository.getUserByEmail(email);
         if (user == null) {
             throw Error('wrong email or password');

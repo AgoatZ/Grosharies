@@ -3,6 +3,7 @@ const { status } = require('express/lib/response');
 const Post = require('./post.model');
 const router = express.Router();
 const reply = require('../enums/post-reply');
+const postStatus = require('../enums/post-status');
 
 const getPosts = async (query) => {
     try {
@@ -18,9 +19,22 @@ const getPosts = async (query) => {
 const getRelevantPosts = async () => {
     try {
         const posts = await Post.find({}).where('pickUpDates.from').
-        lt(Date.now()).
-        where('pickUpDates.until').
-        gt(Date.now());
+            lt(Date.now()).
+            where('pickUpDates.until').
+            gt(Date.now());
+        return posts;
+    } catch (e) {
+        console.log('repository error: ' + e.message);
+
+        throw Error('Error while Retrieving Posts: ' + e.message);
+    }
+};
+
+const getPublisherOpenPosts = async (publisherId) => {
+    try {
+        const posts = await Post.find({ userId: publisherId }).
+        where('status').
+        in([postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE]);
         return posts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -86,7 +100,7 @@ const getPostsByCollector = async (userId) => {
 
 const getPostsByGroceries = async (groceries) => {
     try {
-        const posts = await Post.find({}).where('content.name').in(groceries);
+        const posts = await Post.find({}).where('content.original.name').in(groceries);
         return posts;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -119,8 +133,10 @@ const deletePost = async (postId) => {
 
 const updatePost = async (postId, postDetails) => {
     try {
-        const oldPost = await Post.findByIdAndUpdate(postId, postDetails);
-        return oldPost;
+        console.log('repo update post: ', JSON.stringify(postDetails));
+        let post = await Post.findByIdAndUpdate(postId, postDetails);
+        post = await Post.findById(postId);
+        return post;
     } catch (e) {
         console.log('repository error: ' + e.message);
 
@@ -148,6 +164,7 @@ module.exports = {
     getPostsByCollector,
     getPostsByGroceries,
     getRelevantPosts,
+    getPublisherOpenPosts,
     addPost,
     deletePost,
     updatePost,

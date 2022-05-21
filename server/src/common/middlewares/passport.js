@@ -15,15 +15,13 @@ var cookieExtractor = function (req) {
 
 var opts = {}
 opts.jwtFromRequest = cookieExtractor;
-opts.secretOrKey =  process.env.ACCESS_TOKEN_SECRET;
-passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
+opts.secretOrKey = process.env.ACCESS_TOKEN_SECRET;
+passport.use(new JwtStrategy(opts, async function (jwt_payload, done) {
     const user = await User.getUserById(jwt_payload.id);
     try {
         if (user) {
-            console.log('USER RETURNED AND JWT PAYLOAD IS ', jwt_payload);
             return done(null, user);
         } else {
-            console.log('RETURNED NULL AND JWT PAYLOAD IS ', jwt_payload);
             return done(null, false);
         }
     } catch (err) {
@@ -36,10 +34,10 @@ passport.use(new GoogleStrategy({
     callbackURL: process.env.GOOGLE_CALLBACK_URL,
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    scope: [ 'profile' ]
-    }, async function verify(issuer, profile, cb) {
-        try {
-            console.log('passgoogle');
+    scope: ['profile']
+}, async function verify(issuer, profile, cb) {
+    try {
+        console.log('passgoogle');
         var credentials = await FederatedCredential.getFederatedCredentialByProviderAndSubject(issuer, profile.id);
         console.log('credentials:', credentials);
         if (!credentials) {
@@ -72,8 +70,8 @@ passport.use(new GoogleStrategy({
 
 const authGoogle = passport.authenticate("google", { scope: ["profile", "email"] });
 const authGoogleCallback = passport.authenticate("google", {
-      failureRedirect: "/",
-      successRedirect: "/api/auth/google/sign",
+    failureRedirect: "/",
+    successRedirect: "/api/auth/google/sign",
     //   failureFlash: true,
     //   successFlash: "Successfully logged in!",
 });

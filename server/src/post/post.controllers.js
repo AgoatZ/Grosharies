@@ -1,8 +1,8 @@
-const PostService = require('./post.services');  
+const PostService = require('./post.services');
 
 const getPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
-    
+
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
@@ -31,6 +31,18 @@ const getPostsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const posts = await PostService.getPostsByUser(req.params.id);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const getPublisherOpenPosts = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PostService.getPublisherOpenPosts(req);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -116,14 +128,15 @@ const addPost = async function (req, res, next) {
 const pendPost = async function (req, res, next) {
     try {
         console.log("controller groceries: ", req.body.groceries);
-        const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.body.collectorId, req.body.groceries);
-        console.log("FINISHED PENDING WITH UPDATED POST: ",updatedPost);
-        console.log("FINISHED PENDING FROM PENDING POST: ",pendingPost);
+        console.log('req.user = ' + req.user);
+        const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
+        console.log("FINISHED PENDING WITH UPDATED POST: ", updatedPost);
+        console.log("FINISHED PENDING FROM PENDING POST: ", pendingPost);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {
         console.log('controller error from pendPost: ' + e.message);
 
-        return res.status(400).json({message: e.message});
+        return res.status(400).json({ message: e.message });
     }
 }
 
@@ -151,6 +164,19 @@ const updatePost = async function (req, res, next) {
     }
 };
 
+// const updateImage = async function (req, res, next) {
+//     // Validate request parameters, queries using express-validator
+
+//     try {
+//         const answer = await PostService.updateImage(req, res);
+//         return answer;
+//     } catch (e) {
+//         console.log('controller error: ' + e.message);
+
+//         return res.status(400).json({ message: e.message });
+//     }
+// };
+
 module.exports = {
     getPosts,
     getPostById,
@@ -160,6 +186,7 @@ module.exports = {
     getPostsByCollector,
     getPostsByGroceries,
     getSuggestedPosts,
+    getPublisherOpenPosts,
     addPost,
     pendPost,
     deletePost,
