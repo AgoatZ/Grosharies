@@ -71,10 +71,10 @@ const getPendingsByCollector = async function (req) {
         let userId;
         if (req.params.id == 'current') {
             userId = req.user._id;
-            console.log("Service bycollector from user._id userId:", userId);
+            //console.log("Service bycollector from user._id userId:", userId);
         } else {
             userId = req.params.id;
-            console.log("Service bycollector from params userId:", userId);
+            //console.log("Service bycollector from params userId:", userId);
         }
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByCollector(userId);
         return { pendingPosts, finishedPendings, cancelledPendings };
@@ -236,10 +236,10 @@ const updatePending = async function (pendingId, pendingDetails) {
 const setCollectorStatement = async function (pendingId, user) {
     try {
         const pending = await PendingRepository.getPendingById(pendingId);
-        if (user != null && user._id != pending.collectorId) {
+        if (user != null && user._id.toString() != pending.collectorId.toString()) {
             throw Error('This user is not allowed to do that');
         }
-        const oldPending = await PendingRepository.updatePending({ status: { collectorStatement: "collected" }});
+        const oldPending = await PendingRepository.updatePending(pendingId, { 'status.collectorStatement': "collected" });
         return oldPending;
     } catch (e) {
         console.log('Pending service error from setCollectorStatement: ', e.message);
@@ -254,8 +254,11 @@ const finishPending = async function (pendingPostId, user) {
         if (pendingPost.status.finalStatus !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
         }
-        if (user != null && user._id !== pendingPost.publisherId && user._id !== pendingPost.collectorId) {
+        if ((user != null) && (user._id.toString() !==  pendingPost.publisherId.toString()) && (user._id.toString() !== pendingPost.collectorId.toString())) {
             throw Error('This user is not allowed to do that');
+        }
+        if(user != null && user._id.toString() === pendingPost.collectorId.toString()) {
+            return await setCollectorStatement(pendingPostId, user);
         }
         const trafficGroceries = [];
         const content = pendingPost.content;
