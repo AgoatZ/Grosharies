@@ -270,7 +270,7 @@ const finishPending = async function (pendingPostId, user) {
             trafficGrocery = await GroceryRepository.getGroceryByName(grocery.name);
             trafficGroceries.push(trafficGrocery);
         }
-        await PendingRepository.updatePending(pendingPostId, { status: { finalStatus: Status.COLLECTED }});
+        await PendingRepository.updatePending(pendingPostId, { 'status.finalStatus': Status.COLLECTED });
 
         const postCurrentStatus = await evaluatePostStatus(pendingPost.sourcePost);
         await PostRepository.updatePost(pendingPost.sourcePost, { status: postCurrentStatus });
@@ -325,7 +325,7 @@ const cancelPending = async function (pendingPostId) {
         await PostRepository.updatePost(originalPost._id, { content: updatedContent });
         const updatedPost = await PostRepository.getPostById(pendingPost.sourcePost);
 
-        await PendingRepository.updatePending(pendingPostId, { status: { finalStatus: Status.CANCELLED }});
+        await PendingRepository.updatePending(pendingPostId, { 'status.finalStatus': Status.CANCELLED });
 
         const cancelledPost = await PendingRepository.getPendingById(pendingPostId);
 
