@@ -152,17 +152,16 @@ const pendPost = async (postId, collectorId, groceries) => {
         const post = await PostRepository.getPostById(postId);
         const updatedContent = [];
         const content = post.content;
-        const groceriesSchemaArr = [];
 
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
-            //console.log("grocery from post: ", grocery);
+            console.log("grocery from post: ", grocery);
             let isThere = false;
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
-                //console.log("grocery from array: ", wantedGrocery);
-                //console.log("grocery name original: ", wantedGrocery.name);
-                //console.log("grocery name wanted: ", grocery.original.name);
+                console.log("grocery from array: ", wantedGrocery);
+                console.log("grocery name original: ", wantedGrocery.name);
+                console.log("grocery name wanted: ", grocery.original.name);
                 if (wantedGrocery.name === grocery.original.name) {
                     //reduce amount and creat json for updating
                     isThere = true;
@@ -174,29 +173,20 @@ const pendPost = async (postId, collectorId, groceries) => {
                         original: grocery.original,
                         left: left
                     });
-                    let groSchema = {
-                        name: wantedGrocery.name,
-                        amount: wantedGrocery.amount,
-                        scale: grocery.original.scale,
-                        packing: grocery.original.packing,
-                        category: grocery.original.category,
-                        images: grocery.original.images
-                      };
-                    groceriesSchemaArr.push(groSchema);
                 }
             }
             if (!isThere) {
                 updatedContent.push(grocery);
             }
         }
-        //console.log('updatedContent: ', updatedContent);
+        console.log('updatedContent', updatedContent);
         await PostRepository.updatePost(postId, { content: updatedContent });
-        console.log('schema array:', groceriesSchemaArr);
+
         const oneHour = 60 * 60 * 1000;
         const pendingPost = await PendingService.addPending({
             headline: post.headline,
             address: post.address,
-            content: groceriesSchemaArr,
+            content: groceries,
             sourcePost: post._id,
             publisherId: post.userId,
             collectorId: collectorId,

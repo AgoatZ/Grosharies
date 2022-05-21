@@ -126,8 +126,8 @@ const addPost = async function (req, res, next) {
 
 const pendPost = async function (req, res, next) {
     try {
-        //console.log("controller groceries: ", req.body.groceries);
-        console.log('req.user = ' + req.user);
+        console.log("controller groceries: ", req.body.groceries);
+        console.log('req.params = ' + req.params);
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
         //console.log("FINISHED PENDING WITH UPDATED POST: ", updatedPost);
         //console.log("FINISHED PENDING FROM PENDING POST: ", pendingPost);
