@@ -47,19 +47,24 @@ const MyPosts = () => {
 
   const loadMyPosts = () => {
     axios.get("posts/openPosts/current").then((res) => {
-      console.log(JSON.stringify(res.data));
       setPosts(res.data.posts);
+    });
+
+    axios.get("pendings/publisher/current").then((res) => {
+      console.log(JSON.stringify(res.data));
+      setPendingsForPost(res.data.pendings);
     });
   };
 
   const loadPendingsForSpecificPost = (post) => {
-    // axios.get("pendings/post" + post._id).then((res) => {
-    //   console.log(JSON.stringify(res.data));
-
-    // });
-    console.log(post);
+    const pendingsByPost = axios.get("pendings/post/" + post._id);
+    console.log(JSON.stringify(pendingsByPost.data));
     return (
-      <RenderOrders posts={[post]} isFinished={false} isCanceled={false} />
+      <RenderOrders
+        posts={pendingsByPost.data.pendings}
+        isFinished={false}
+        isCanceled={false}
+      />
     );
   };
 
@@ -132,17 +137,14 @@ const MyPosts = () => {
                   </Box>
                   {/* {approveOrCancelSection("publisher", post._id)} */}
                 </Box>
-                <Popper {...bindPopper(popupState)} transition>
+                {loadPendingsForSpecificPost(post)}
+                {/* <Popper {...bindPopper(popupState)} transition>
                   {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={350}>
-                      <Paper>
-                        <Typography sx={{ p: 2 }}>
-                          {loadPendingsForSpecificPost(post)}
-                        </Typography>
-                      </Paper>
+                      <Paper>{loadPendingsForSpecificPost(post)}</Paper>
                     </Fade>
                   )}
-                </Popper>
+                </Popper> */}
               </Box>
             </div>
           )}

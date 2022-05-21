@@ -21,6 +21,25 @@ const routeCategories = require('./src/category/category.routes');
 const routeTags = require('./src/tag/tag.routes');
 const routeAuth = require('./src/auth/auth.routes');
 
+if (process.env.NODE_ENV == "development") {
+  const swaggerUI = require("swagger-ui-express")
+  const swaggerJsDoc = require("swagger-jsdoc")
+  const options = {
+      definition: {
+          openapi: "3.0.0",
+          info: {
+              title: "Grosharies API",
+              version: "1.0.0",
+              description: "A zero-waste groceries sharing platform API",
+          },
+          servers: [{url: "http://localhost:" + process.env.PORT,},],
+      },
+      apis: ["./src/user/*.routes.js"],
+  };
+  const specs = swaggerJsDoc(options);
+  app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+}
+
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json({ limit: '16mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));

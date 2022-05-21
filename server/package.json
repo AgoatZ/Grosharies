@@ -38,6 +38,8 @@
   "devDependencies": {
     "jest": "^27.5.1",
     "prettier": "^1.18.2",
-    "supertest": "^6.2.2"
+    "supertest": "^6.2.2",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.4.0"
   }
 }

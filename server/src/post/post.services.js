@@ -111,7 +111,6 @@ const addPost = async (postDetails) => {
     try {
         postDetails.content.left = postDetails.content.original.amount;
         const post = await PostRepository.addPost(postDetails);
-        console.log('service: ' + post);
 
         return post;
     } catch (e) {
@@ -147,6 +146,7 @@ const updatePost = async (postId, postDetails) => {
     }
 };
 
+//TODO: fix it
 const pendPost = async (postId, collectorId, groceries) => {
     try {
         const post = await PostRepository.getPostById(postId);

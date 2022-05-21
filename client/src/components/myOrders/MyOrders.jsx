@@ -274,7 +274,9 @@ const approveOrderComplete = (role, postId) => {
     showConfirmButton: true,
     confirmButtonText: "yes",
   }).then((result) => {
-    role === "collector" ? (route = "") : (route = "pendings/finish/" + postId);
+    role === "collector"
+      ? (route = "pendings/collector/finish/" + postId)
+      : (route = "pendings/finish/" + postId);
     if (result.isConfirmed) {
       axios.post(route).then((res) => {
         console.log(res.data);
