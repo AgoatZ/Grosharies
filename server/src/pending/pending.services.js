@@ -232,12 +232,15 @@ const updatePending = async function (pendingId, pendingDetails) {
         throw Error('Error while Updating Pendings');
     }
 };
-
-const finishPending = async function (pendingPostId) {
+//TODO:change pending collector status
+const finishPending = async function (pendingPostId, user) {
     try {
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
         if (pendingPost.status.finalStatus !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
+        }
+        if (user != null && user._id !== pendingPost.publisherId && user._id !== pendingPost.collectorId) {
+
         }
         const trafficGroceries = [];
         const content = pendingPost.content;

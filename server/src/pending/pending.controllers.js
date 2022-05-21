@@ -163,7 +163,7 @@ const updatePending = async function (req, res, next) {
 const finishPending = async function (req, res, next) {
     try {
         console.log('Enterred finishPending Controller');
-        const {finishedPending, trafficGroceries} = await PendingService.finishPending(req.params.id);
+        const {finishedPending, trafficGroceries} = await PendingService.finishPending(req.params.id, req.user);
         return res.status(200).json({ post: finishedPending, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
     } catch (e) {
         console.log('Pending controller error from finishPending: ' + e.message);
@@ -174,7 +174,7 @@ const finishPending = async function (req, res, next) {
 
 const cancelPending = async function (req, res, next) {
     try {
-        const {cancelledPost, updatedPost} = await PendingService.cancelPending(req.params.id);
+        const {cancelledPost, updatedPost} = await PendingService.cancelPending(req.params.id, req.user);
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
