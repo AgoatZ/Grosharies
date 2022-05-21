@@ -160,6 +160,17 @@ const updatePending = async function (req, res, next) {
     }
 };
 
+const setCollectorStatement = async function (req, res, next) {
+    try {
+        const oldPending = await PendingService.setCollectorStatement(req.params.id, req.user);
+        return res.status(200).json({ oldPending: oldPending, message: "Succesfully Post Updated" });
+    } catch (e) {
+        console.log('Pending service error from setCollectorStatement: ', e.message);
+
+        throw Error('Error while changing statement Posts');
+    }
+};
+
 const finishPending = async function (req, res, next) {
     try {
         console.log('Enterred finishPending Controller');
@@ -183,6 +194,17 @@ const cancelPending = async function (req, res, next) {
     }
 };
 
+const getPendingsByPost = async (req, res, next) => {
+    try {
+        const pendings = await PendingService.getPendingsByPost(req.params.id);
+        return res.status(200).json({ pendings: pendings, message: "Succesfully retrieved pendings" });
+    } catch (e) {
+        console.log('Pending controller error from cancelPending: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 module.exports = {
     getPendings,
     getGroupedPendings,
@@ -194,9 +216,11 @@ module.exports = {
     getAllFinishedPosts,
     getAllPendingPosts,
     getAllCancelledPosts,
+    getPendingsByPost,
     addPending,
     finishPending,
     cancelPending,
     deletePending,
-    updatePending
+    updatePending,
+    setCollectorStatement
 }

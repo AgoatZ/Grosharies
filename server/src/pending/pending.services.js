@@ -233,6 +233,21 @@ const updatePending = async function (pendingId, pendingDetails) {
     }
 };
 //TODO:change pending collector status
+const setCollectorStatement = async function (pendingId, user) {
+    try {
+        const pending = await PendingRepository.getPendingById(pendingId);
+        if (user != null && user._id != pending.collectorId) {
+            throw Error('This user is not allowed to do that');
+        }
+        const oldPending = await PendingRepository.updatePending({ status: { collectorStatement: "collected" }});
+        return oldPending;
+    } catch (e) {
+        console.log('Pending service error from setCollectorStatement: ', e.message);
+
+        throw Error('Error while changing statement Posts');
+    }
+};
+
 const finishPending = async function (pendingPostId, user) {
     try {
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
@@ -240,7 +255,7 @@ const finishPending = async function (pendingPostId, user) {
             throw Error('Pending Post is not pending anymore!');
         }
         if (user != null && user._id !== pendingPost.publisherId && user._id !== pendingPost.collectorId) {
-
+            throw Error('This user is not allowed to do that');
         }
         const trafficGroceries = [];
         const content = pendingPost.content;
@@ -437,5 +452,6 @@ module.exports = {
     cancelPending,
     deletePending,
     updatePending,
-    evaluatePostStatus
+    evaluatePostStatus,
+    setCollectorStatement
 }
