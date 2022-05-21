@@ -1,8 +1,5 @@
 const express = require('express');
-const { status } = require('express/lib/response');
 const Pending = require('./pending.model');
-const router = express.Router();
-const reply = require('../enums/post-reply');
 const Status = require('../enums/pending-status');
 
 const getPendings = async (query) => {

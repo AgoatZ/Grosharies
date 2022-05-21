@@ -1,8 +1,8 @@
-const PendingService = require('./pending.services');  
+const PendingService = require('./pending.services');
 
 const getPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
-    
+
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
@@ -174,7 +174,7 @@ const finishPending = async function (req, res, next) {
 
 const cancelPending = async function (req, res, next) {
     try {
-        const {cancelledPost, updatedPost} = await PendingService.cancelPending(req.params.id, req.user);
+        const { cancelledPost, updatedPost } = await PendingService.cancelPending(req.params.id);
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);

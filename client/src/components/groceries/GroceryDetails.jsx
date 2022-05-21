@@ -21,14 +21,12 @@ const GroceryDetails = () => {
     loadPostsByGroceries();
   }, []);
   const grocery = useLocation().state;
-  console.log(JSON.stringify(grocery));
   const loadPostsByGroceries = () => {
     axios
       .post("/api/posts/bygroceries", {
         groceries: [grocery.name],
       })
       .then((res) => {
-        console.log(res.data.posts);
         setPosts(res.data.posts);
       });
   };
