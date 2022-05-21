@@ -198,7 +198,6 @@ const updatePending = async function(postId, postDetails) {
 
 const finishPending = async function(pendingPostId) {
   try {
-    console.log(pendingPostId);
     let pendingPost = await PendingRepository.getPendingById(pendingPostId);
     if (pendingPost.status.finalStatus !== Status.PENDING) {
       throw Error("Pending Post is not pending anymore!");

@@ -11,7 +11,6 @@ const session = require('express-session');
 const passport = require('passport');
 require('./src/common/middlewares/passport');
 
-
 const routeTasks = require('./src/routes/tasks');
 const routeUsers = require('./src/user/user.routes');
 const routePosts = require('./src/post/post.routes');
@@ -23,7 +22,7 @@ const routeTags = require('./src/tag/tag.routes');
 const routeAuth = require('./src/auth/auth.routes');
 
 app.use(express.static(path.join(__dirname, 'client/build')));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '16mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(function(req, res, next) {
