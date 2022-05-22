@@ -11,6 +11,7 @@ const grocery = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" , required: true},
   images: { type: String, required: false , default: ''}
 });
+//
 
 const Grocery = mongoose.model('Grocery', grocery, 'Grocery');
 
