@@ -10,14 +10,8 @@ import {
   Paper,
 } from "@mui/material";
 import axios from "../../utils/axios";
-import CloseIcon from "@mui/icons-material/Close";
-import CheckIcon from "@mui/icons-material/Check";
 import { approveOrCancelSection, RenderOrders } from "../myOrders/MyOrders";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import PopupState, { bindToggle, bindPopper } from "material-ui-popup-state";
-
-const MySwal = withReactContent(Swal);
 
 const MyPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -27,49 +21,25 @@ const MyPosts = () => {
     loadMyPosts();
   }, []);
 
-  const cancelPost = (postId) => {
-    MySwal.fire({
-      title: <strong>Are you sure you want to cancel the order?</strong>,
-      icon: "info",
-      showCancelButton: true,
-      cancelButtonText: "no",
-      showConfirmButton: true,
-      confirmButtonText: "yes",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios.post("pendings/cancel/" + postId).then((res) => {
-          console.log(res.data);
-          window.location.reload();
-        });
-      }
-    });
+
+  const loadMyPosts = async () => {
+    axios.get("posts/openPosts/current").then((openPostsRes) => {
+      let filterArray = [];
+      axios.get("pendings/").then((res) => {
+        for (const post of openPostsRes.data.posts) {
+          filterArray.push(res.data.posts.filter((pending) => {
+            return pending.status.finalStatus === "pending" && post._id === pending.sourcePost
+          }))
+        }
+        setPendingsForPost(filterArray);
+        setPosts(openPostsRes.data.posts);
+      });
+    })
   };
 
-  const loadMyPosts = () => {
-    axios.get("posts/openPosts/current").then((res) => {
-      setPosts(res.data.posts);
-    });
-
-    axios.get("pendings/publisher/current").then((res) => {
-      console.log(JSON.stringify(res.data));
-      setPendingsForPost(res.data.pendings);
-    });
-  };
-
-  const loadPendingsForSpecificPost = (post) => {
-    const pendingsByPost = axios.get("pendings/post/" + post._id);
-    console.log(JSON.stringify(pendingsByPost.data));
-    return (
-      <RenderOrders
-        posts={pendingsByPost.data.pendings}
-        isFinished={false}
-        isCanceled={false}
-      />
-    );
-  };
 
   const RenderPosts = ({ posts }) =>
-    posts.map((post) => {
+    posts.map((post, index) => {
       return (
         <PopupState variant="popper" popupId="demo-popup-popper">
           {(popupState) => (
@@ -137,14 +107,15 @@ const MyPosts = () => {
                   </Box>
                   {/* {approveOrCancelSection("publisher", post._id)} */}
                 </Box>
-                {loadPendingsForSpecificPost(post)}
-                {/* <Popper {...bindPopper(popupState)} transition>
+                <Popper {...bindPopper(popupState)} transition>
                   {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={350}>
-                      <Paper>{loadPendingsForSpecificPost(post)}</Paper>
+                      <Paper>
+                        <RenderOrders role="publisher" isFinished={false} isCanceled={false} posts={pendingsForPost[index]}></RenderOrders>
+                      </Paper>
                     </Fade>
                   )}
-                </Popper> */}
+                </Popper>
               </Box>
             </div>
           )}

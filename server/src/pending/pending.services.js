@@ -200,9 +200,6 @@ const updatePending = async function (pendingId, pendingDetails) {
             let isThere = false;
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
-                //console.log("grocery from array: ", wantedGrocery);
-                console.log("grocery name original: ", wantedGrocery.name);
-                console.log("grocery name wanted: ", grocery.original.name);
                 if (wantedGrocery.name === grocery.original.name) {
                     //reduce amount and creat json for updating
                     isThere = true;
@@ -236,11 +233,20 @@ const updatePending = async function (pendingId, pendingDetails) {
 const setCollectorStatement = async function (pendingId, user) {
     try {
         const pending = await PendingRepository.getPendingById(pendingId);
-        if (user != null && user._id != pending.collectorId) {
+        if (user && !user._id.equals(pending.collectorId)) {
             throw Error('This user is not allowed to do that');
         }
-        const oldPending = await PendingRepository.updatePending({ status: { collectorStatement: "collected" }});
-        return oldPending;
+        const oldPending = await PendingRepository.updatePending(pendingId,{
+             status: { 
+                 collectorStatement: "collected",
+                 publisherStatement: "pending",
+                 finalStatus: "pending"
+            }
+        }
+    );
+    
+    return oldPending;
+    
     } catch (e) {
         console.log('Pending service error from setCollectorStatement: ', e.message);
 
@@ -254,7 +260,8 @@ const finishPending = async function (pendingPostId, user) {
         if (pendingPost.status.finalStatus !== Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
         }
-        if (user != null && user._id !== pendingPost.publisherId && user._id !== pendingPost.collectorId) {
+
+        if (user  && !user._id.equals(pendingPost.publisherId) && !user._id.equals(pendingPost.collectorId)) {
             throw Error('This user is not allowed to do that');
         }
         const trafficGroceries = [];

@@ -83,15 +83,16 @@ const calculateTimeLeft = (pendingPost) => {
   );
 
   return today.getTime() > untilDate.getTime()
-    ? `Time's Up!`
+    ? (pendingPost.status.collectorStatement === "collected") ? approveOrderComplete("publisher", pendingPost._id)
+      : cancelOrder(pendingPost._id)
     : ("0" + days).slice(-2) +
-        ":" +
-        ("0" + hours).slice(-2) +
-        ":" +
-        ("0" + minutes).slice(-2) +
-        ":" +
-        ("0" + seconds).slice(-2) +
-        " left for the order";
+    ":" +
+    ("0" + hours).slice(-2) +
+    ":" +
+    ("0" + minutes).slice(-2) +
+    ":" +
+    ("0" + seconds).slice(-2) +
+    " left for the order";
 };
 
 const myOrderDetails = (orderDetails, navigate) => {
@@ -169,7 +170,7 @@ const handleFinishedOrCanceled = (isFinished) => {
   );
 };
 
-export const RenderOrders = ({ posts, isFinished, isCanceled }) => {
+export const RenderOrders = ({ posts, isFinished, isCanceled, role = "collector" }) => {
   let navigate = useNavigate();
   return posts.map((post) => {
     const timeLeft =
@@ -250,19 +251,23 @@ export const RenderOrders = ({ posts, isFinished, isCanceled }) => {
             </Box>
             {!timeLeft
               ? handleFinishedOrCanceled(
-                  isFinished && !isCanceled
-                ) /* returns true if finished, and false if canceled*/
+                isFinished && !isCanceled
+              ) /* returns true if finished, and false if canceled*/
               : null}
           </Box>
-
           {!isFinished && !isCanceled
-            ? approveOrCancelSection("collector", post._id)
+            ? (post.status.collectorStatement === "pending") ? approveOrCancelSection(role, post._id)
+              : (role === "collector") ? waitForPublisherSection() : approveOrCancelSection(role, post._id)
             : null}
         </Box>
       </Box>
     );
   });
 };
+
+const waitForPublisherSection = () => {
+  return <Typography>this is wait for publisher section</Typography>;
+}
 
 const approveOrderComplete = (role, postId) => {
   let route;
@@ -283,7 +288,7 @@ const approveOrderComplete = (role, postId) => {
         window.location.reload();
       });
     }
-  });
+  })
 };
 
 const cancelOrder = (postId) => {
@@ -305,6 +310,7 @@ const cancelOrder = (postId) => {
 };
 
 export const approveOrCancelSection = (role, postId) => {
+
   return (
     <>
       <Divider color="black" sx={{ width: "1px" }} />
