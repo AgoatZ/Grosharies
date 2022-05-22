@@ -50,7 +50,7 @@ const getPendingById = async function (postId) {
 const getPendingsByPublisher = async function (req) {
     try {
         let userId;
-        if (req.params.id == 'current') {
+        if (req.params.id.equals('current')) {
             userId = req.user._id;
             //console.log("Service bypublisher from user._id userId:", userId)
         } else {
@@ -69,7 +69,7 @@ const getPendingsByPublisher = async function (req) {
 const getPendingsByCollector = async function (req) {
     try {
         let userId;
-        if (req.params.id == 'current') {
+        if (req.params.id.equals('current')) {
             userId = req.user._id;
             //console.log("Service bycollector from user._id userId:", userId);
         } else {
@@ -188,7 +188,7 @@ const updatePending = async function (pendingId, pendingDetails) {
         const amountsToReduce = new Map();
         for (let i in groceries) {
             for (let j in oldPending.content) {
-                if (groceries[i].name === oldPending.content[j].name) {
+                if (groceries[i].name.equals(oldPending.content[j].name)) {
                     amountsToReduce.set(groceries[i].name, groceries[i].amount - oldPending.content[j].amount);
                 }
             }
@@ -203,7 +203,7 @@ const updatePending = async function (pendingId, pendingDetails) {
                 //console.log("grocery from array: ", wantedGrocery);
                 //console.log("grocery name original: ", wantedGrocery.name);
                 //console.log("grocery name wanted: ", grocery.original.name);
-                if (wantedGrocery.name === grocery.original.name) {
+                if (wantedGrocery.name.equals(grocery.original.name)) {
                     //reduce amount and creat json for updating
                     isThere = true;
                     let left = grocery.left - amountsToReduce.get(wantedGrocery.name);
@@ -251,13 +251,13 @@ const setCollectorStatement = async function (pendingId, user) {
 const finishPending = async function (pendingPostId, user) {
     try {
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
-        if (pendingPost.status.finalStatus !== Status.PENDING) {
+        if (!pendingPost.status.finalStatus.equals(Status.PENDING)) {
             throw Error('Pending Post is not pending anymore!');
         }
-        if ((user != null) && (user._id.toString() !==  pendingPost.publisherId.toString()) && (user._id.toString() !== pendingPost.collectorId.toString())) {
+        if (user && !user._id.equals(pendingPost.publisherId) && !user._id.equals(pendingPost.collectorId)) {
             throw Error('This user is not allowed to do that');
         }
-        if(user != null && user._id.toString() === pendingPost.collectorId.toString()) {
+        if(user && user._id.equals(pendingPost.collectorId)) {
             return await setCollectorStatement(pendingPostId, user);
         }
         const trafficGroceries = [];
@@ -289,7 +289,7 @@ const cancelPending = async function (pendingPostId) {
         //console.log("cacncelling ID: ", pendingPostId);
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
         //console.log("pendingPost at service from repository: ", pendingPost);
-        if (pendingPost.status.finalStatus !== Status.PENDING) {
+        if (!pendingPost.status.finalStatus.equals(Status.PENDING)) {
             throw Error('Pending Post is not pending anymore!');
         }
         console.log("ENTERRED CANCEL PENDING");
@@ -304,7 +304,7 @@ const cancelPending = async function (pendingPostId) {
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
                 //console.log("grocery from array: ", wantedGrocery);
-                if (wantedGrocery.name === grocery.name) {
+                if (wantedGrocery.name.equals(grocery.name)) {
                     isThere = true;
                     let left = grocery.left + wantedGrocery.amount;
                     if (left > grocery.original.amount) {
@@ -347,12 +347,12 @@ const interrestedUserReminder = async (userId, pendingId) => {
             const publisherStatement = pending.status.publisherStatement;
             const collectorStatement = pending.status.collectorStatement;
             console.log("ENTERRED DECIDE with id: ", pendingId);
-            if (publisherStatement === Status.PENDING && collectorStatement === Status.PENDING) {
+            if (publisherStatement.equals(Status.PENDING) && collectorStatement.equals(Status.PENDING)) {
                 console.log("status from interrestedUserReminder: ", pending.status);
                 console.log("WILL CALL NOW CANCEL PENDING POST");
                 let { cancelledPost, updatedPost } = await cancelPending(pendingId);
             }
-            else if (publisherStatement === Status.CANCELLED || collectorStatement === Status.CANCELLED) {
+            else if (publisherStatement.equals(Status.CANCELLED) || collectorStatement.equals(Status.CANCELLED)) {
                 let { cancelledPost, updatedPost } = await cancelPending(pendingId);
             }
             else {
@@ -423,7 +423,7 @@ const evaluatePostStatus = async (postId) => {
 
         else { //if empty, check whether all pendings have finished
             for (pended in pendings) {
-                if (pendings[pended].status.finalStatus == Status.PENDING) {
+                if (pendings[pended].status.finalStatus.equals(Status.PENDING)) {
                     return postStatus.PARTIALLY_COLLECTED;
                 }
             }
