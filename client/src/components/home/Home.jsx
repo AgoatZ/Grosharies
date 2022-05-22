@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Stack, Box, Tabs, Tab } from '@mui/material';
 import axios from 'axios';
 import Posts from '../posts/Posts';
+import AddPost from '../add-post/AddPost'
 
-const tabs = ['Near By', 'Recently Added'];
+const tabs = ['Near By', 'Recently Added', 'Add post'];
 
 const Home = () => {
     const [activeTabNumber, setActiveTabNumber] = useState(0);
@@ -50,12 +51,17 @@ const Home = () => {
                 <Tabs value={activeTabNumber} onChange={handleTabChange} >
                     <Tab label={tabs[0]} />
                     <Tab label={tabs[1]} />
+                    <Tab label={tabs[2]} />
                 </Tabs>
                 <TabPanel value={activeTabNumber} index={0}>
                     <Posts posts={posts} />
                 </TabPanel>
                 <TabPanel value={activeTabNumber} index={1}>
                     <Posts posts={posts.sort((a, b) => a - b)} />
+                </TabPanel>
+
+                <TabPanel value={activeTabNumber} index={2}>
+                    <AddPost/>
                 </TabPanel>
             </Box>
 

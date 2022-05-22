@@ -173,7 +173,7 @@ const setCollectorStatement = async function (req, res, next) {
 
 const finishPending = async function (req, res, next) {
     try {
-        console.log('Enterred finishPending Controller');
+        console.log('Enterred finishPending Controller')
         const {finishedPending, trafficGroceries} = await PendingService.finishPending(req.params.id, req.user);
         return res.status(200).json({ post: finishedPending, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
     } catch (e) {

@@ -16,6 +16,7 @@ import serverRoutes from "../../utils/server-routes";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Cookies from "universal-cookie";
+import jwt from 'jwt-decode' // import depende
 
 const theme = createTheme();
 const MySwal = withReactContent(Swal);
@@ -44,6 +45,9 @@ export default function Login(props) {
         });
         setTimeout(() => {
           cookies.set("jwt_token", res.data.accessToken, { httpOnly: false });
+          console.log("kkkkkkkkk");
+          const user = jwt(res.data.accessToken); // decode your token here
+          console.log("kkkkkkkkk",user);
           props.LoginUser();
         }, 1000);
       })

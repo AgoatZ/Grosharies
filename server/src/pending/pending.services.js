@@ -182,10 +182,12 @@ const updatePending = async function (pendingId, pendingDetails) {
         const oldPending = await PendingRepository.updatePending(pendingId, pendingDetails);
         const updatedPending = await PendingRepository.getPendingById(pendingId);
         const post = await PostRepository.getPostById(oldPending.sourcePost);
+        
         const updatedContent = [];
         const content = post.content;
         const groceries = updatedPending.content;
         const amountsToReduce = new Map();
+
         for (let i in groceries) {
             for (let j in oldPending.content) {
                 if (groceries[i].name.equals(oldPending.content[j].name)) {
@@ -196,13 +198,9 @@ const updatePending = async function (pendingId, pendingDetails) {
 
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
-            //console.log("grocery from post: ", grocery);
             let isThere = false;
             for (wantedGroceryIndex in groceries) {
                 let wantedGrocery = groceries[wantedGroceryIndex];
-                //console.log("grocery from array: ", wantedGrocery);
-                //console.log("grocery name original: ", wantedGrocery.name);
-                //console.log("grocery name wanted: ", grocery.original.name);
                 if (wantedGrocery.name.equals(grocery.original.name)) {
                     //reduce amount and creat json for updating
                     isThere = true;
@@ -232,11 +230,11 @@ const updatePending = async function (pendingId, pendingDetails) {
         throw Error('Error while Updating Pendings');
     }
 };
-//TODO:change pending collector status
+
 const setCollectorStatement = async function (pendingId, user) {
     try {
         const pending = await PendingRepository.getPendingById(pendingId);
-        if (user != null && user._id.toString() != pending.collectorId.toString()) {
+        if (user && !user._id.equals(pending.collectorId)) {
             throw Error('This user is not allowed to do that');
         }
         const oldPending = await PendingRepository.updatePending(pendingId, { 'status.collectorStatement': "collected" });

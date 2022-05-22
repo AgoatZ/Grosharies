@@ -126,11 +126,7 @@ const addPost = async function (req, res, next) {
 
 const pendPost = async function (req, res, next) {
     try {
-        console.log("controller groceries: ", req.body.groceries);
-        console.log('req.params = ' + req.params);
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
-        //console.log("FINISHED PENDING WITH UPDATED POST: ", updatedPost);
-        //console.log("FINISHED PENDING FROM PENDING POST: ", pendingPost);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {
         console.log('controller error from pendPost: ' + e.message);
@@ -162,19 +158,6 @@ const updatePost = async function (req, res, next) {
         return res.status(400).json({ message: e.message });
     }
 };
-
-// const updateImage = async function (req, res, next) {
-//     // Validate request parameters, queries using express-validator
-
-//     try {
-//         const answer = await PostService.updateImage(req, res);
-//         return answer;
-//     } catch (e) {
-//         console.log('controller error: ' + e.message);
-
-//         return res.status(400).json({ message: e.message });
-//     }
-// };
 
 module.exports = {
     getPosts,
