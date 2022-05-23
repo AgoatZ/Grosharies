@@ -15,9 +15,7 @@ const MySwal = withReactContent(Swal);
 const Post = () => {
   const res = useLocation().state;
   const isEdit = res.isEdit;
-  console.log("isEdit=" + isEdit);
   let navigate = useNavigate();
-  console.log(JSON.stringify(res));
   const { handleSubmit, control } = useForm();
   const onSubmit = (data) => {
     const updatedGroceries = res.post.content.map((groceryWrapper) => {

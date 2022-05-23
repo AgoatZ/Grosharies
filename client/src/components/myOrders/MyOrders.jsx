@@ -6,6 +6,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 const MySwal = withReactContent(Swal);
 
@@ -83,16 +84,17 @@ const calculateTimeLeft = (pendingPost) => {
   );
 
   return today.getTime() > untilDate.getTime()
-    ? (pendingPost.status.collectorStatement === "collected") ? approveOrderComplete("publisher", pendingPost._id)
+    ? pendingPost.status.collectorStatement === "collected"
+      ? approveOrderComplete("publisher", pendingPost._id)
       : cancelOrder(pendingPost._id)
     : ("0" + days).slice(-2) +
-    ":" +
-    ("0" + hours).slice(-2) +
-    ":" +
-    ("0" + minutes).slice(-2) +
-    ":" +
-    ("0" + seconds).slice(-2) +
-    " left for the order";
+        ":" +
+        ("0" + hours).slice(-2) +
+        ":" +
+        ("0" + minutes).slice(-2) +
+        ":" +
+        ("0" + seconds).slice(-2) +
+        " left for the order";
 };
 
 const myOrderDetails = (orderDetails, navigate) => {
@@ -170,7 +172,12 @@ const handleFinishedOrCanceled = (isFinished) => {
   );
 };
 
-export const RenderOrders = ({ posts, isFinished, isCanceled, role = "collector" }) => {
+export const RenderOrders = ({
+  posts,
+  isFinished,
+  isCanceled,
+  role = "collector",
+}) => {
   let navigate = useNavigate();
   return posts.map((post) => {
     const timeLeft =
@@ -190,15 +197,20 @@ export const RenderOrders = ({ posts, isFinished, isCanceled, role = "collector"
       >
         <Box sx={{ display: "flex", width: "100%" }}>
           <Box
-            onClick={() => myOrderDetails(post, navigate)}
+            onClick={() =>
+              isFinished || isCanceled ? null : myOrderDetails(post, navigate)
+            }
             sx={{
               display: "flex",
               width: "100%",
-              ":hover": {
-                cursor: "pointer",
-                bgcolor: "#F2FCF8",
-                borderRadius: "10px",
-              },
+              ":hover":
+                isFinished || isCanceled
+                  ? null
+                  : {
+                      cursor: "pointer",
+                      bgcolor: "#F2FCF8",
+                      borderRadius: "10px",
+                    },
             }}
           >
             <CardMedia
@@ -251,23 +263,22 @@ export const RenderOrders = ({ posts, isFinished, isCanceled, role = "collector"
             </Box>
             {!timeLeft
               ? handleFinishedOrCanceled(
-                isFinished && !isCanceled
-              ) /* returns true if finished, and false if canceled*/
+                  isFinished && !isCanceled
+                ) /* returns true if finished, and false if canceled*/
               : null}
           </Box>
           {!isFinished && !isCanceled
-            ? (post.status.collectorStatement === "pending") ? approveOrCancelSection(role, post._id)
-              : (role === "collector") ? waitForPublisherSection() : approveOrCancelSection(role, post._id)
+            ? post.status.collectorStatement === "pending"
+              ? approveOrCancelSection(role, post)
+              : role === "collector"
+              ? waitForPublisherSection()
+              : approveOrCancelSection(role, post)
             : null}
         </Box>
       </Box>
     );
   });
 };
-
-const waitForPublisherSection = () => {
-  return <Typography>this is wait for publisher section</Typography>;
-}
 
 const approveOrderComplete = (role, postId) => {
   let route;
@@ -288,7 +299,7 @@ const approveOrderComplete = (role, postId) => {
         window.location.reload();
       });
     }
-  })
+  });
 };
 
 const cancelOrder = (postId) => {
@@ -309,15 +320,52 @@ const cancelOrder = (postId) => {
   });
 };
 
-export const approveOrCancelSection = (role, postId) => {
+const waitForPublisherSection = () => {
+  return (
+    <>
+      <Divider color="black" sx={{ width: "1px" }} />
 
+      <Box
+        sx={{
+          width: "30%",
+          height: "100%",
+          flexDirection: "column",
+          flexWrap: "wrap",
+          display: "flex",
+          alignItems: "center",
+          m: "6% 2% 0 2%",
+        }}
+      >
+        <Typography
+          fontSize="20px"
+          sx={{ color: "green", mb: "10%", fontFamily: "Roboto" }}
+        >
+          Successfully Approved!
+          <CheckIcon fontSize="medium" sx={{ color: "green", ml: "10px" }} />
+        </Typography>
+        <Typography
+          fontSize="20px"
+          sx={{ color: "goldenrod", mb: "2%", fontFamily: "Roboto" }}
+        >
+          Waiting for Post Publisher
+          <AccessTimeIcon
+            sx={{ color: "goldenrod", ml: "10px" }}
+            fontSize="medium"
+          />
+        </Typography>
+      </Box>
+    </>
+  );
+};
+
+export const approveOrCancelSection = (role, post) => {
   return (
     <>
       <Divider color="black" sx={{ width: "1px" }} />
 
       <Box sx={{ width: "30%" }}>
         <Button
-          onClick={() => approveOrderComplete(role, postId)}
+          onClick={() => approveOrderComplete(role, post._id)}
           sx={{
             flexDirection: "row",
             display: "flex",
@@ -326,11 +374,19 @@ export const approveOrCancelSection = (role, postId) => {
           }}
         >
           <CheckIcon fontSize="large" sx={{ color: "green", mr: "10px" }} />
-          <Typography fontSize="18px">I Picked Up the Order</Typography>
+          <Typography fontSize="18px">
+            {role === "publisher" &&
+            post.status.collectorStatement === "collected"
+              ? "collector approved, Waiting for your approval"
+              : role === "publisher" &&
+                post.status.collectorStatement === "pending"
+              ? "Complete the order"
+              : "I Picked Up the Order"}
+          </Typography>
         </Button>
         <Divider color="black" sx={{ width: "100%" }} />
         <Button
-          onClick={() => cancelOrder(postId)}
+          onClick={() => cancelOrder(post._id)}
           sx={{
             flexDirection: "row",
             display: "flex",
