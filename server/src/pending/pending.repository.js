@@ -142,7 +142,8 @@ const deletePending = async function (postId) {
 
 const updatePending = async function (postId, postDetails) {
     try {
-        console.log("pend ---",postDetails);
+        console.log("pend ---", postDetails);
+        console.log("pend id ---", postId);
         const oldPendingPost = await Pending.findByIdAndUpdate(postId, postDetails);
         return oldPendingPost;
     } catch (e) {

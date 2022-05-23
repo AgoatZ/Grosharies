@@ -236,11 +236,15 @@ const updatePending = async function (pendingId, pendingDetails) {
 
 const setCollectorStatement = async function (pendingId, user) {
     try {
-        const pending = await PendingRepository.getPendingById(pendingId);
+        let pending = await PendingRepository.getPendingById(pendingId);
         if (user && !user._id.equals(pending.collectorId)) {
             throw Error('This user is not allowed to do that');
         }
         const oldPending = await PendingRepository.updatePending(pendingId, { 'status.collectorStatement': "collected" });
+        pending = await PendingRepository.getPendingById(pendingId);
+        if (pending.pendingTime.until < Date.now()) {
+            await decide(pending);
+        }
 
         return oldPending;
     } catch (e) {
@@ -354,17 +358,17 @@ const routine = async () => {
 const decide = async (pending) => {
     const publisherStatement = pending.status.publisherStatement;
     const collectorStatement = pending.status.collectorStatement;
-    console.log("ENTERRED DECIDE with id:", pendingId);
+    console.log("ENTERRED DECIDE with id:", pending._id);
     if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
         console.log("status from decide pending service:", pending.status);
         console.log("WILL CALL NOW CANCEL PENDING POST");
-        let { cancelledPost, updatedPost } = await cancelPending(pendingId, false);
+        let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
     }
     else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
-        let { cancelledPost, updatedPost } = await cancelPending(pendingId, false);
+        let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
     }
     else {
-        let { cancelledPost, updatedPost } = await finishPending(pendingId, false);
+        let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
     }
 
     return;
@@ -376,25 +380,6 @@ const interrestedUserReminder = async (userId, pendingId) => {
         const pending = await PendingRepository.getPendingById(pendingId);
         const publisher = await UserRepository.getUserById(pending.publisherId);
         console.log("ENTERRED REMINDER");
-
-        // const decide = async (publisherStatement, collectorStatement) => {
-        //     const publisherStatement = pending.status.publisherStatement;
-        //     const collectorStatement = pending.status.collectorStatement;
-        //     console.log("ENTERRED DECIDE with id: ", pendingId);
-        //     if (publisherStatement.equals(Status.PENDING) && collectorStatement.equals(Status.PENDING)) {
-        //         console.log("status from interrestedUserReminder: ", pending.status);
-        //         console.log("WILL CALL NOW CANCEL PENDING POST");
-        //         let { cancelledPost, updatedPost } = await cancelPending(pendingId);
-        //     }
-        //     else if (publisherStatement.equals(Status.CANCELLED) || collectorStatement.equals(Status.CANCELLED)) {
-        //         let { cancelledPost, updatedPost } = await cancelPending(pendingId);
-        //     }
-        //     else {
-        //         let { cancelledPost, updatedPost } = await finishPending(pendingId);
-        //     }
-
-        //     return;
-        // }
 
         const remind = async (recieverNumber, publisherNumber) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
