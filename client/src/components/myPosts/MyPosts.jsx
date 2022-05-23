@@ -21,22 +21,25 @@ const MyPosts = () => {
     loadMyPosts();
   }, []);
 
-
   const loadMyPosts = async () => {
     axios.get("posts/openPosts/current").then((openPostsRes) => {
       let filterArray = [];
       axios.get("pendings/").then((res) => {
         for (const post of openPostsRes.data.posts) {
-          filterArray.push(res.data.posts.filter((pending) => {
-            return pending.status.finalStatus === "pending" && post._id === pending.sourcePost
-          }))
+          filterArray.push(
+            res.data.posts.filter((pending) => {
+              return (
+                pending.status.finalStatus === "pending" &&
+                post._id === pending.sourcePost
+              );
+            })
+          );
         }
         setPendingsForPost(filterArray);
         setPosts(openPostsRes.data.posts);
       });
-    })
+    });
   };
-
 
   const RenderPosts = ({ posts }) =>
     posts.map((post, index) => {
@@ -111,7 +114,19 @@ const MyPosts = () => {
                   {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={350}>
                       <Paper>
-                        <RenderOrders role="publisher" isFinished={false} isCanceled={false} posts={pendingsForPost[index]}></RenderOrders>
+                        {pendingsForPost[index].length > 0 ? (
+                          <RenderOrders
+                            role="publisher"
+                            isFinished={false}
+                            isCanceled={false}
+                            posts={pendingsForPost[index]}
+                          ></RenderOrders>
+                        ) : (
+                          <Typography sx={{ fontFamily: "roboto" }}>
+                            This post has no orders at the moment
+                          </Typography>
+                        )}
+                        {/* <RenderOrders role="publisher" isFinished={false} isCanceled={false} posts={pendingsForPost[index]}></RenderOrders> */}
                       </Paper>
                     </Fade>
                   )}
