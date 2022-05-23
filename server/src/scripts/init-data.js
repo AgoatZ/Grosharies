@@ -11,7 +11,7 @@ const path = require('path');
 
 const packing = require('../enums/packing');
 const packs = Object.values(packing);
-let a = path.resolve().split('\\');
+let a = path.resolve("src/imgs").split('\\');
 
 let folderPath = '';
 a.splice(a.length - 1, 1);
@@ -19,6 +19,7 @@ a.forEach(element => {
     folderPath += element + '\\'
 });
 
+console.log(folderPath);
 const imgsFolderPath = path.join(folderPath, 'common', 'imgs');
 const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;

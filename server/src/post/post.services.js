@@ -44,14 +44,14 @@ const getPostsByUser = async (userId) => {
     }
 };
 
-const getPublisherOpenPosts = async (req) => {
+const getPublisherOpenPosts = async (publisherId, user) => {
     try {
         let userId;
-        if (req.params.id == 'current') {
-            userId = req.user._id;
+        if (publisherId == 'current' && user) {
+            userId = user._id;
             console.log("Service bycollector from user._id userId:", userId);
         } else {
-            userId = req.params.id;
+            userId = publisherId;
             console.log("Service bycollector from params userId:", userId);
         }
         const posts = await PostRepository.getPublisherOpenPosts(userId);

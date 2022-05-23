@@ -185,7 +185,7 @@ const finishPending = async function (req, res, next) {
 
 const cancelPending = async function (req, res, next) {
     try {
-        const { cancelledPost, updatedPost } = await PendingService.cancelPending(req.params.id);
+        const { cancelledPost, updatedPost } = await PendingService.cancelPending(req.params.id, req.user);
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
