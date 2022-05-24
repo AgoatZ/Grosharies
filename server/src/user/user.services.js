@@ -18,8 +18,16 @@ const getUsers = async function (query, page, limit) {
     }
 };
 
-const getUserById = async function (userId) {
+const getUserById = async function (id, currentUser) {
     try {
+        let userId;
+        if (id == 'current' && currentUser) {
+            userId = currentUser._id;
+            //console.log("Service bypublisher from user._id userId:", userId)
+        } else {
+            userId = id;
+            //console.log("Service bypublisher from params userId:", userId)
+        }
         const user = await UserRepository.getUserById(userId)
         return user;
     } catch (e) {
