@@ -113,8 +113,8 @@ const addToHistory = async function (userId, pendingPostId) {
     try {
         let oldUser = await UserRepository.getUserById(userId);
         let history = oldUser.collectedHistory;
-        console.log(history);
-        console.log(oldUser);
+        //console.log(history);
+        //console.log(oldUser);
         history = history.concat(pendingPostId);
         oldUser = await UserRepository.updateUser(userId, { collectedHistory: history });
         return oldUser;

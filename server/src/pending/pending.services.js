@@ -176,7 +176,6 @@ const getAllCancelledPosts = async function () {
     }
 };
 
-//TODO: update all relevant data in db
 const updatePending = async function (pendingId, pendingDetails) {
     try {
         const oldPending = await PendingRepository.updatePending(pendingId, pendingDetails);
