@@ -11,13 +11,15 @@ const calcWeights = async (history) => {
             //weigh tags
             let sourceId = history[piece].sourcePost;
             const tags = await getPostTags(sourceId);
-            for (tag in tags) {
-                let tagName = tags[tag].name;
-                let tagRank = tagsWeights.get(tagName);
-                if (!tagRank) {
-                    tagsWeights.set(tagName, 1);
-                } else {
-                    tagsWeights.set(tagName, tagRank + 1);
+            if (tags) {
+                for (tag in tags) {
+                    let tagName = tags[tag].name;
+                    let tagRank = tagsWeights.get(tagName);
+                    if (!tagRank) {
+                        tagsWeights.set(tagName, 1);
+                    } else {
+                        tagsWeights.set(tagName, tagRank + 1);
+                    }
                 }
             }
             for (grocery in history[piece].content) {
@@ -34,7 +36,6 @@ const calcWeights = async (history) => {
 
                 //weigh groceries
                 let gro = history[piece].content[grocery];
-                console.log(gro.name);
                 let groRank = groceriesWeights.get(gro.name);
                 console.log('grorank:', groRank);
                 if (!groRank) {
@@ -46,6 +47,8 @@ const calcWeights = async (history) => {
         }
         return { categoriesWeights, groceriesWeights, tagsWeights };
     } catch (e) {
+        console.log("calc whights", e);
+
         throw Error('Error calculating weights');
     }
 };
@@ -60,6 +63,8 @@ const getPostTags = async (postId) => {
         }
         return tags;
     } catch (e) {
+        console.log("get post tags", e);
+
         throw Error('Error while retrieving tags');
     }
 };
@@ -71,32 +76,36 @@ const getPostRelevance = async (history, post) => {
         console.log('rels:', categoriesWeights, groceriesWeights, tagsWeights);
         //add relevance regarding tags
         const tags = await getPostTags(post._id);
-        console.log(tags);
+        console.log('tags from getPostRelevance:', tags);
         var relevance = 0;
-        for (tag in tags) {
-            const tagRank = tagsWeights.get(tags[tag].name);
-            if (tagRank) {
-                relevance += tagRank;
+        if (tags) {
+            for (tag in tags) {
+                const tagRank = tagsWeights.get(tags[tag].name);
+                if (tagRank) {
+                    relevance += tagRank;
+                }
             }
         }
 
         //add relevance regarding categories and groceries
         for (grocery in post.content) {
-            const category = await CategoryService.getCategoryById(post.content[grocery].category);
+            const category = await CategoryService.getCategoryById(post.content[grocery].original.category);
             const catRank = categoriesWeights.get(category.name);
             console.log('postRel catRank:', catRank);
             if (catRank) {
                 relevance += catRank;
             }
-            const groRank = groceriesWeights.get(post.content[grocery].name);
+            const groRank = groceriesWeights.get(post.content[grocery].original.name);
             console.log('postRel groRank:', groRank);
             if (groRank) {
                 relevance += groRank;
             }
         }
-        console.log("relevance", relevance);
+        //console.log("relevance", relevance);
         return relevance;
     } catch (e) {
+        console.log("get post relevance", e);
+
         throw Error('Error while determining post relevance');
     }
 };
