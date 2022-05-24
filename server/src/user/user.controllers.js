@@ -89,9 +89,9 @@ const getSuggestedPosts = async (req, res, next) => {
 
 const getUserProfile = async (req, res, next) => {
     try{
-        const user = await UserService.getUserById(req.params.id);
-        const history = await UserService.getPickupHistory(req.params.id);
-        const posts = await PostService.getPostsByUser(req.params.id);
+        const user = await UserService.getUserById(req.params.id, req.user);
+        const history = await UserService.getPickupHistory(req.params.id, req.user);
+        const posts = await PostService.getPostsByUser(req.params.id, req.user);
         return res.status(200).json({ user: user, history: history, posts: posts, message: "Succesfully History Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);

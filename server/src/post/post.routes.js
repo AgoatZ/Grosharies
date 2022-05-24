@@ -7,19 +7,19 @@ const { authJwt } = require("../common/middlewares/passport");
 
 router.get("/", PostController.getPosts);
 
-router.get("/:id", PostController.getPostById);
+router.get("/:id", authJwt, PostController.getPostById);
 
-router.get("/user=:id", PostController.getPostsByUser);
+router.get("/user/:id", authJwt, PostController.getPostsByUser);
 
 router.get("/openPosts/:id", authJwt, PostController.getPublisherOpenPosts);
 
-router.get("/category=:id", PostController.getPostsByCategory);
+router.get("/category/:id", authJwt, PostController.getPostsByCategory);
 
-router.get("/tag=:id", PostController.getPostsByTag);
+router.get("/tag/:id", authJwt, PostController.getPostsByTag);
 
-router.get("/collector=:id", PostController.getPostsByCollector);
+router.get("/collector/:id", authJwt, PostController.getPostsByCollector);
 
-router.get("/suggested/:userid", PostController.getSuggestedPosts);
+router.get("/suggested/:userid", authJwt, PostController.getSuggestedPosts);
 
 router.post(
   "/updateImage/:id",

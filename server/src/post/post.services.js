@@ -33,8 +33,16 @@ const getPostById = async (postId) => {
     }
 };
 
-const getPostsByUser = async (userId) => {
+const getPostsByUser = async (publisherId, user) => {
     try {
+        let userId;
+        if (publisherId == 'current' && user) {
+            userId = user._id;
+            console.log("Post Service byUser from user._id userId:", userId);
+        } else {
+            userId = publisherId;
+            console.log("Post Service byUser from params userId:", userId);
+        }
         const posts = await PostRepository.getPostsByUser(userId);
         return posts;
     } catch (e) {
@@ -49,10 +57,10 @@ const getPublisherOpenPosts = async (publisherId, user) => {
         let userId;
         if (publisherId == 'current' && user) {
             userId = user._id;
-            console.log("Service bycollector from user._id userId:", userId);
+            console.log("Post Service getPublisherOpenPosts from user._id userId:", userId);
         } else {
             userId = publisherId;
-            console.log("Service bycollector from params userId:", userId);
+            console.log("Post Service getPublisherOpenPosts from params userId:", userId);
         }
         const posts = await PostRepository.getPublisherOpenPosts(userId);
         return posts;
@@ -85,8 +93,16 @@ const getPostsByTag = async (tagId) => {
     }
 };
 
-const getPostsByCollector = async (userId) => {
+const getPostsByCollector = async (userId, user) => {
     try {
+        let userId;
+        if (userId == 'current' && user) {
+            userId = user._id;
+            //console.log("Service bypublisher from user._id userId:", userId)
+        } else {
+            userId = userId;
+            //console.log("Service bypublisher from params userId:", userId)
+        }
         const posts = await PostRepository.getPostsByCollector(userId);
         return posts;
     } catch (e) {
@@ -146,7 +162,6 @@ const updatePost = async (postId, postDetails) => {
     }
 };
 
-//TODO: fix it
 const pendPost = async (postId, collectorId, groceries) => {
     try {
         const post = await PostRepository.getPostById(postId);
@@ -216,9 +231,17 @@ const getPostTags = async (postId) => {
     }
 };
 
-const getSuggestedPosts = async (userId) => {
+const getSuggestedPosts = async (id, currentUser) => {
     console.log('sugestservice');
     try {
+        let userId;
+        if (id == 'current' && currentUser) {
+            userId = currentUser._id;
+            //console.log("Service bypublisher from user._id userId:", userId)
+        } else {
+            userId = id;
+            //console.log("Service bypublisher from params userId:", userId)
+        }
         var posts = await PostRepository.getRelevantPosts();
         const user = await UserService.getUserById(userId);
         const history = [];

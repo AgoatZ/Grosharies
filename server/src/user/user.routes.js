@@ -2,8 +2,9 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const UserController = require('./user.controllers');
 const PostController = require('../post/post.controllers');
-const imageUtil = require('../common/middlewares/image-upload');
+const { uploadImage } = require('../common/middlewares/image-upload');
 const router = express.Router();
+const { authJwt } = require('../common/middlewares/passport');
 
 /**
 * @swagger
@@ -142,7 +143,7 @@ router.post('/', UserController.addUser);
 *             schema:
 *               $ref: '#/components/schemas/User'
 */
-router.post('/updateImage/:id', imageUtil.uploadImage, UserController.updateUser);
+router.post('/updateImage/:id', authJwt, uploadImage, UserController.updateUser);
 
 /**
 * @swagger
@@ -165,7 +166,7 @@ router.post('/updateImage/:id', imageUtil.uploadImage, UserController.updateUser
 *             schema:
 *               $ref: '#/components/schemas/User'
 */
-router.delete('/:id', UserController.deleteUser);
+router.delete('/:id', authJwt, UserController.deleteUser);
 
 /**
 * @swagger
@@ -194,7 +195,7 @@ router.delete('/:id', UserController.deleteUser);
 *             schema:
 *               $ref: '#/components/schemas/User'
 */
-router.put('/:id', UserController.updateUser);
+router.put('/:id', authJwt, UserController.updateUser);
 
 /**
 * @swagger
@@ -218,7 +219,7 @@ router.put('/:id', UserController.updateUser);
 *             items:
 *               $ref: '#/components/schemas/PendingPost'
 */
-router.get('/pickuphistory/:id', UserController.getPickupHistory);
+router.get('/pickuphistory/:id', authJwt, UserController.getPickupHistory);
 
 /**
 * @swagger
@@ -268,6 +269,6 @@ router.get('/suggested/:userid', PostController.getSuggestedPosts);
 *                 - $ref: '#/components/schemas/PendingPost'
 *                 - $ref: '#/components/schemas/User'
 */
-router.get('/profile/:id', UserController.getUserProfile);
+router.get('/profile/:id', authJwt, UserController.getUserProfile);
 
 module.exports = router;

@@ -30,7 +30,7 @@ const getPostById = async function (req, res, next) {
 const getPostsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PostService.getPostsByUser(req.params.id);
+        const posts = await PostService.getPostsByUser(req.params.id, req.user);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -78,7 +78,7 @@ const getPostsByTag = async function (req, res, next) {
 const getPostsByCollector = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PostService.getPostsByCollector(req.params.id);
+        const posts = await PostService.getPostsByCollector(req.params.id, req.user);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -102,7 +102,7 @@ const getPostsByGroceries = async function (req, res, next) {
 const getSuggestedPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PostService.getSuggestedPosts(req.params.userid);
+        const posts = await PostService.getSuggestedPosts(req.params.userid, req.user);
         return res.status(200).json({ posts: posts, message: "Succesfully Suggested Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);

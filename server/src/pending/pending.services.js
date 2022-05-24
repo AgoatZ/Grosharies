@@ -47,14 +47,14 @@ const getPendingById = async function (postId) {
     }
 };
 
-const getPendingsByPublisher = async function (req) {
+const getPendingsByPublisher = async function (userId, user) {
     try {
         let userId;
-        if (req.params.id == 'current') {
-            userId = req.user._id;
+        if (userId == 'current' && user) {
+            userId = user._id;
             //console.log("Service bypublisher from user._id userId:", userId)
         } else {
-            userId = req.params.id;
+            userId = userId;
             //console.log("Service bypublisher from params userId:", userId)
         }
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByPublisher(userId);
@@ -66,15 +66,15 @@ const getPendingsByPublisher = async function (req) {
     }
 };
 
-const getPendingsByCollector = async function (req) {
+const getPendingsByCollector = async function (collectorId, user) {
     try {
         let userId;
-        if (req.params.id == 'current') {
-            userId = req.user._id;
-            //console.log("Service bycollector from user._id userId:", userId);
+        if (collectorId == 'current' && user) {
+            userId = user._id;
+            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
-            userId = req.params.id;
-            //console.log("Service bycollector from params userId:", userId);
+            userId = collectorId;
+            //console.log("Service bypublisher from params userId:", userId)
         }
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByCollector(userId);
         return { pendingPosts, finishedPendings, cancelledPendings };
