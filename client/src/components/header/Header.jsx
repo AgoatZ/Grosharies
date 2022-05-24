@@ -1,21 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Menu,
-  Container,
-  Button,
-  Tooltip,
-  MenuItem,
-  Drawer,
-  List,
-  ListItemText,
-  ListItemIcon,
-  Divider,
-} from "@mui/material";
+import { AppBar, Box, Toolbar, IconButton, Menu, Container, Button, Tooltip, MenuItem, Drawer, List, ListItemText, ListItemIcon, Divider, } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { UserImageThumbnail } from "../common/Images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,34 +12,20 @@ const pages = [
   { name: "Events", path: "events" },
 ];
 const userOptions = [
-  {
-    name: "Profile",
-    path: "profile",
-  },
-  {
-    name: "My Posts",
-    path: "my-posts",
-  },
-  {
-    name: "My Orders",
-    path: "my-orders",
-  },
-  {
-    name: "Logout",
-    path: "logout",
-  },
+  { name: "Profile", path: "profile", },
+  { name: "My Posts", path: "my-posts", },
+  { name: "My Orders", path: "my-orders", },
+  { name: "Logout", path: "logout", },
 ];
 
 const Header = ({ loggedIn, userData, logoutUser }) => {
   //Generic item click navigation
   let navigate = useNavigate();
-  const navigateToPage = (path) => {
-    navigate("./" + path, {});
-  };
+  const navigateToPage = (path) => navigate("./" + path, {});
+
   const logout = () => {
     cookies.remove("jwt_token");
     logoutUser();
-    navigate("./", {});
   };
 
   const NavigationBar = () => {
@@ -144,20 +115,23 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
 
   const UserOptions = () => {
     const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
-    const handleOpenUserMenu = (event) =>
-      setUserMenuAnchorEl(event.currentTarget);
+    const handleOpenUserMenu = (event) => setUserMenuAnchorEl(event.currentTarget);
     const handleCloseUserMenu = () => setUserMenuAnchorEl(null);
+
+    const [userNotificationsAnchorEl, setUserNotificationsAnchorEl] = useState(null);
+
 
     return (
       <Box sx={{ flexGrow: 0 }} hidden={!loggedIn}>
-        {/* User Pending GroSharies */}
+        {/* User Notifications Area*/}
         <IconButton>
           <FontAwesomeIcon
-            icon="fa-solid fa-basket-shopping"
+            icon="fa-regular fa-bell"
             color="white"
             size="lg"
           />
         </IconButton>
+
 
         {/* User Options Menu */}
         <Tooltip title="Open User Menu">
@@ -202,7 +176,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
     );
   };
 
-  const LoggedIn = () => {
+  const Login = () => {
     return (
       <Box sx={{ flexGrow: 0 }} hidden={loggedIn}>
         <Button
@@ -255,7 +229,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
             <UserOptions />
 
             {/* No User Setup */}
-            <LoggedIn />
+            <Login />
           </Toolbar>
         </Container>
       </AppBar>

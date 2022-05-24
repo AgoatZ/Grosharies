@@ -21,7 +21,7 @@ const Home = () => {
     const loadPosts = () => {
         //TODO: replace to suggested posts after Amit fixes API
         //axios.get('/posts/suggested/current').then(res => setSuggestedPosts(res.data.posts));
-        axios.post("/posts/bygroceries", { groceries: ["Off Bagril"], }).then((res) => setSuggestedPosts(res.data.posts));
+        //axios.post("/posts/bygroceries", { groceries: ["Off Bagril"], }).then((res) => setSuggestedPosts(res.data.posts));
         //TODO: Posts nearby and Posts recently added
         axios.get('/posts/').then(res => setNearbyPosts(res.data.posts));
         axios.get('/posts/').then(res => setRecentPosts(res.data.posts));
@@ -60,7 +60,7 @@ const Home = () => {
                 <Divider variant="middle">
                     <Typography variant='h5' margin='10px'>Recommended For You</Typography>
                 </Divider>
-                <Posts posts={suggestedPosts} noBorder />
+                <Posts data={suggestedPosts} noBorder />
             </Box>
 
             <Box sx={{ width: 'auto' }}>
@@ -70,10 +70,10 @@ const Home = () => {
                     <Tab label={tabs[2]} />
                 </Tabs>
                 <TabPanel value={activeTabNumber} index={0}>
-                    <Posts posts={nearbyPosts} />
+                    <Posts data={nearbyPosts} />
                 </TabPanel>
                 <TabPanel value={activeTabNumber} index={1}>
-                    <Posts posts={recentPosts} />
+                    <Posts data={recentPosts} />
                 </TabPanel>
                 <TabPanel value={activeTabNumber} index={2}>
                     <AddPost />

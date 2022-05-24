@@ -23,18 +23,37 @@ import MyOrderDetails from "./components/myOrders/MyOrderDetails";
 
 iconsLibrary.add(fas, far);
 
+const fakeUser = {
+  firstName: "Ilan",
+  lastName: "Rozenfeld",
+  emailAddress: "Ilan@Walla.com",
+  phone: "05000000000",
+  accountType: "user",
+  rank: 0,
+  posts: [],
+  profileImage: "/assets/default-user-image.svg",
+  collectedHistory: [],
+};
+
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(fakeUser);
 
   useEffect(() => {
     axios
-      .get("auth/isLoggedIn").then(() => setLoggedIn(true))
+      .get("auth/isLoggedIn").then(() => {
+        setLoggedIn(true);
+        //axios.get('/users/profile/current').then(res => { console.log(res.data); setUserData(res.data) });
+        //setUserData(fakeUser);
+      })
       .catch(() => setLoggedIn(false));
-  },
-    []);
+  }, []);
 
-  const LoginUser = () => {
+
+  const loginUser = () => {
     setLoggedIn(true);
+
+    //axios.get('/users/profile/current').then(res => { console.log(res.data); setUserData(res.data) });
     window.location.replace("/");
   };
 
@@ -47,7 +66,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout loggedIn={loggedIn} logoutUser={logoutUser} />}>
+        <Route path="/" element={<Layout loggedIn={loggedIn} userData={userData} logoutUser={logoutUser} />}>
           <Route index element={<Home />} />
           <Route path="post/:id" element={<Post />} />
           <Route path="groceries" element={<Groceries />} />
@@ -58,8 +77,8 @@ const App = () => {
           <Route path="my-orders" element={<MyOrders />} />
           <Route path="my-order-details" element={<MyOrderDetails />} />
           <Route path="about" element={<About />} />
-          <Route path="login" element={<Login LoginUser={LoginUser} />} />
-          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login loginUser={loginUser} />} />
+          <Route path="register" element={<Register loginUser={loginUser} />} />
           <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>
