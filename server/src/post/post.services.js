@@ -255,10 +255,11 @@ const getSuggestedPosts = async (id, currentUser) => {
             let rPost = posts[post];
             let postRelevance = await SuggestionsUtil.getPostRelevance(history, rPost);
             relevanceMap.set(rPost, postRelevance);
-            console.log(relevanceMap);
         }
         return posts.sort((p1, p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
     } catch (e) {
+        console.log(e);
+
         throw Error('Error while suggesting posts');
     }
 };
