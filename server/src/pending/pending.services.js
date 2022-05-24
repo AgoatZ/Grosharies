@@ -47,14 +47,14 @@ const getPendingById = async function (postId) {
     }
 };
 
-const getPendingsByPublisher = async function (userId, user) {
+const getPendingsByPublisher = async function (publisherId, user) {
     try {
         let userId;
         if (userId == 'current' && user) {
             userId = user._id;
             //console.log("Service bypublisher from user._id userId:", userId)
         } else {
-            userId = userId;
+            userId = publisherId;
             //console.log("Service bypublisher from params userId:", userId)
         }
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByPublisher(userId);

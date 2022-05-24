@@ -93,14 +93,14 @@ const getPostsByTag = async (tagId) => {
     }
 };
 
-const getPostsByCollector = async (userId, user) => {
+const getPostsByCollector = async (collectorId, user) => {
     try {
         let userId;
         if (userId == 'current' && user) {
             userId = user._id;
             //console.log("Service bypublisher from user._id userId:", userId)
         } else {
-            userId = userId;
+            userId = collectorId;
             //console.log("Service bypublisher from params userId:", userId)
         }
         const posts = await PostRepository.getPostsByCollector(userId);
