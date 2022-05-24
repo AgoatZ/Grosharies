@@ -125,8 +125,16 @@ const addToHistory = async function (userId, pendingPostId) {
     }
 };
 
-const getPickupHistory = async function (userId) {
+const getPickupHistory = async function (id, currentUser) {
     try {
+        let userId;
+        if (id == 'current' && currentUser) {
+            userId = currentUser._id;
+            //console.log("Service bypublisher from user._id userId:", userId)
+        } else {
+            userId = id;
+            //console.log("Service bypublisher from params userId:", userId)
+        }
         const pendingPosts = await PendingRepository.getPendingsByCollector(userId);
         return pendingPosts;
     } catch (e) {
