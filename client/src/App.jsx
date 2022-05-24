@@ -28,14 +28,10 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get("auth/isLoggedIn")
-      .then(() => {
-        setLoggedIn(true);
-      })
-      .catch(() => {
-        setLoggedIn(false);
-      });
-  }, []);
+      .get("auth/isLoggedIn").then(() => setLoggedIn(true))
+      .catch(() => setLoggedIn(false));
+  },
+    []);
 
   const LoginUser = () => {
     setLoggedIn(true);
@@ -51,10 +47,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={<Layout loggedIn={loggedIn} logoutUser={logoutUser} />}
-        >
+        <Route path="/" element={<Layout loggedIn={loggedIn} logoutUser={logoutUser} />}>
           <Route index element={<Home />} />
           <Route path="post/:id" element={<Post />} />
           <Route path="groceries" element={<Groceries />} />

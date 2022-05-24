@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Stack, Box, Tabs, Tab } from '@mui/material';
-import axios from 'axios';
+import { useOutletContext } from "react-router-dom";
+import { Stack, Box, Tabs, Tab, Typography, Divider } from '@mui/material';
+import axios from "../../utils/axios";
 import Posts from '../posts/Posts';
-import AddPost from '../add-post/AddPost'
+import AddPost from '../add-post/AddPost';
 
 const tabs = ['Near By', 'Recently Added', 'Add post'];
 
 const Home = () => {
+    const { loggedIn, userData } = useOutletContext();
+
     const [activeTabNumber, setActiveTabNumber] = useState(0);
     const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
 
-    const [posts, setPosts] = useState([]);
-    useEffect(() => { loadPosts(); }, []);
+    const [suggestedPosts, setSuggestedPosts] = useState([]);
+    const [nearbyPosts, setNearbyPosts] = useState([]);
+    const [recentPosts, setRecentPosts] = useState([]);
+
+    useEffect(() => loadPosts(), []);
     const loadPosts = () => {
-        axios.get('/api/posts/').then(res => {
-            setPosts(res.data.posts);
-        });
+        //TODO: replace to suggested posts after Amit fixes API
+        //axios.get('/posts/suggested/current').then(res => setSuggestedPosts(res.data.posts));
+        axios.post("/posts/bygroceries", { groceries: ["Off Bagril"], }).then((res) => setSuggestedPosts(res.data.posts));
+        //TODO: Posts nearby and Posts recently added
+        axios.get('/posts/').then(res => setNearbyPosts(res.data.posts));
+        axios.get('/posts/').then(res => setRecentPosts(res.data.posts));
     };
 
     const Logo = () => {
@@ -47,6 +56,13 @@ const Home = () => {
         <Stack direction="column" justifyContent="flex-start" alignItems="center" spacing={{ xs: 1, sm: 1, md: 5, lg: 5 }}>
             <Logo />
 
+            <Box sx={{ width: 'auto' }} hidden={!loggedIn}>
+                <Divider variant="middle">
+                    <Typography variant='h5' margin='10px'>Recommended For You</Typography>
+                </Divider>
+                <Posts posts={suggestedPosts} noBorder />
+            </Box>
+
             <Box sx={{ width: 'auto' }}>
                 <Tabs value={activeTabNumber} onChange={handleTabChange} >
                     <Tab label={tabs[0]} />
@@ -54,14 +70,13 @@ const Home = () => {
                     <Tab label={tabs[2]} />
                 </Tabs>
                 <TabPanel value={activeTabNumber} index={0}>
-                    <Posts posts={posts} />
+                    <Posts posts={nearbyPosts} />
                 </TabPanel>
                 <TabPanel value={activeTabNumber} index={1}>
-                    <Posts posts={posts.sort((a, b) => a - b)} />
+                    <Posts posts={recentPosts} />
                 </TabPanel>
-
                 <TabPanel value={activeTabNumber} index={2}>
-                    <AddPost/>
+                    <AddPost />
                 </TabPanel>
             </Box>
 

@@ -22,7 +22,7 @@ const appTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: ["'Quicksand'", "sans-serif"].join(","),
+    fontFamily: ["'Roboto'", "sans-serif"].join(","),
     button: {
       textTransform: "capitalize",
       fontSize: 16,
