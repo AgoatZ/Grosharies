@@ -9,7 +9,9 @@ import withReactContent from "sweetalert2-react-content";
 
 import serverRoutes from "../../utils/server-routes";
 import axios from "../../utils/axios";
+import Map from "../map/Map";
 
+const position = [51.505, -0.09];
 const MySwal = withReactContent(Swal);
 
 const Post = () => {
@@ -155,7 +157,7 @@ const Post = () => {
   });
 
   return (
-    <Box sx={{ margin: "0 10%" }}>
+    <Box style={{ margin: "0 10%", height: "100%", width: "80%" }}>
       <Box
         sx={{
           justifyContent: "space-between",
@@ -177,6 +179,7 @@ const Post = () => {
             {res.post.description}
           </Typography>
         </Box>
+
         <CardMedia
           component="img"
           sx={{
@@ -188,17 +191,8 @@ const Post = () => {
           image="/assets/default-post-image.svg"
         />
       </Box>
-      <Box sx={{ flexDirection: "row", display: "flex" }}>
-        <LocationOnIcon color="primary" fontSize="large" />
-        <Typography
-          gutterBottom
-          fontSize="25px"
-          fontWeight="bold"
-          color="text.secondary"
-        >
-          {res.post.address}
-        </Typography>
-      </Box>
+
+      <Map address={res.post.address} /*userLocation={userlocation}*/ />
 
       <Box sx={{ width: "600px", height: "600px", margin: "0 auto" }}>
         <Typography
