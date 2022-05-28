@@ -258,7 +258,6 @@ const setCollectorStatement = async function (pendingId, user) {
 const finishPending = async function (pendingPostId, user) {
     try {
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
-        console.log('pending post id:', pendingPostId);
         if (!pendingPost.status.finalStatus == Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
         }
@@ -359,9 +358,7 @@ const routine = async () => {
 const decide = async (pending) => {
     const publisherStatement = pending.status.publisherStatement;
     const collectorStatement = pending.status.collectorStatement;
-    console.log("ENTERRED DECIDE with id:", pending._id);
     if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
-        console.log("status from decide pending service:", pending.status);
         console.log("WILL CALL NOW CANCEL PENDING POST");
         let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
     }
@@ -386,15 +383,13 @@ const interrestedUserReminder = async (userId, pendingId) => {
             content += (pending.content[i].amount + ' ' + pending.content[i].name + ',');
         }
         content = content.slice(0,-1);
-        console.log("ENTERRED REMINDER");
 
         const remind = async (recieverNumber, publisherNumber) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
             //const collectorSMS = sendSMSToNumber(`Hey from Grosharies! Have you picked up the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${publisher.firstName} ${publisher.lastName}? Tell us what you feel!`, recieverNumber);
             //const publisherSMS = sendSMSToNumber(`Hey from Grosharies! Have you delivered the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${user.firstName} ${user.lastName}? Tell us what you feel!`, publisherNumber);
             
-            collectorSMS.finally(() =>  decide(pending));
-
+            //await decide(pending);
             //const reToId = setTimeout(async function () { await decide(pending) }, (oneHour / 240));
             //reToId.hasRef();
             return;
