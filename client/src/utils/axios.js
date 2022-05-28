@@ -6,7 +6,7 @@ const instance = axios.create({
   timeout: 20000,
   withCredentials: true,
   headers: {
-    "Access-Control-Allow-Origin": "http://localhost:3000",
+    "Access-Control-Allow-Origin": "https://grosharies.herokuapp.com/",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
