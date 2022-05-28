@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, IconButton, Menu, Container, Button, Tooltip, MenuItem, Drawer, List, ListItemText, ListItemIcon, Divider, } from "@mui/material";
+import { AppBar, Box, Toolbar, IconButton, Menu, MenuList, MenuItem, Container, Button, Tooltip, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider, Popper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { UserImageThumbnail } from "../common/Images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
+
 const pages = [
   { name: "Groceries", path: "groceries" },
   { name: "Events", path: "events" },
@@ -36,11 +37,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
           onClick={navigateToPage.bind(this, pages[0].path)}
         >
           <ListItemIcon>
-            <FontAwesomeIcon
-              icon="fa-solid fa-apple-whole"
-              size="lg"
-              color="white"
-            />
+            <FontAwesomeIcon icon="fa-solid fa-apple-whole" size="lg" color="white" />
           </ListItemIcon>
           <ListItemText primary={pages[0].name} />
         </MenuItem>
@@ -49,11 +46,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
           onClick={navigateToPage.bind(this, pages[1].path)}
         >
           <ListItemIcon>
-            <FontAwesomeIcon
-              icon="fa-solid fa-calendar"
-              size="lg"
-              color="white"
-            />
+            <FontAwesomeIcon icon="fa-solid fa-calendar" size="lg" color="white" />
           </ListItemIcon>
           <ListItemText primary={pages[1].name} />
         </MenuItem>
@@ -64,10 +57,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
   const NavigationDrawer = () => {
     const [navDrawerState, setNavDrawerState] = useState(false);
     const toggleNavDrawer = (open) => (event) => {
-      if (
-        event.type === "keydown" &&
-        (event.key === "Tab" || event.key === "Shift")
-      )
+      if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift"))
         return;
       setNavDrawerState(open);
     };
@@ -113,26 +103,55 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
     );
   };
 
+  const UserNotifications = () => {
+    const [userNotificationsAnchorEl, setUserNotificationsAnchorEl] = useState(null);
+    const handleOpenNotifications = (event) => setUserNotificationsAnchorEl(event.currentTarget);
+    const handleCloseNotifications = (event) => setUserNotificationsAnchorEl(null);
+
+    if (!loggedIn)
+      return;
+
+    return (
+      <Box sx={{ flexGrow: 0 }} hidden={!loggedIn}>
+        {/* User Notifications Area*/}
+        <Tooltip title="Open Notifications">
+          <IconButton onClick={handleOpenNotifications}>
+            <FontAwesomeIcon icon="fa-regular fa-bell" color="white" size="lg" />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          keepMounted
+          disableScrollLock
+          sx={{ mt: "45px" }}
+          anchorEl={userNotificationsAnchorEl}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          open={Boolean(userNotificationsAnchorEl)}
+          onClose={handleCloseNotifications}
+        >
+          {userData.notifications.map((n) => (
+            <MenuItem key={n.postId}
+              onClick={navigateToPage.bind(this, 'post/' + n.postId)}>
+              <ListItemText
+                primary={n.title}
+                secondary={n.text} />
+            </MenuItem >
+          ))}
+        </Menu>
+      </Box>
+    )
+  }
+
   const UserOptions = () => {
     const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
     const handleOpenUserMenu = (event) => setUserMenuAnchorEl(event.currentTarget);
     const handleCloseUserMenu = () => setUserMenuAnchorEl(null);
 
-    const [userNotificationsAnchorEl, setUserNotificationsAnchorEl] = useState(null);
-
+    if (!loggedIn)
+      return;
 
     return (
       <Box sx={{ flexGrow: 0 }} hidden={!loggedIn}>
-        {/* User Notifications Area*/}
-        <IconButton>
-          <FontAwesomeIcon
-            icon="fa-regular fa-bell"
-            color="white"
-            size="lg"
-          />
-        </IconButton>
-
-
         {/* User Options Menu */}
         <Tooltip title="Open User Menu">
           <IconButton onClick={handleOpenUserMenu}>
@@ -143,9 +162,9 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
           keepMounted
           disableScrollLock
           sx={{ mt: "45px" }}
+          anchorEl={userMenuAnchorEl}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "right" }}
-          anchorEl={userMenuAnchorEl}
           open={Boolean(userMenuAnchorEl)}
           onClose={handleCloseUserMenu}
         >
@@ -172,7 +191,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
             <ListItemText primary={userOptions[3].name} />
           </MenuItem>
         </Menu>
-      </Box>
+      </Box >
     );
   };
 
@@ -226,6 +245,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
             </Button>
 
             {/* User Setup */}
+            <UserNotifications />
             <UserOptions />
 
             {/* No User Setup */}

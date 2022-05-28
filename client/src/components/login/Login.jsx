@@ -47,6 +47,7 @@ export default function Login({ loginUser }) {
         MySwal.fire({
           text: "Wrong Username or Password, Please try again",
           icon: "warning",
+          backdrop: false
         });
       });
   };

@@ -23,37 +23,40 @@ import MyOrderDetails from "./components/myOrders/MyOrderDetails";
 
 iconsLibrary.add(fas, far);
 
-const fakeUser = {
-  firstName: "Ilan",
-  lastName: "Rozenfeld",
-  emailAddress: "Ilan@Walla.com",
-  phone: "05000000000",
-  accountType: "user",
-  rank: 0,
-  posts: [],
-  profileImage: "/assets/default-user-image.svg",
-  collectedHistory: [],
-};
-
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(fakeUser);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     axios
-      .get("auth/isLoggedIn").then(() => {
-        setLoggedIn(true);
-        //axios.get('/users/profile/current').then(res => { console.log(res.data); setUserData(res.data) });
-        //setUserData(fakeUser);
-      })
+      .get("auth/isLoggedIn").then(() => setUser())
       .catch(() => setLoggedIn(false));
   }, []);
 
+  //User's info from API
+  const setUser = () => {
+    //TODO: Get user's notifications from API somehow
+    const notifications = [
+      { postId: "628d1d8759e1381f2401548c", title: "n1", text: "This is notification n1 content" },
+      { postId: "628d1d8759e1381f240154a2", title: "n2", text: "This is notification n2 content" },
+      { postId: "628d1d8759e1381f240154b8", title: "n3", text: "This is notification n3 content" },
+      { postId: "628d1d8759e1381f240154ce", title: "n4", text: "This is notification n4 content" },
+      { postId: "628d1d8759e1381f240154e4", title: "n5", text: "This is notification n5 content" },
+      { postId: "628d1d8759e1381f240154fa", title: "n6", text: "This is notification n6 content" },
+    ]
+
+    axios.get('/users/profile/current').then(res => {
+      let userData = res.data.user;
+      userData.notifications = notifications;
+
+      setLoggedIn(true);
+      setUserData(userData);
+    });
+  };
 
   const loginUser = () => {
     setLoggedIn(true);
-
-    //axios.get('/users/profile/current').then(res => { console.log(res.data); setUserData(res.data) });
+    axios.get('/users/profile/current').then(res => setUserData(res.data.user));
     window.location.replace("/");
   };
 
