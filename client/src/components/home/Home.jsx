@@ -54,7 +54,7 @@ const Home = () => {
         <Stack direction="column" justifyContent="flex-start" alignItems="center" spacing={{ xs: 1, sm: 1, md: 5, lg: 5 }}>
             <Logo />
 
-            <Box sx={{ width: 'auto' }} hidden={!loggedIn}>
+            <Box sx={{ width: 'auto' }} hidden={!loggedIn || suggestedPosts.length == 0}>
                 <Divider variant="middle">
                     <Typography variant='h5' margin='10px'>Recommended For You</Typography>
                 </Divider>
