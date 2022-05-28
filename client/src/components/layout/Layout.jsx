@@ -31,25 +31,7 @@ const appTheme = createTheme({
   },
 });
 
-const Layout = (props) => {
-  const { loggedIn } = props;
-  //User Data Setup
-
-  const [userData, setUser] = useState(() => {
-    //TODO: add request to get user's status and data
-
-    return {
-      firstName: "Ilan",
-      lastName: "Rozenfeld",
-      emailAddress: "Ilan@Walla.com",
-      phone: "05000000000",
-      accountType: "user",
-      rank: 0,
-      posts: [],
-      profileImage: "/assets/ohad.png",
-      collectedHistory: [],
-    };
-  });
+const Layout = ({ loggedIn, userData, logoutUser }) => {
 
   return (
     <ThemeProvider theme={appTheme}>
@@ -61,7 +43,7 @@ const Layout = (props) => {
         gridTemplateRows="auto 1fr auto"
       >
         <Grid item component="header">
-          <Header loggedIn={loggedIn} userData={userData} logoutUser={props.logoutUser} />
+          <Header loggedIn={loggedIn} userData={userData} logoutUser={logoutUser} />
         </Grid>
         <Grid item component="main">
           <Outlet context={{ loggedIn, userData }} />
