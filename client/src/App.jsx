@@ -25,16 +25,38 @@ iconsLibrary.add(fas, far);
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     axios
-      .get("auth/isLoggedIn").then(() => setLoggedIn(true))
+      .get("auth/isLoggedIn").then(() => setUser())
       .catch(() => setLoggedIn(false));
-  },
-    []);
+  }, []);
 
-  const LoginUser = () => {
+  //User's info from API
+  const setUser = () => {
+    //TODO: Get user's notifications from API somehow
+    const notifications = [
+      { postId: "628d1d8759e1381f2401548c", title: "n1", text: "This is notification n1 content" },
+      { postId: "628d1d8759e1381f240154a2", title: "n2", text: "This is notification n2 content" },
+      { postId: "628d1d8759e1381f240154b8", title: "n3", text: "This is notification n3 content" },
+      { postId: "628d1d8759e1381f240154ce", title: "n4", text: "This is notification n4 content" },
+      { postId: "628d1d8759e1381f240154e4", title: "n5", text: "This is notification n5 content" },
+      { postId: "628d1d8759e1381f240154fa", title: "n6", text: "This is notification n6 content" },
+    ]
+
+    axios.get('/users/profile/current').then(res => {
+      let userData = res.data.user;
+      userData.notifications = notifications;
+
+      setLoggedIn(true);
+      setUserData(userData);
+    });
+  };
+
+  const loginUser = () => {
     setLoggedIn(true);
+    axios.get('/users/profile/current').then(res => setUserData(res.data.user));
     window.location.replace("/");
   };
 
@@ -47,7 +69,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout loggedIn={loggedIn} logoutUser={logoutUser} />}>
+        <Route path="/" element={<Layout loggedIn={loggedIn} userData={userData} logoutUser={logoutUser} />}>
           <Route index element={<Home />} />
           <Route path="post/:id" element={<Post />} />
           <Route path="groceries" element={<Groceries />} />
@@ -58,8 +80,8 @@ const App = () => {
           <Route path="my-orders" element={<MyOrders />} />
           <Route path="my-order-details" element={<MyOrderDetails />} />
           <Route path="about" element={<About />} />
-          <Route path="login" element={<Login LoginUser={LoginUser} />} />
-          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login loginUser={loginUser} />} />
+          <Route path="register" element={<Register loginUser={loginUser} />} />
           <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>

@@ -19,9 +19,7 @@ const Home = () => {
 
     useEffect(() => loadPosts(), []);
     const loadPosts = () => {
-        //TODO: replace to suggested posts after Amit fixes API
-        //axios.get('/posts/suggested/current').then(res => setSuggestedPosts(res.data.posts));
-        axios.post("/posts/bygroceries", { groceries: ["Off Bagril"], }).then((res) => setSuggestedPosts(res.data.posts));
+        axios.get('posts/suggested/current').then(res => setSuggestedPosts(res.data.posts));
         //TODO: Posts nearby and Posts recently added
         axios.get('/posts/').then(res => setNearbyPosts(res.data.posts));
         axios.get('/posts/').then(res => setRecentPosts(res.data.posts));
@@ -31,10 +29,10 @@ const Home = () => {
         return (
             <Box >
                 <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                    <img src={'assets/logo.png'} height='300px' width='300px' />
+                    <img src={'assets/logo.svg'} height='300px' width='300px' />
                 </Box>
                 <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                    <img src={'assets/logo.png'} height='150px' width='150px' />
+                    <img src={'assets/logo.svg'} height='150px' width='150px' />
                 </Box>
             </Box>
         )
@@ -60,7 +58,7 @@ const Home = () => {
                 <Divider variant="middle">
                     <Typography variant='h5' margin='10px'>Recommended For You</Typography>
                 </Divider>
-                <Posts posts={suggestedPosts} noBorder />
+                <Posts data={suggestedPosts} noBorder />
             </Box>
 
             <Box sx={{ width: 'auto' }}>
@@ -70,10 +68,10 @@ const Home = () => {
                     <Tab label={tabs[2]} />
                 </Tabs>
                 <TabPanel value={activeTabNumber} index={0}>
-                    <Posts posts={nearbyPosts} />
+                    <Posts data={nearbyPosts} />
                 </TabPanel>
                 <TabPanel value={activeTabNumber} index={1}>
-                    <Posts posts={recentPosts} />
+                    <Posts data={recentPosts} />
                 </TabPanel>
                 <TabPanel value={activeTabNumber} index={2}>
                     <AddPost />
