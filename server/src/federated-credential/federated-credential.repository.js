@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const FederatedCredential = require('./federated-credential.model');
-const router = express.Router();
 
 getFederatedCredentials = async function (query) {
     try {

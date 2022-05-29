@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./event.repository');
-const router = express.Router();
 
 getEvents = async function (query, page, limit) {
     try {

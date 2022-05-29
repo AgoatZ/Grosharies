@@ -5,7 +5,6 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const UserService = require('../user/user.services');
-const router = express.Router();
 const oneHour = 60 * 60 * 60 * 1000;
 const Status = require('../enums/pending-status');
 const postStatus = require('../enums/post-status');

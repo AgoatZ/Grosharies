@@ -7,7 +7,6 @@ const UserService = require('../user/user.services');
 const TagService = require('../tag/tag.services');
 const TagRepository = require('../tag/tag.repository');
 const Grocery = require('../grocery/grocery.model');
-const router = express.Router();
 const SuggestionsUtil = require('../common/utils/suggestions-util');
 const PendingStatus = require('../enums/pending-status');
 
