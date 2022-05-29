@@ -122,7 +122,6 @@ const getPendingsByPost = async function (postId) {
 
 const addPending = async function (postDetails) {
     try {
-        //console.log(postDetails);
         const pendingPost = await PendingRepository.addPending(postDetails);
         await interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
 

@@ -38,10 +38,10 @@ const getPostsByUser = async (publisherId, user) => {
         let userId;
         if (publisherId == 'current' && user) {
             userId = user._id;
-            console.log("Post Service byUser from user._id userId:", userId);
+            //console.log("Post Service byUser from user._id userId:", userId);
         } else {
             userId = publisherId;
-            console.log("Post Service byUser from params userId:", userId);
+            //console.log("Post Service byUser from params userId:", userId);
         }
         const posts = await PostRepository.getPostsByUser(userId);
         return posts;
@@ -57,10 +57,10 @@ const getPublisherOpenPosts = async (publisherId, user) => {
         let userId;
         if (publisherId == 'current' && user) {
             userId = user._id;
-            console.log("Post Service getPublisherOpenPosts from user._id userId:", userId);
+            //console.log("Post Service getPublisherOpenPosts from user._id userId:", userId);
         } else {
             userId = publisherId;
-            console.log("Post Service getPublisherOpenPosts from params userId:", userId);
+            //console.log("Post Service getPublisherOpenPosts from params userId:", userId);
         }
         const posts = await PostRepository.getPublisherOpenPosts(userId);
         return posts;
@@ -106,7 +106,7 @@ const getPostsByCollector = async (collectorId, user) => {
         const posts = await PostRepository.getPostsByCollector(userId);
         return posts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('service error: ' + e.message);
 
         throw Error('Error while Retrieving Posts by Collector');
     }
@@ -117,7 +117,7 @@ const getPostsByGroceries = async (groceries) => {
         const posts = await PostRepository.getPostsByGroceries(groceries);
         return posts;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+        console.log('service error: ' + e.message);
 
         throw Error('Error while Retrieving Posts by Collector');
     }
@@ -232,7 +232,6 @@ const getPostTags = async (postId) => {
 };
 
 const getSuggestedPosts = async (id, currentUser) => {
-    console.log('sugestservice');
     try {
         let userId;
         if (id == 'current' && currentUser) {

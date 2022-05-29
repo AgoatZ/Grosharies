@@ -37,7 +37,6 @@ passport.use(new GoogleStrategy({
     scope: ['profile']
 }, async function verify(issuer, profile, cb) {
     try {
-        console.log('passgoogle');
         var credentials = await FederatedCredential.getFederatedCredentialByProviderAndSubject(issuer, profile.id);
         console.log('credentials:', credentials);
         if (!credentials) {
@@ -51,7 +50,6 @@ passport.use(new GoogleStrategy({
                 source: userSource.GOOGLE
             };
             newUser = await User.addGoogleUser(newUser);
-            console.log(newUser);
             credentials = await FederatedCredential.addFederatedCredential(newUser._id, issuer, profile.id);
             return cb(null, newUser);
         } else {

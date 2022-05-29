@@ -30,7 +30,7 @@ getFederatedCredentialByProviderAndSubject = async function (provider, subject) 
         const federatedCredential = await FederatedCredential.findOne({ provider: provider, subject: subject });
         return federatedCredential;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Repository error: ' + e.message);
 
         throw Error('Error while Retrieving federatedCredential');
     }

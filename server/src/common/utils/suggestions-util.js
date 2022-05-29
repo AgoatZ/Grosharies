@@ -45,7 +45,7 @@ const calcWeights = async (history) => {
         }
         return { categoriesWeights, groceriesWeights, tagsWeights };
     } catch (e) {
-        console.log("calc whights", e);
+        console.log("calc whights error", e);
 
         throw Error('Error calculating weights');
     }
@@ -61,14 +61,13 @@ const getPostTags = async (postId) => {
         }
         return tags;
     } catch (e) {
-        console.log("get post tags", e);
+        console.log("get post tags error", e);
 
         throw Error('Error while retrieving tags');
     }
 };
 
 const getPostRelevance = async (history, post) => {
-    console.log('getPostRelevanceUtil');
     try {
         const { categoriesWeights, groceriesWeights, tagsWeights } = await calcWeights(history);
         //add relevance regarding tags
@@ -95,7 +94,6 @@ const getPostRelevance = async (history, post) => {
                 relevance += groRank;
             }
         }
-        //console.log("relevance", relevance);
         return relevance;
     } catch (e) {
         console.log("get post relevance", e);

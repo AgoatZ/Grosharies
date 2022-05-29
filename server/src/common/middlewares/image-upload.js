@@ -16,7 +16,6 @@ const uploadImage = async (req, res, next) => {
         });
 
         req.on('data', function (chunk, error) {
-          console.log('rec data');
           chData.push(chunk);
         });
 
