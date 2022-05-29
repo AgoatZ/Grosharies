@@ -8,8 +8,8 @@ const post = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   address: { type: String, required: true },
   addressCoordinates: {
-    lat: { type: Number, required: true },
-    long: { type: Number, required: true }
+    lat: { type: Number, required: false },
+    long: { type: Number, required: false }
   },
   publishingDate: { type: Date, default: Date.now },
   pickUpDates: [{

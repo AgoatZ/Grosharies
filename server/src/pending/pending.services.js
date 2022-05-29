@@ -8,10 +8,8 @@ const UserService = require('../user/user.services');
 const oneHour = 60 * 60 * 60 * 1000;
 const Status = require('../enums/pending-status');
 const postStatus = require('../enums/post-status');
-const { PublishCommand } = require('@aws-sdk/client-sns');
 const { StartExecutionCommand } = require('@aws-sdk/client-sfn');
-const { snsClient } = require('../common/utils/sns-client');
-const { sfnClient } = require('../common/utils/sns-client');
+const { sfnClient } = require('../common/utils/sfn-client');
 
 const getPendings = async function (query, page, limit) {
     try {
@@ -404,10 +402,6 @@ const interrestedUserReminder = async (userId, pendingId) => {
 };
 
 const sendSMSToNumber = async (firstMessage, secondMessage, phoneNumber) => {
-    // var params = {
-    //     Message: message,
-    //     PhoneNumber: phoneNumber
-    // };
     const r = Date.now() + Math.round(Math.random() * 1E9);
     var params = {
         stateMachineArn: process.env.AWS_SFN_SENDSMS_ARN,
@@ -423,7 +417,6 @@ const sendSMSToNumber = async (firstMessage, secondMessage, phoneNumber) => {
         try {
             const command = new StartExecutionCommand(params);
             const response = await sfnClient.send(command);
-            //const data = await snsClient.send(new PublishCommand(params));
             console.log("Success sending SMS.", response);
             return response; // For unit tests.
         } catch (err) {

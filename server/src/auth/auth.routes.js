@@ -1,7 +1,6 @@
 const express = require('express');
 const AuthController = require('./auth.controllers');
 const router = express.Router();
-const passportMiddlewares = require('../common/middlewares/passport');
 const { authJwt, authGoogle, authGoogleCallback } = require('../common/middlewares/passport');
 
 router.post('/register', AuthController.register);
