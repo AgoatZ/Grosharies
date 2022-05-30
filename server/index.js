@@ -67,7 +67,7 @@ app.use(
   session({
     secret: "secret-key",
     store: MongoStore.create({
-      mongoUrl: "mongodb+srv://Grosharies:"+process.env.MONGO_ATLAS_PASS+"@grosharies.glcd8.mongodb.net/?retryWrites=true&w=majority",
+      mongoUrl: process.env.MONGO_ATLAS_URL,
     }),
     saveUninitialized: true,
     cookie: { maxAge: 1000 * 60 * 60 * 24 },
