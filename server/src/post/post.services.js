@@ -4,8 +4,8 @@ const PostRepository = require('./post.repository');
 const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
 const TagRepository = require('../tag/tag.repository');
-const Grocery = require('../grocery/grocery.model');
 const SuggestionsUtil = require('../common/utils/suggestions-util');
+const { getCoordinates } = require('../common/utils/google-maps-client');
 
 const getPosts = async (query, page, limit) => {
     try {
@@ -20,9 +20,11 @@ const getPosts = async (query, page, limit) => {
 
 const getPostById = async (postId) => {
     try {
-        const post = await PostRepository.getPostById(postId);
-        if (!(post.addressCoordinates.lat && post.addressCoordinates.long)) {
-            
+        let post = await PostRepository.getPostById(postId);
+        if (!(post.addressCoordinates.lat && post.addressCoordinates.lng)) {
+            let coordinates = await getCoordinates(post.address);
+            await PostRepository.updatePost(postId, { addressCoordinates: { lat: coordinates.lat, lng: coordinates.lng }});
+            post = await PostRepository.getPostById(postId);
         }
         return post;
     } catch (e) {

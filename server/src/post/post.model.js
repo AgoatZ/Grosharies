@@ -9,7 +9,7 @@ const post = new mongoose.Schema({
   address: { type: String, required: true },
   addressCoordinates: {
     lat: { type: Number, required: false },
-    long: { type: Number, required: false }
+    lng: { type: Number, required: false }
   },
   publishingDate: { type: Date, default: Date.now },
   pickUpDates: [{
