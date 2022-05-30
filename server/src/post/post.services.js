@@ -127,6 +127,8 @@ const getPostsByGroceries = async (groceries) => {
 const addPost = async (postDetails) => {
     try {
         postDetails.content.left = postDetails.content.original.amount;
+        let coordinates = await getCoordinates(post.address);
+        postDetails.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
         const post = await PostRepository.addPost(postDetails);
 
         return post;
@@ -197,6 +199,7 @@ const pendPost = async (postId, collectorId, groceries) => {
         const pendingPost = await PendingService.addPending({
             headline: post.headline,
             address: post.address,
+            addressCoordinates: post.addressCoordinates,
             content: groceries,
             sourcePost: post._id,
             publisherId: post.userId,
