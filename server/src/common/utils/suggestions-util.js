@@ -26,11 +26,13 @@ const calcWeights = async (history) => {
                 //weigh categories
                 let catId = history[piece].content[grocery].category
                 let category = await CategoryService.getCategoryById(catId);
-                let catRank = categoriesWeights.get(category.name);
-                if (!catRank) {
-                    categoriesWeights.set(category.name, 1);
-                } else {
-                    categoriesWeights.set(category.name, catRank + 1);
+                if (category) {
+                    let catRank = categoriesWeights.get(category.name);
+                    if (!catRank) {
+                        categoriesWeights.set(category.name, 1);
+                    } else {
+                        categoriesWeights.set(category.name, catRank + 1);
+                    }
                 }
 
                 //weigh groceries
@@ -85,9 +87,11 @@ const getPostRelevance = async (history, post) => {
         //add relevance regarding categories and groceries
         for (grocery in post.content) {
             const category = await CategoryService.getCategoryById(post.content[grocery].original.category);
-            const catRank = categoriesWeights.get(category.name);
-            if (catRank) {
-                relevance += catRank;
+            if (category) {
+                const catRank = categoriesWeights.get(category.name);
+                if (catRank) {
+                    relevance += catRank;
+                }
             }
             const groRank = groceriesWeights.get(post.content[grocery].original.name);
             if (groRank) {
