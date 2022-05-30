@@ -1,8 +1,4 @@
 const fs = require('fs');
-const GroceryService = require('.././../grocery/grocery.services');
-const PostService = require('.././../post/post.services');
-const EventService = require('.././../event/event.services');
-const UserService = require('.././../user/user.services');
 
 const uploadImage = async (req, res, next) => {
     try {

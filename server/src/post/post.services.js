@@ -1,14 +1,11 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const PostRepository = require('./post.repository');
-const GroceryRepository = require('../grocery/grocery.repository');
 const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
-const TagService = require('../tag/tag.services');
 const TagRepository = require('../tag/tag.repository');
 const Grocery = require('../grocery/grocery.model');
 const SuggestionsUtil = require('../common/utils/suggestions-util');
-const PendingStatus = require('../enums/pending-status');
 
 const getPosts = async (query, page, limit) => {
     try {
@@ -24,6 +21,9 @@ const getPosts = async (query, page, limit) => {
 const getPostById = async (postId) => {
     try {
         const post = await PostRepository.getPostById(postId);
+        if (!(post.addressCoordinates.lat && post.addressCoordinates.long)) {
+            
+        }
         return post;
     } catch (e) {
         console.log('service error: ' + e.message);
