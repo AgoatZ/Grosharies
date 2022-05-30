@@ -13,7 +13,7 @@
     "start:app": "npm run start:server | npm run start:client",
     "start:server": "cd server && npm install && npm start",
     "start:client": "cd client && npm start",
-    "start:prod": "npm run start:server",
+    "start:prod": "npm run start:server && npm run build",
     "build": "cd client && npm --force install && npm run build",
     "heroku-postbuild": "npm run build",
     "start:nobrowser": "npm run start:server | npm run start:client-no-browser",
