@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv').config();
 const mongoose = require('./src/db');
 const MongoStore = require('connect-mongo');
-const cors = require('cors');
+//const cors = require('cors');
 
 const app = express();
 const session = require('express-session');
@@ -41,12 +41,12 @@ if (process.env.NODE_ENV == "development") {
 }
 
 //app.use(express.static(path.join(__dirname, 'client/build')));
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, '..', 'build')));
 app.use(bodyParser.json({ limit: '16mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(function(req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
@@ -58,12 +58,12 @@ app.use(function(req, res, next) {
   res.setHeader("Access-Control-Allow-Credentials", true);
   next();
 });
-app.use(
-  cors({
-    origin: [`http://localhost:3000`, `https://localhost:3000`],
-    credentials: "true",
-  })
-);
+// app.use(
+//   cors({
+//     origin: [`http://localhost:3000`, `https://localhost:3000`],
+//     credentials: "true",
+//   })
+// );
 app.use(
   session({
     secret: "secret-key",
