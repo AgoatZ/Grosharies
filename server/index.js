@@ -40,8 +40,8 @@ if (process.env.NODE_ENV == "development") {
   app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 }
 
-//app.use(express.static(path.join(__dirname, 'client/build')));
-app.use(express.static(path.join(__dirname, '..', 'build')));
+app.use(express.static(path.join(__dirname, 'client/build')));
+//app.use(express.static(path.join(__dirname, '..', 'build')));
 app.use(bodyParser.json({ limit: '16mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -87,11 +87,11 @@ app.use('/api/categories', routeCategories, (req, res) => res.sendStatus(401));
 app.use('/api/tags', routeTags, (req, res) => res.sendStatus(401));
 app.use('/api/auth', routeAuth, (req, res) => res.sendStatus(401));
 
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname + '/../client/build/index.html'));
-// });
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/../client/build/index.html'));
 });
+// app.get('/*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 
 module.exports = app;
