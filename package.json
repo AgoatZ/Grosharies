@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "GroSharies Project",
   "main": "index.js",
+  "homepage":"https://grosharies.herokuapp.com/",
   "engines": {
     "node": "18.2.0",
     "npm": "8.11.0"
