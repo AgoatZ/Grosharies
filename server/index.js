@@ -40,7 +40,7 @@ if (process.env.NODE_ENV == "development") {
   app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 }
 
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname + '/../client/build')));
 //app.use(express.static(path.resolve(__dirname, "./client/build")));
 app.use(bodyParser.json({ limit: '16mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
