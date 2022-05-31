@@ -64,7 +64,7 @@ const MyPosts = () => {
           image="/assets/default-post-image.svg"
           sx={{ padding: 1, borderRadius: "10px", height: "250px", width: "auto", mr: "3%" }}
         />
-        <Stack spacing={1} sx={{ mt: "10px", mb: "10px", width: "auto" }}>
+        <Stack spacing={1} sx={{ mt: "10px", mb: "10px" }}>
           <Typography variant="h4" >{post.headline}</Typography>
           <Typography variant="h6" >Address: {post.address}</Typography>
           <List disablePadding sx={{ display: { xs: 'none', md: 'block' } }}>
@@ -75,9 +75,6 @@ const MyPosts = () => {
           <Divider />
           <Button fullWidth variant="text" onClick={() => toPostPage(post)}>Go To Post Page</Button>
         </Stack>
-        <Box >
-
-        </Box>
       </>
     )
 
