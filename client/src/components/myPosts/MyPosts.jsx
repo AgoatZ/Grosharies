@@ -1,162 +1,126 @@
 import React, { useState, useEffect } from "react";
-import {
-  Typography,
-  Box,
-  CardMedia,
-  Divider,
-  Button,
-  Fade,
-  Popper,
-  Paper,
-} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
-import { approveOrCancelSection, RenderOrders } from "../myOrders/MyOrders";
-import PopupState, { bindToggle, bindPopper } from "material-ui-popup-state";
+import { Typography, Box, CardMedia, Divider, Button, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const MyPosts = () => {
   const [posts, setPosts] = useState([]);
-  const [pendingsForPost, setPendingsForPost] = useState([]);
-
-  useEffect(() => {
-    loadMyPosts();
-  }, []);
+  useEffect(() => { loadMyPosts(); }, []);
 
   const loadMyPosts = async () => {
-    axios.get("posts/openPosts/current").then((openPostsRes) => {
-      let filterArray = [];
-      axios.get("pendings/").then((res) => {
-        for (const post of openPostsRes.data.posts) {
-          filterArray.push(
-            res.data.posts.filter((pending) => {
-              return (
-                pending.status.finalStatus === "pending" &&
-                post._id === pending.sourcePost
-              );
-            })
-          );
-        }
-        setPendingsForPost(filterArray);
-        setPosts(openPostsRes.data.posts);
+    let userPosts = []
+    //Get user's open posts
+    axios.get("posts/openPosts/current").then((userOpenPosts) => {
+      userPosts = userOpenPosts.data.posts;
+    }).then(() => {
+      //Add pending orders to each post object
+      userPosts.forEach(post => {
+        post.pendings = [];
+        axios.get("pendings/post/" + post._id).then((postOpenOrders) => {
+          //Filter to relevant pendings 
+          post.pendings = postOpenOrders.data.pendings.filter((pending) => pending.status.finalStatus === "pending");
+          //Add collector's name for each pending
+          post.pendings.forEach((pending) => {
+            axios.get("users/profile/" + pending.collectorId).then((res) => pending.collector = res.data.user.firstName + ' ' + res.data.user.lastName);
+          });
+        });
       });
+    }).then(() => {
+      console.log(userPosts);
+      setPosts(userPosts);
     });
+  }
+
+  const PostsAccordion = ({ posts }) => {
+    const [expanded, setExpanded] = useState(false);
+    const handleChange = (panel) => (event, isExpanded) => setExpanded(isExpanded ? panel : false);
+
+    return (
+      posts.map((post, index) => (
+        <Accordion onChange={handleChange('panel' + index)} key={post._id} sx={{ mb: '16px' }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <PostCard post={post} />
+          </AccordionSummary >
+          <AccordionDetails>
+            <Divider />
+            <PendingsList pendings={post.pendings} />
+          </AccordionDetails>
+        </Accordion >
+      ))
+    )
   };
 
-  const RenderPosts = ({ posts }) =>
-    posts.map((post, index) => {
-      return (
-        <PopupState variant="popper" popupId="demo-popup-popper">
-          {(popupState) => (
-            <div>
-              <Box
-                key={post._id}
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  m: "5%",
-                  width: "70%",
-                  backgroundColor: "whitesmoke",
-                  borderRadius: "20px",
-                }}
-              >
-                <Box sx={{ display: "flex", width: "100%" }}>
-                  <Box
-                    {...bindToggle(popupState)}
-                    sx={{
-                      display: "flex",
-                      width: "100%",
-                      ":hover": {
-                        cursor: "pointer",
-                        bgcolor: "#F2FCF8",
-                        borderRadius: "10px",
-                      },
-                    }}
-                  >
-                    <CardMedia
-                      component="img"
-                      sx={{
-                        padding: 1,
-                        borderRadius: "10px",
-                        height: "250px",
-                        width: "auto",
-                        mr: "3%",
-                      }}
-                      image="/assets/default-post-image.svg"
-                    />
-                    <Box
-                      sx={{
-                        flexDirection: "column",
-                        margin: "auto 10% auto 0",
-                        width: "70%",
-                      }}
-                    >
-                      <Typography
-                        component="div"
-                        variant="h4"
-                        mb="2%"
-                        fontFamily="Roboto"
-                      >
-                        Title: {post.headline}
-                      </Typography>
-                      <Typography
-                        component="div"
-                        variant="h6"
-                        mb="2%"
-                        fontFamily="Roboto"
-                      >
-                        Address: {post.address}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  {/* {approveOrCancelSection("publisher", post._id)} */}
-                </Box>
-                <Popper {...bindPopper(popupState)} transition>
-                  {({ TransitionProps }) => (
-                    <Fade {...TransitionProps} timeout={350}>
-                      <Paper>
-                        {pendingsForPost[index].length > 0 ? (
-                          <RenderOrders
-                            role="publisher"
-                            isFinished={false}
-                            isCanceled={false}
-                            posts={pendingsForPost[index]}
-                          ></RenderOrders>
-                        ) : (
-                          <Typography sx={{ fontFamily: "roboto" }}>
-                            This post has no orders at the moment
-                          </Typography>
-                        )}
-                        {/* <RenderOrders role="publisher" isFinished={false} isCanceled={false} posts={pendingsForPost[index]}></RenderOrders> */}
-                      </Paper>
-                    </Fade>
-                  )}
-                </Popper>
-              </Box>
-            </div>
-          )}
-        </PopupState>
-      );
-    });
+  const PostCard = ({ post }) => {
+    let navigate = useNavigate();
+    const toPostPage = (post) => navigate("/post/" + post._id, { state: { post: post }, isEdit: true });
+
+    return (
+      <>
+        <CardMedia
+          component="img"
+          image="/assets/default-post-image.svg"
+          sx={{ padding: 1, borderRadius: "10px", height: "250px", width: "auto", mr: "3%" }}
+        />
+        <Stack spacing={1} sx={{ mt: "10px", mb: "10px", width: "auto" }}>
+          <Typography variant="h4" >{post.headline}</Typography>
+          <Typography variant="h6" >Address: {post.address}</Typography>
+          <List disablePadding sx={{ display: { xs: 'none', md: 'block' } }}>
+            {post.content.map((item) => (
+              <ListItemText inset key={item.original._id}>{item.original.amount + item.original.scale + ' '} <b>{item.original.name} </b> {' packed in a ' + item.original.packing}</ListItemText>
+            ))}
+          </List>
+          <Divider />
+          <Button fullWidth variant="text" onClick={() => toPostPage(post)}>Go To Post Page</Button>
+        </Stack>
+        <Box >
+
+        </Box>
+      </>
+    )
+
+  }
+
+  const PendingsList = ({ pendings }) => {
+    return (
+      <List>
+        <ListSubheader>Open Orders</ListSubheader>
+        {
+          pendings.length > 0 ?
+            (pendings.map(pending => <PendingCard pending={pending} key={pending._id} />)) :
+            (<ListItemText>This post has no orders at the moment</ListItemText>)
+        }
+      </List >
+    )
+  }
+
+  const PendingCard = ({ pending }) => {
+    const [open, setOpen] = useState(false);
+    const handleClick = () => setOpen(!open);
+    return (
+      <>
+        <ListItemButton onClick={handleClick}>
+          <ListItemText>{"Order By " + pending.collector}</ListItemText>
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={open}>
+          <List disablePadding>
+            {pending.content.map((item) => (
+              <ListItemText inset key={item._id}>{item.amount + item.scale + ' '} <b>{item.name} </b> {' packed in a ' + item.packing}</ListItemText>
+            ))}
+          </List>
+        </Collapse>
+      </>
+    )
+  }
 
   return (
-    <>
-      <Box sx={{ m: "5%", mb: "1%" }}>
-        <Typography
-          component="div"
-          variant="h3"
-          fontFamily="Roboto"
-          sx={{ mb: "5%" }}
-        >
-          My Posts
-        </Typography>
-
-        {posts.length > 0 ? (
-          <>
-            <RenderPosts posts={posts} />
-          </>
-        ) : null}
-      </Box>
-    </>
+    <Box sx={{ m: "5%", mb: "1%" }}>
+      <Typography variant="h3" sx={{ mb: "5%" }}>My Posts</Typography>
+      {posts.length > 0 ? (<PostsAccordion posts={posts} />) : null}
+    </Box>
   );
 };
 
