@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv').config();
 const mongoose = require('./src/db');
 const MongoStore = require('connect-mongo');
-//const cors = require('cors');
 
 const app = express();
 const session = require('express-session');
@@ -20,33 +19,38 @@ const routeEvents = require('./src/event/event.routes');
 const routeCategories = require('./src/category/category.routes');
 const routeTags = require('./src/tag/tag.routes');
 const routeAuth = require('./src/auth/auth.routes');
+let mongoUrl;
 
 if (process.env.NODE_ENV == "development") {
   const swaggerUI = require("swagger-ui-express")
   const swaggerJsDoc = require("swagger-jsdoc")
   const options = {
-      definition: {
-          openapi: "3.0.0",
-          info: {
-              title: "Grosharies API",
-              version: "1.0.0",
-              description: "A zero-waste groceries sharing platform API",
-          },
-          servers: [{url: "http://localhost:" + process.env.PORT,},],
+    definition: {
+      openapi: "3.0.0",
+      info: {
+        title: "Grosharies API",
+        version: "1.0.0",
+        description: "A zero-waste groceries sharing platform API",
       },
-      apis: ["./src/user/*.routes.js"],
+      servers: [{ url: "http://localhost:" + process.env.PORT, },],
+    },
+    apis: ["./src/user/*.routes.js"],
   };
   const specs = swaggerJsDoc(options);
   app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 }
 
 app.use(express.static(path.join(__dirname + '/../client/build')));
-//app.use(express.static(path.resolve(__dirname, "./client/build")));
 app.use(bodyParser.json({ limit: '16mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(function(req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+app.use(function (req, res, next) {
+  if (process.env.NODE_ENV == "production") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
+  else if (process.env.NODE_ENV == "development") {
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000")
+  }
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
@@ -58,17 +62,24 @@ app.use(function(req, res, next) {
   res.setHeader("Access-Control-Allow-Credentials", true);
   next();
 });
-// app.use(
-//   cors({
-//     origin: [`http://localhost:3000`, `https://localhost:3000`],
-//     credentials: "true",
-//   })
-// );
+if (process.env.NODE_ENV == "development") {
+  const cors = require('cors');
+  app.use(
+    cors({
+      origin: [`http://localhost:3000`, `https://localhost:3000`],
+      credentials: "true",
+    })
+  );
+  mongoUrl = process.env.MONGO_LOCAL_URL;
+}
+else if (process.env.NODE_ENV == "production") {
+  mongoUrl = process.env.MONGO_ATLAS_URL;
+}
 app.use(
   session({
     secret: "secret-key",
     store: MongoStore.create({
-      mongoUrl: process.env.MONGO_ATLAS_URL,
+      mongoUrl: mongoUrl,
     }),
     saveUninitialized: true,
     cookie: { maxAge: 1000 * 60 * 60 * 24 },
@@ -90,8 +101,5 @@ app.use('/api/auth', routeAuth, (req, res) => res.sendStatus(401));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/../client/build/index.html'));
 });
-// app.get('/*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
 
 module.exports = app;

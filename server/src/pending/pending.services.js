@@ -472,7 +472,6 @@ module.exports = {
     interrestedUserReminder,
     addPending,
     sendSMSToNumber,
-    routine,
     finishPending,
     cancelPending,
     deletePending,
