@@ -187,7 +187,7 @@ const init = async () => {
             let post = new Post({
                 "headline": "Come and take some " + gross[i % 11],
                 "userId": user._id,
-                "address": '' + i + " Nowhere Street",
+                "address": '' + (i+1) + " King George, Tel Aviv",
                 "pickUpDates": {
                     "from": Date.now(),
                     "until": Date.now() + oneDay

@@ -261,9 +261,33 @@ const getSuggestedPosts = async (id, currentUser) => {
         }
         return posts.sort((p1, p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
     } catch (e) {
-        console.log(e);
+        console.log('Service error from getSuggestedPosts', e);
 
         throw Error('Error while suggesting posts');
+    }
+};
+
+const getNearbyPosts = async (currentUser, coordinates) => {
+    try {
+        let userId;
+        if (currentUser) {
+            userId = currentUser._id;
+        }    
+        const posts = await PostRepository.getRelevantPosts();
+        let nearbyPosts = [];
+        for (i in posts) {
+            let lanDist = posts[i].addressCoordinates.lan - coordinates.lan;
+            let lngDist = posts[i].addressCoordinates.lng - coordinates.lng;
+            let dist = Math.sqrt(lanDist*lanDist + lngDist*lngDist);
+            if (dist < 666) {
+                nearbyPosts.push(posts[i]);
+            }
+        }
+        return nearbyPosts;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error('Error while Retrieving Posts');
     }
 };
 
@@ -276,6 +300,7 @@ module.exports = {
     getPostsByCollector,
     getPostsByGroceries,
     getSuggestedPosts,
+    getNearbyPosts,
     getPublisherOpenPosts,
     addPost,
     pendPost,
