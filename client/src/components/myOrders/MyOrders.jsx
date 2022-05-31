@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Box, CardMedia, Divider, Button } from "@mui/material";
 import axios from "../../utils/axios";
-import CloseIcon from "@mui/icons-material/Close";
-import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
+import { Typography, Box, CardMedia, Divider, Button, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 
 const MySwal = withReactContent(Swal);
 
@@ -14,10 +17,7 @@ const MyOrders = () => {
   const [pendingsPosts, setPendingsPosts] = useState([]);
   const [finishedPendings, setFinishedPendings] = useState([]);
   const [cancelledPendings, setCancelledPendings] = useState([]);
-
-  useEffect(() => {
-    loadPendingPosts();
-  }, []);
+  useEffect(() => { loadPendingPosts(); }, []);
 
   const loadPendingPosts = () => {
     axios.get("pendings/collector/current").then((res) => {
@@ -29,259 +29,132 @@ const MyOrders = () => {
   };
 
   return (
-    <>
-      <Box sx={{ m: "5%", mb: "1%" }}>
-        <Typography
-          component="div"
-          variant="h3"
-          fontFamily="Roboto"
-          sx={{ mb: "5%" }}
-        >
-          My Orders
-        </Typography>
-
-        {pendingsPosts.length > 0 ? (
-          <>
-            <Typography component="div" variant="h4" fontFamily="Roboto">
-              Pending
-            </Typography>
-            <RenderOrders posts={pendingsPosts} />
-          </>
-        ) : null}
-
-        {finishedPendings.length > 0 ? (
-          <>
-            <Typography component="div" variant="h4" fontFamily="Roboto">
-              Finished
-            </Typography>
-            <RenderOrders posts={finishedPendings} isFinished />
-          </>
-        ) : null}
-
-        {cancelledPendings.length > 0 ? (
-          <>
-            <Typography component="div" variant="h4" fontFamily="Roboto">
-              Canceled
-            </Typography>
-            <RenderOrders posts={cancelledPendings} isCanceled />
-          </>
-        ) : null}
-      </Box>
-    </>
+    <Stack spacing={1} sx={{ m: "5%", mb: "1%" }}>
+      <Typography variant="h3" sx={{ mb: "5%" }}>My Orders</Typography>
+      <Typography variant="h4" >Pending</Typography>
+      {pendingsPosts.length > 0 ? <PostsAccordion posts={pendingsPosts} /> : <Typography>No Pending Orders</Typography>}
+      <Typography variant="h4" >Finished</Typography>
+      {finishedPendings.length > 0 ? <PostsAccordion posts={finishedPendings} /> : <Typography>No Finished Orders</Typography>}
+      <Typography variant="h4" >Canceled</Typography>
+      {cancelledPendings.length > 0 ? <PostsAccordion posts={cancelledPendings} /> : <Typography>No Canceled Orders</Typography>}
+    </Stack>
   );
 };
+
+const PostsAccordion = ({ posts }) => {
+  const [expanded, setExpanded] = useState(false);
+  const handleChange = (panel) => (event, isExpanded) => setExpanded(isExpanded ? panel : false);
+
+  return (
+    posts.map((post, index) => (
+      <Accordion onChange={handleChange('panel' + index)} key={post._id} sx={{ mb: '16px' }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <PostCard post={post} />
+        </AccordionSummary >
+        <AccordionDetails>
+          <Divider />
+          <ItemsList content={post.content} />
+        </AccordionDetails>
+      </Accordion >
+    ))
+  )
+};
+
+const PostCard = ({ post }) => {
+  let navigate = useNavigate();
+  const toPostPageWithOrderEdit = (post) => navigate("/post/" + post._id, { state: { post: post }, isEdit: true });
+
+  return (
+    <>
+      <CardMedia
+        component="img"
+        image="/assets/default-post-image.svg"
+        sx={{ padding: 1, borderRadius: "10px", height: "200px", width: "auto", mr: "3%" }}
+      />
+      <Stack spacing={1} sx={{ width: '50%', flexShrink: 0, mr: "3%", mt: "10px", mb: "10px" }}>
+        <Status post={post} />
+        <Divider />
+        <Typography variant="h5" >{post.headline}</Typography>
+        <Typography variant="h6" >Address: {post.address}</Typography>
+      </Stack>
+
+      <Stack justifyContent="center" alignItems="center" spacing={2} sx={{ width: '33%', flexShrink: 1 }}>
+        <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toPostPageWithOrderEdit(post)}>Change Order</Button>
+        <Button variant="outlined" startIcon={<CheckIcon />} onClick={() => completeOrder(post)}>Complete Order</Button>
+        <Button variant="outlined" startIcon={<CloseIcon />} onClick={() => cancelOrder(post)}>Cancel Order</Button>
+      </Stack>
+    </>
+  )
+}
+
+const Status = ({ post }) => {
+  const timeLeft = calculateTimeLeft(post);
+  return (
+    <>
+      {post.status.finalStatus === "pending" && post.status.collectorStatement === "pending" && post.status.publisherStatement === "pending" ?
+        (<Typography variant="overline">Waiting for you</Typography>) : null}
+
+      {post.status.finalStatus === "cancelled" && post.status.collectorStatement === "cancelled" && post.status.publisherStatement === "pending" ?
+        (<Typography variant="overline">Canceled by you</Typography>) : null}
+      {post.status.finalStatus === "cancelled" && post.status.collectorStatement === "pending" && post.status.publisherStatement === "cancelled" ?
+        (<Typography variant="overline">Canceled by the publisher</Typography>) : null}
+
+      {post.status.finalStatus === "collected" && post.status.collectorStatement === "collected" && post.status.publisherStatement === "pending" ?
+        (<Typography variant="overline">Collected by you</Typography>) : null}
+      {post.status.finalStatus === "collected" && post.status.collectorStatement === "pending" && post.status.publisherStatement === "collected" ?
+        (<Typography variant="overline">Collected by others</Typography>) : null}
+
+      <Typography variant="overline">
+        {timeLeft ? <Typography variant="overline" sx={{ color: "red" }}>{timeLeft}</Typography> : null}
+      </Typography>
+    </>
+  )
+}
+
+//TODO: Add actions to each items - marked picked, etc
+const ItemsList = ({ content }) => {
+
+  //   //
+  // const myOrderDetails = (orderDetails, navigate) => {
+  //   axios.get("posts/" + orderDetails.sourcePost).then((res) => {
+  //     res.data.post.content.forEach((grocery, i) => {
+  //       orderDetails.content[i].left = grocery.left;
+  //     });
+  //     navigate("/post/" + orderDetails._id, {
+  //       state: { post: orderDetails, isEdit: true },
+  //     });
+  //   });
+  // };
+
+  return (
+    <List disablePadding sx={{ display: { xs: 'none', md: 'block' } }}>
+      <ListSubheader>Items</ListSubheader>
+      {content.map((item) => (
+        <ListItemText inset key={item._id}>
+          {item.amount + item.scale + ' '}
+          <b>{item.name} </b>
+          {' packed in a ' + item.packing + ' '}
+          {/* <ins >{item.left + ' left'}</ins > */}
+        </ListItemText>
+      ))}
+    </List>
+  )
+}
 
 const calculateTimeLeft = (pendingPost) => {
   const today = new Date();
   const untilDate = new Date(pendingPost.pendingTime.until);
   const days = parseInt((untilDate - today) / (1000 * 60 * 60 * 24));
   const hours = parseInt((Math.abs(untilDate - today) / (1000 * 60 * 60)) % 24);
-  const minutes = parseInt(
-    (Math.abs(untilDate.getTime() - today.getTime()) / (1000 * 60)) % 60
-  );
-  const seconds = parseInt(
-    (Math.abs(untilDate.getTime() - today.getTime()) / 1000) % 60
-  );
+  const minutes = parseInt((Math.abs(untilDate.getTime() - today.getTime()) / (1000 * 60)) % 60);
+  const seconds = parseInt((Math.abs(untilDate.getTime() - today.getTime()) / 1000) % 60);
 
-  return today.getTime() > untilDate.getTime()
-    ? pendingPost.status.collectorStatement === "collected"
-      ? approveOrderComplete("publisher", pendingPost._id)
-      : cancelOrder(pendingPost._id)
-    : ("0" + days).slice(-2) +
-        ":" +
-        ("0" + hours).slice(-2) +
-        ":" +
-        ("0" + minutes).slice(-2) +
-        ":" +
-        ("0" + seconds).slice(-2) +
-        " left for the order";
+  return today.getTime() > untilDate.getTime() ?
+    (("0" + days).slice(-2) + ":" + ("0" + hours).slice(-2) + ":" + ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2) + " left for the order") :
+    ("The post is expired");
 };
 
-const myOrderDetails = (orderDetails, navigate) => {
-  axios.get("posts/" + orderDetails.sourcePost).then((res) => {
-    res.data.post.content.forEach((grocery, i) => {
-      orderDetails.content[i].left = grocery.left;
-    });
-    navigate("/post/" + orderDetails._id, {
-      state: { post: orderDetails, isEdit: true },
-    });
-  });
-};
-
-const handleFinishedOrCanceled = (isFinished) => {
-  return isFinished ? (
-    <Box
-      sx={{
-        width: "30%",
-        m: "0 auto",
-        height: "100%",
-        alignItems: "center",
-        display: "flex",
-        flexDirection: "column",
-        pt: "3%",
-      }}
-    >
-      <CheckIcon
-        sx={{
-          color: "green",
-          m: "0 auto",
-          height: "50%",
-          width: "50%",
-          fontSize: "20px",
-        }}
-      />
-      <Typography
-        component="div"
-        variant="h6"
-        fontFamily="Roboto"
-        sx={{ color: "green" }}
-      >
-        Order Picked up
-      </Typography>
-    </Box>
-  ) : (
-    <Box
-      sx={{
-        width: "30%",
-        m: "0 auto",
-        height: "100%",
-        alignItems: "center",
-        display: "flex",
-        flexDirection: "column",
-        pt: "3%",
-      }}
-    >
-      <CloseIcon
-        sx={{
-          color: "red",
-          m: "0 auto",
-          height: "50%",
-          width: "50%",
-          fontSize: "20px",
-        }}
-      />
-      <Typography
-        component="div"
-        variant="h6"
-        fontFamily="Roboto"
-        sx={{ color: "red" }}
-      >
-        Order was canceled
-      </Typography>
-    </Box>
-  );
-};
-
-export const RenderOrders = ({
-  posts,
-  isFinished,
-  isCanceled,
-  role = "collector",
-}) => {
-  let navigate = useNavigate();
-  return posts.map((post) => {
-    const timeLeft =
-      !isFinished && !isCanceled ? calculateTimeLeft(post) : null;
-    return (
-      <Box
-        key={post._id}
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          m: "5%",
-          width: "70%",
-          backgroundColor: "whitesmoke",
-          borderRadius: "20px",
-        }}
-      >
-        <Box sx={{ display: "flex", width: "100%" }}>
-          <Box
-            onClick={() =>
-              isFinished || isCanceled ? null : myOrderDetails(post, navigate)
-            }
-            sx={{
-              display: "flex",
-              width: "100%",
-              ":hover":
-                isFinished || isCanceled
-                  ? null
-                  : {
-                      cursor: "pointer",
-                      bgcolor: "#F2FCF8",
-                      borderRadius: "10px",
-                    },
-            }}
-          >
-            <CardMedia
-              component="img"
-              sx={{
-                padding: 1,
-                borderRadius: "10px",
-                height: "250px",
-                width: "auto",
-                mr: "3%",
-              }}
-              image="/assets/default-post-image.svg"
-            />
-            <Box
-              sx={{
-                flexDirection: "column",
-                margin: "auto 10% auto 0",
-                width: "70%",
-              }}
-            >
-              <Typography
-                component="div"
-                variant="h4"
-                mb="2%"
-                fontFamily="Roboto"
-              >
-                Title: {post.headline}
-              </Typography>
-              <Typography
-                component="div"
-                variant="h6"
-                mb="2%"
-                fontFamily="Roboto"
-              >
-                Address: {post.address}
-              </Typography>
-              <Typography
-                component="div"
-                variant="h6"
-                mb="2%"
-                fontFamily="Roboto"
-                sx={{ display: "flex" }}
-              >
-                {timeLeft ? (
-                  <Typography sx={{ color: "red", mr: "2%" }}>
-                    {timeLeft}
-                  </Typography>
-                ) : null}
-              </Typography>
-            </Box>
-            {!timeLeft
-              ? handleFinishedOrCanceled(
-                  isFinished && !isCanceled
-                ) /* returns true if finished, and false if canceled*/
-              : null}
-          </Box>
-          {!isFinished && !isCanceled
-            ? post.status.collectorStatement === "pending"
-              ? approveOrCancelSection(role, post)
-              : role === "collector"
-              ? waitForPublisherSection()
-              : approveOrCancelSection(role, post)
-            : null}
-        </Box>
-      </Box>
-    );
-  });
-};
-
-const approveOrderComplete = (role, postId) => {
-  let route;
+const completeOrder = (postId) => {
   MySwal.fire({
     title: <strong>Are you sure you picked up the order?</strong>,
     icon: "info",
@@ -289,12 +162,10 @@ const approveOrderComplete = (role, postId) => {
     cancelButtonText: "no",
     showConfirmButton: true,
     confirmButtonText: "yes",
+    backdrop: false
   }).then((result) => {
-    role === "collector"
-      ? (route = "pendings/collector/finish/" + postId)
-      : (route = "pendings/finish/" + postId);
     if (result.isConfirmed) {
-      axios.post(route).then((res) => {
+      axios.post("pendings/finish/" + postId).then((res) => {
         console.log(res.data);
         window.location.reload();
       });
@@ -310,6 +181,7 @@ const cancelOrder = (postId) => {
     cancelButtonText: "no",
     showConfirmButton: true,
     confirmButtonText: "yes",
+    backdrop: false
   }).then((result) => {
     if (result.isConfirmed) {
       axios.post("pendings/cancel/" + postId).then((res) => {
@@ -318,88 +190,6 @@ const cancelOrder = (postId) => {
       });
     }
   });
-};
-
-const waitForPublisherSection = () => {
-  return (
-    <>
-      <Divider color="black" sx={{ width: "1px" }} />
-
-      <Box
-        sx={{
-          width: "30%",
-          height: "100%",
-          flexDirection: "column",
-          flexWrap: "wrap",
-          display: "flex",
-          alignItems: "center",
-          m: "6% 2% 0 2%",
-        }}
-      >
-        <Typography
-          fontSize="20px"
-          sx={{ color: "green", mb: "10%", fontFamily: "Roboto" }}
-        >
-          Successfully Approved!
-          <CheckIcon fontSize="medium" sx={{ color: "green", ml: "10px" }} />
-        </Typography>
-        <Typography
-          fontSize="20px"
-          sx={{ color: "goldenrod", mb: "2%", fontFamily: "Roboto" }}
-        >
-          Waiting for Post Publisher
-          <AccessTimeIcon
-            sx={{ color: "goldenrod", ml: "10px" }}
-            fontSize="medium"
-          />
-        </Typography>
-      </Box>
-    </>
-  );
-};
-
-export const approveOrCancelSection = (role, post) => {
-  return (
-    <>
-      <Divider color="black" sx={{ width: "1px" }} />
-
-      <Box sx={{ width: "30%" }}>
-        <Button
-          onClick={() => approveOrderComplete(role, post._id)}
-          sx={{
-            flexDirection: "row",
-            display: "flex",
-            width: "100%",
-            height: "50%",
-          }}
-        >
-          <CheckIcon fontSize="large" sx={{ color: "green", mr: "10px" }} />
-          <Typography fontSize="18px">
-            {role === "publisher" &&
-            post.status.collectorStatement === "collected"
-              ? "collector approved, Waiting for your approval"
-              : role === "publisher" &&
-                post.status.collectorStatement === "pending"
-              ? "Complete the order"
-              : "I Picked Up the Order"}
-          </Typography>
-        </Button>
-        <Divider color="black" sx={{ width: "100%" }} />
-        <Button
-          onClick={() => cancelOrder(post._id)}
-          sx={{
-            flexDirection: "row",
-            display: "flex",
-            width: "100%",
-            height: "50%",
-          }}
-        >
-          <CloseIcon fontSize="large" sx={{ color: "red", mr: "10px" }} />
-          <Typography fontSize="18px">I Want to Cancel</Typography>
-        </Button>
-      </Box>
-    </>
-  );
 };
 
 export default MyOrders;
