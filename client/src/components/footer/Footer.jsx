@@ -1,68 +1,36 @@
 import React from 'react';
-import { AppBar, Box, Toolbar, Typography, Menu, Container, Button, MenuItem } from '@mui/material';
-import './Footer.scss';
+import { useNavigate } from "react-router-dom";
+import { AppBar, Box, Toolbar, Container, Button } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const pages = ['About'];
 
-const appBarStyle = { backgroundColor: 'rgb(58, 173, 135)' };
-const profileStyle = { flexGrow: 1, display: { xs: 'flex', md: 'none' } };
-const menuStyle = { display: { xs: 'block', md: 'none' } };
-const pagesStyle = { flexGrow: 0, display: { xs: 'none', md: 'flex' } };
-const pageButtonStyle = { my: 1, color: 'white', display: 'block', alignContent: 'end' };
-
 const Footer = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  let navigate = useNavigate();
 
-  const handleClick = () => {
-    setAnchorElNav(null);
+  const handleClickItemNavMenu = (event) => {
+    const target = event.currentTarget.innerText.toLowerCase();
+    navigate("./" + target, {});
   };
 
+  const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
   return (
-    <footer>
-      <AppBar position="static" sx={appBarStyle}>
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-
-            <Box sx={profileStyle}>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'center',
-                }}
-                open={true}
-                sx={menuStyle}
-              >
-                {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleClick}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-            
-            <Box sx={pagesStyle}>
+    <Box >
+      <Offset />
+      <AppBar position="sticky" sx={{ top: 'auto', bottom: 0 }}>
+        <Toolbar>
+          <Container maxWidth="xl">
+            <Box >
               {pages.map((page) => (
-                <Button
-                  key={page}
-                  onClick={handleClick}
-                  sx={pageButtonStyle}
-                >
+                <Button key={page} onClick={handleClickItemNavMenu} sx={{ color: 'white' }}>
                   {page}
                 </Button>
               ))}
             </Box>
-
-          </Toolbar>
-        </Container>
+          </Container>
+        </Toolbar>
       </AppBar>
-    </footer>
+    </Box>
   );
 };
 export default Footer;

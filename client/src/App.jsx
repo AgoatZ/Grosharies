@@ -1,73 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import './App.scss';
-import Posts from './components/posts/Posts';
-import Layout from './components/layout/Layout';
-import axios from 'axios';
-// import TasksList from './components/TaskList';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { Container } from "@mui/material";
+import axios from "./utils/axios";
+//FontAwesome Icons Setup
+import { library as iconsLibrary } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { far } from "@fortawesome/free-regular-svg-icons";
+//Routs Components
+import Home from "./components/home/Home";
+import Post from "./components/post/Post";
+import About from "./components/about/About";
+import Groceries from "./components/groceries/Groceries";
+import Events from "./components/events/Events";
+import Profile from "./components/profile/Profile";
+import MyOrders from "./components/myOrders/MyOrders";
+import MyPosts from "./components/myPosts/MyPosts";
+import Layout from "./components/layout/Layout";
+import Login from "./components/login/Login";
+import Register from "./components/register/Register";
+import GroceryDetails from "./components/groceries/GroceryDetails";
+import MyOrderDetails from "./components/myOrders/MyOrderDetails";
+
+iconsLibrary.add(fas, far);
 
 const App = () => {
-  // const [tasks, setTasks] = useState([]);
-  // const [newTaskTitle, setNewTaskTitle] = useState('');
-
-  // const getTasks = useCallback(() => {
-  //   fetch('/api/tasks')
-  //     .then(res => res.json())
-  //     .then(setTasks);
-  // });
-
-  // useEffect(() => {
-  //   getTasks();
-  // }, []);
-
-  // const clickAddTask = event => {
-  //   event.preventDefault();
-
-  //   fetch('/api/tasks/add', {
-  //     method: 'post',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ title: newTaskTitle }),
-  //   }).then(() => {
-  //     setNewTaskTitle('');
-  //     getTasks();
-  //   });
-  // };
-
-  const [posts, setPosts] = useState([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    loadPosts();
+    axios
+      .get("auth/isLoggedIn").then(() => setUser())
+      .catch(() => setLoggedIn(false));
   }, []);
 
-  const loadPosts = () => {
-    axios.get('/api/posts/').then(posts => {
-      console.log('data = ' + JSON.stringify(posts.data) + ", status = " + posts.status);
-      setPosts(posts.data);
+  //User's info from API
+  const setUser = () => {
+    //TODO: Get user's notifications from API somehow
+    const notifications = [
+      { postId: "628d1d8759e1381f2401548c", title: "n1", text: "This is notification n1 content" },
+      { postId: "628d1d8759e1381f240154a2", title: "n2", text: "This is notification n2 content" },
+      { postId: "628d1d8759e1381f240154b8", title: "n3", text: "This is notification n3 content" },
+      { postId: "628d1d8759e1381f240154ce", title: "n4", text: "This is notification n4 content" },
+      { postId: "628d1d8759e1381f240154e4", title: "n5", text: "This is notification n5 content" },
+      { postId: "628d1d8759e1381f240154fa", title: "n6", text: "This is notification n6 content" },
+    ]
+
+    axios.get('/users/profile/current').then(res => {
+      let userData = res.data.user;
+      userData.notifications = notifications;
+
+      setLoggedIn(true);
+      setUserData(userData);
     });
   };
 
-  return (
-    <Layout>
-      <div className='img'>
-        <img src={'assets/logo.png'} height='300px' width='300px' />
-      </div>
-      <Posts posts={posts} />
-      {/* <div className="App">
-        
-        <h1>My Tasks</h1>
-        <TasksList tasks={tasks} updateTasks={getTasks} />
+  const loginUser = () => {
+    setLoggedIn(true);
+    axios.get('/users/profile/current').then(res => setUserData(res.data.user));
+    window.location.replace("/");
+  };
 
-        <form onSubmit={clickAddTask}>
-          <input
-            type="text"
-            size="30"
-            placeholder="New Task"
-            value={newTaskTitle}
-            onChange={event => setNewTaskTitle(event.target.value)}
-          />
-          <input className="btn-primary" type="submit" value="Add" />
-        </form>
-      </div> */}
-    </Layout>
+  const logoutUser = () => {
+    setLoggedIn(false);
+    window.location.replace("/");
+  };
+
+  //All Routes Componentes are nested under Layout->Outlet
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout loggedIn={loggedIn} userData={userData} logoutUser={logoutUser} />}>
+          <Route index element={<Home />} />
+          <Route path="post/:id" element={<Post />} />
+          <Route path="groceries" element={<Groceries />} />
+          <Route path="events" element={<Events />} />
+          <Route path="groceries/:name" element={<GroceryDetails />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="my-posts" element={<MyPosts />} />
+          <Route path="my-orders" element={<MyOrders />} />
+          <Route path="my-order-details" element={<MyOrderDetails />} />
+          <Route path="about" element={<About />} />
+          <Route path="login" element={<Login loginUser={loginUser} />} />
+          <Route path="register" element={<Register loginUser={loginUser} />} />
+          <Route path="*" element={<NoMatch />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
+const NoMatch = () => {
+  return (
+    <Container>
+      <h2>Nothing to see here!</h2>
+      <p>
+        <Link to="/">Go to the home page</Link>
+      </p>
+    </Container>
   );
 };
 

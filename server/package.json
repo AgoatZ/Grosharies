@@ -2,22 +2,45 @@
   "name": "grosharies",
   "version": "0.2.0",
   "description": "GroSharies Project",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "start:prod": "node index.js",
+    "test": "jest --detectOpenHandles --forceExit",
+    "start": "node app.js",
+    "start:prod": "node app.js",
+    "db:init": "node ./src/scripts/init-data.js",
     "build": "cd ../client && npm install && npm run build"
   },
   "author": "Best Team in the World",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.80.0",
+    "@aws-sdk/node-http-handler": "^3.78.0",
+    "@aws-sdk/types": "^3.78.0",
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.18.3",
+    "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
     "express": "^4.16.4",
+    "express-session": "^1.17.2",
+    "googleapis": "^100.0.0",
+    "grosharies": "file:..",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.5.0",
     "mongoose": "^5.7.5",
+    "node-fetch": "^3.2.4",
+    "passport": "^0.5.2",
+    "passport-google-oidc": "^0.1.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
     "password-generator": "^2.2.0"
   },
   "devDependencies": {
-    "prettier": "^1.18.2"
+    "jest": "^27.5.1",
+    "prettier": "^1.18.2",
+    "supertest": "^6.2.2",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.4.0"
   }
 }

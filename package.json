@@ -10,7 +10,9 @@
       "start:server": "cd server && npm start",
       "start:client": "cd client && npm start",
       "start:prod": "npm run start:server",
-      "build": "cd client && npm install && npm run build"
+      "build": "cd client && npm install && npm run build",
+      "start:nobrowser": "npm run start:server | npm run start:client-no-browser",
+      "start:client-no-browser": "cd client && npm run start-no-browser"
     },
     "author": "Best Team in the World",
     "license": "MIT"
