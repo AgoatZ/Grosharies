@@ -14,8 +14,8 @@
     "start:server": "cd server && npm install && npm start",
     "start:client": "cd client && npm start",
     "start:prod": "npm run start:server",
-    "buildme": "cd client && npm --force install && npm run build",
-    "heroku-postbuild": "cd server && npm install && npm run buildme",
+    "build": "cd client && npm --force install && npm run build",
+    "heroku-postbuild": "cd server && npm install && cd client && npm --force install && npm run build",
     "start:nobrowser": "npm run start:server | npm run start:client-no-browser",
     "start:client-no-browser": "cd client && npm run start-no-browser"
   },
