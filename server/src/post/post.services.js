@@ -281,6 +281,7 @@ const getNearbyPosts = async (currentUser, coordinates) => {
                 nearbyPosts.push(posts[i]);
             }
         }
+        nearbyPosts = nearbyPosts.sort((a, b) => coordinatesDistance(a.addressCoordinates, coordinates) - coordinatesDistance(b.addressCoordinates, coordinates));
         return nearbyPosts;
     } catch (e) {
         console.log('service error: ' + e.message);
