@@ -23,7 +23,7 @@ const getPostById = async (postId) => {
         let post = await PostRepository.getPostById(postId);
         if (!(post.addressCoordinates.lat && post.addressCoordinates.lng)) {
             let coordinates = await getCoordinates(post.address);
-            await PostRepository.updatePost(postId, { addressCoordinates: { lat: coordinates.lat, lng: coordinates.lng }});
+            await PostRepository.updatePost(postId, { addressCoordinates: { lat: coordinates.lat, lng: coordinates.lng } });
             post = await PostRepository.getPostById(postId);
         }
         return post;
@@ -272,13 +272,11 @@ const getNearbyPosts = async (currentUser, coordinates) => {
         let userId;
         if (currentUser) {
             userId = currentUser._id;
-        }    
+        }
         const posts = await PostRepository.getRelevantPosts();
         let nearbyPosts = [];
         for (i in posts) {
-            let lanDist = posts[i].addressCoordinates.lan - coordinates.lan;
-            let lngDist = posts[i].addressCoordinates.lng - coordinates.lng;
-            let dist = Math.sqrt(lanDist*lanDist + lngDist*lngDist);
+            let dist = coordinatesDistance(posts[i].addressCoordinates, coordinates);
             if (dist < 666) {
                 nearbyPosts.push(posts[i]);
             }
@@ -289,6 +287,25 @@ const getNearbyPosts = async (currentUser, coordinates) => {
 
         throw Error('Error while Retrieving Posts');
     }
+};
+
+const coordinatesDistance = async (coor1, coor2) => {
+    const lat1 = coor1.lat;
+    const lng1 = coor1.lng;
+    const lat2 = coor2.lat;
+    const lng2 = coor2.lng;
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) *
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const d = R * c; // in metres
 };
 
 module.exports = {
