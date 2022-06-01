@@ -279,10 +279,10 @@ const getNearbyPosts = async (currentUser, coordinates) => {
             let dist = coordinatesDistance(posts[i].addressCoordinates, coordinates);
             if (dist < 666) {
                 nearbyPosts.push(posts[i]);
+                console.log('distance of results:', dist);
             }
         }
-        nearbyPosts = nearbyPosts.sort((a, b) => coordinatesDistance(a.addressCoordinates, coordinates) - coordinatesDistance(b.addressCoordinates, coordinates));
-        return nearbyPosts;
+        return nearbyPosts.sort((a, b) => coordinatesDistance(a.addressCoordinates, coordinates) - coordinatesDistance(b.addressCoordinates, coordinates));
     } catch (e) {
         console.log('service error: ' + e.message);
 
@@ -290,7 +290,7 @@ const getNearbyPosts = async (currentUser, coordinates) => {
     }
 };
 
-const coordinatesDistance = async (coor1, coor2) => {
+const coordinatesDistance = (coor1, coor2) => {
     const lat1 = coor1.lat;
     const lng1 = coor1.lng;
     const lat2 = coor2.lat;
@@ -307,6 +307,7 @@ const coordinatesDistance = async (coor1, coor2) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     const d = R * c; // in metres
+    return d;
 };
 
 module.exports = {
