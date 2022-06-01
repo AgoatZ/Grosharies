@@ -266,7 +266,7 @@ const init = async () => {
                 ],
                 "description": desc[i % 5]
             };
-            let userPost = useressPost;
+            let userPost = JSON.parse(JSON.stringify(useressPost));
             userPost.userId = user._id;
             let post1 = new Post(useressPost);
             let post2 = new Post(useressPost);
