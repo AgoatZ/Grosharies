@@ -68,9 +68,9 @@ const PostsAccordion = ({ posts }) => {
 const PostCard = ({ post }) => {
   let navigate = useNavigate();
 
-  const toPostPage = (post) => navigate("/post/" + post._id, { state: { post: post }, isEdit: true });
+  const toPostPage = () => navigate("/post/" + post._id, { state: { postId: post._id, isEdit: false } });
   //TODO: Edit Post Page
-  const toEditPostPage = (post) => navigate("/post/" + post._id, { state: { post: post }, isEdit: false });
+  const toEditPostPage = (post) => { };
   //TODO: DB - mark all as collected by publisher
   const setAllCollected = (post) => { };
 
@@ -88,11 +88,11 @@ const PostCard = ({ post }) => {
         <Typography variant="h4" >{post.headline}</Typography>
         <Typography variant="h6" ><LocationOnIcon /> {post.address}</Typography>
         <Divider />
-        <Button variant="text" onClick={() => toPostPage(post)}>Go To Post</Button>
+        <Button variant="text" onClick={toPostPage}>Go To Post</Button>
       </Stack>
       <Stack justifyContent="center" alignItems="center" spacing={2} sx={{ width: '33%', flexShrink: 1 }}>
-        <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Update Post</Button>
-        <Button variant="outlined" startIcon={<CheckIcon />} onClick={() => setAllCollected(post)}>Mark All As Picked</Button>
+        <Button variant="outlined" startIcon={<EditIcon />} onClick={toEditPostPage}>Update Post</Button>
+        <Button variant="outlined" startIcon={<CheckIcon />} onClick={setAllCollected}>Mark All As Picked</Button>
       </Stack>
     </>
   )
