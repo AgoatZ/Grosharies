@@ -424,7 +424,7 @@ const delayUpdate = async (id) => {
     var params = {
         stateMachineArn: process.env.AWS_SFN_DELAYUPDATE_ARN,
         input: JSON.stringify({
-            id: id
+            Id: id
         }),
         name: `${id}-${r}`
     };
@@ -436,6 +436,8 @@ const delayUpdate = async (id) => {
             console.log("Success sending SMS.", response);
             return response; // For unit tests.
         } catch (err) {
+            console.log(response);
+            console.log(command);
             console.log("Error sending SMS", err.stack);
         }
     };
