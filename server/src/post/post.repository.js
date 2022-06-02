@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const Post = require('./post.model');
-const router = express.Router();
 const reply = require('../enums/post-reply');
 const postStatus = require('../enums/post-status');
 

@@ -27,7 +27,6 @@ const calcWeights = async (history) => {
                 let catId = history[piece].content[grocery].category
                 let category = await CategoryService.getCategoryById(catId);
                 let catRank = categoriesWeights.get(category.name);
-                console.log('catrank:', catRank);
                 if (!catRank) {
                     categoriesWeights.set(category.name, 1);
                 } else {
@@ -37,7 +36,6 @@ const calcWeights = async (history) => {
                 //weigh groceries
                 let gro = history[piece].content[grocery];
                 let groRank = groceriesWeights.get(gro.name);
-                console.log('grorank:', groRank);
                 if (!groRank) {
                     groceriesWeights.set(gro.name, gro.amount);
                 } else {
@@ -47,7 +45,7 @@ const calcWeights = async (history) => {
         }
         return { categoriesWeights, groceriesWeights, tagsWeights };
     } catch (e) {
-        console.log("calc whights", e);
+        console.log("calc whights error", e);
 
         throw Error('Error calculating weights');
     }
@@ -63,20 +61,17 @@ const getPostTags = async (postId) => {
         }
         return tags;
     } catch (e) {
-        console.log("get post tags", e);
+        console.log("get post tags error", e);
 
         throw Error('Error while retrieving tags');
     }
 };
 
 const getPostRelevance = async (history, post) => {
-    console.log('getPostRelevanceUtil');
     try {
         const { categoriesWeights, groceriesWeights, tagsWeights } = await calcWeights(history);
-        console.log('rels:', categoriesWeights, groceriesWeights, tagsWeights);
         //add relevance regarding tags
         const tags = await getPostTags(post._id);
-        console.log('tags from getPostRelevance:', tags);
         var relevance = 0;
         if (tags) {
             for (tag in tags) {
@@ -91,17 +86,14 @@ const getPostRelevance = async (history, post) => {
         for (grocery in post.content) {
             const category = await CategoryService.getCategoryById(post.content[grocery].original.category);
             const catRank = categoriesWeights.get(category.name);
-            console.log('postRel catRank:', catRank);
             if (catRank) {
                 relevance += catRank;
             }
             const groRank = groceriesWeights.get(post.content[grocery].original.name);
-            console.log('postRel groRank:', groRank);
             if (groRank) {
                 relevance += groRank;
             }
         }
-        //console.log("relevance", relevance);
         return relevance;
     } catch (e) {
         console.log("get post relevance", e);

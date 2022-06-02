@@ -26,7 +26,6 @@ const getPendingById = async function (postId) {
 
 const getPendingsByPublisher = async function (userId) {
     try {
-        console.log("bypublisher userId:", userId);
         const cancelledPendings = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.CANCELLED });
         const finishedPendings = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.COLLECTED });
         const pendingPosts = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.PENDING });
@@ -40,7 +39,6 @@ const getPendingsByPublisher = async function (userId) {
 
 const getPendingsByCollector = async function (userId) {
     try {
-        console.log("bycollector userId:", userId)
         const cancelledPendings = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.CANCELLED });
         const finishedPendings = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.COLLECTED });
         const pendingPosts = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.PENDING });
@@ -142,8 +140,8 @@ const deletePending = async function (postId) {
 
 const updatePending = async function (postId, postDetails) {
     try {
-        console.log("pend ---", postDetails);
-        console.log("pend id ---", postId);
+        // console.log("pend ---", postDetails);
+        // console.log("pend id ---", postId);
         const oldPendingPost = await Pending.findByIdAndUpdate(postId, postDetails);
         return oldPendingPost;
     } catch (e) {

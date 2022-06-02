@@ -2,7 +2,6 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const GroceryRepository = require('./grocery.repository');
 const CategoryRepository = require('../category/category.repository');
-const router = express.Router();
 const fs = require('fs');
 
 const getGroceries = async function (query, page, limit) {

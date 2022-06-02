@@ -3,6 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv').config();
+const mongoose = require('./src/db');
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
 
@@ -11,7 +12,6 @@ const session = require('express-session');
 const passport = require('passport');
 require('./src/common/middlewares/passport');
 
-const routeTasks = require('./src/routes/tasks');
 const routeUsers = require('./src/user/user.routes');
 const routePosts = require('./src/post/post.routes');
 const routePendings = require('./src/pending/pending.routes');
@@ -77,7 +77,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api/tasks', routeTasks, (req, res) => res.sendStatus(401));
 app.use('/api/users', routeUsers, (req, res) => res.sendStatus(401));
 app.use('/api/posts', routePosts, (req, res) => res.sendStatus(401));
 app.use('/api/pendings', routePendings, (req, res) => res.sendStatus(401));

@@ -1,20 +1,23 @@
 {
-    "name": "grosharies",
-    "version": "0.2.0",
-    "description": "GroSharies Project",
-    "main": "index.js",
-    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "start": "npm run start:server | npm run start:client",
-      "start:app": "npm run start:server | npm run start:client",
-      "start:server": "cd server && npm start",
-      "start:client": "cd client && npm start",
-      "start:prod": "npm run start:server",
-      "build": "cd client && npm install && npm run build",
-      "start:nobrowser": "npm run start:server | npm run start:client-no-browser",
-      "start:client-no-browser": "cd client && npm run start-no-browser"
-    },
-    "author": "Best Team in the World",
-    "license": "MIT"
-  }
-  
+  "name": "grosharies",
+  "version": "0.2.0",
+  "description": "GroSharies Project",
+  "main": "index.js",
+  "engines": {
+    "node": "18.2.0",
+    "npm": "8.11.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run start:server | npm run start:client",
+    "start:app": "npm run start:server | npm run start:client",
+    "start:server": "cd server && npm install && npm start",
+    "start:client": "cd client && npm start",
+    "start:prod": "npm run start:server",
+    "build": "cd client && npm install && npm run build",
+    "start:nobrowser": "npm run start:server | npm run start:client-no-browser",
+    "start:client-no-browser": "cd client && npm run start-no-browser"
+  },
+  "author": "Best Team in the World",
+  "license": "MIT"
+}

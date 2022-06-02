@@ -6,12 +6,12 @@ const { authJwt } = require('../common/middlewares/passport');
 
 router.get('/', authJwt, TagController.getTags);
 
-router.get('/:id', TagController.getTagById);
+router.get('/:id', authJwt, TagController.getTagById);
 
-router.post('/', TagController.addTag);
+router.post('/', authJwt, TagController.addTag);
 
-router.delete('/:id', TagController.deleteTag);
+router.delete('/:id', authJwt, TagController.deleteTag);
 
-router.put('/:id', TagController.updateTag);
+router.put('/:id', authJwt, TagController.updateTag);
 
 module.exports = router;

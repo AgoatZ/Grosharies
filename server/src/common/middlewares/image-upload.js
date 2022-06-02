@@ -1,8 +1,4 @@
 const fs = require('fs');
-const GroceryService = require('.././../grocery/grocery.services');
-const PostService = require('.././../post/post.services');
-const EventService = require('.././../event/event.services');
-const UserService = require('.././../user/user.services');
 
 const uploadImage = async (req, res, next) => {
     try {
@@ -16,7 +12,6 @@ const uploadImage = async (req, res, next) => {
         });
 
         req.on('data', function (chunk, error) {
-          console.log('rec data');
           chData.push(chunk);
         });
 

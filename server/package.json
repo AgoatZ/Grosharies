@@ -13,9 +13,10 @@
   "author": "Best Team in the World",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-sns": "^3.80.0",
+    "@aws-sdk/client-sfn": "^3.99.0",
     "@aws-sdk/node-http-handler": "^3.78.0",
     "@aws-sdk/types": "^3.78.0",
+    "@googlemaps/google-maps-services-js": "^3.3.14",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.18.3",
     "connect-mongo": "^4.6.0",
@@ -33,7 +34,6 @@
     "passport": "^0.5.2",
     "passport-google-oidc": "^0.1.0",
     "passport-jwt": "^4.0.0",
-    "passport-local": "^1.0.0",
     "password-generator": "^2.2.0"
   },
   "devDependencies": {

@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const User = require('./user.model');
-const router = express.Router();
 
 getUsers = async function (query) {
     try {
