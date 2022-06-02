@@ -157,7 +157,7 @@ const ItemsList = ({ content }) => {
 
 const completeOrder = (postId) => {
   MySwal.fire({
-    title: <strong>Are you sure you picked up the order?</strong>,
+    title: <strong>Are you sure you want to mark all as collected?</strong>,
     icon: "info",
     showCancelButton: true,
     cancelButtonText: "no",
