@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Typography, Box, Button, Slider, CardMedia } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Swal from "sweetalert2";
@@ -10,6 +9,8 @@ import withReactContent from "sweetalert2-react-content";
 import serverRoutes from "../../utils/server-routes";
 import axios from "../../utils/axios";
 import { PostDummy } from "../../utils/dummies";
+import Map from "../map/Map";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const MySwal = withReactContent(Swal);
 
@@ -145,6 +146,8 @@ const Post = () => {
         <LocationOnIcon color="primary" fontSize="large" />
         <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">{post.address}</Typography>
       </Box>
+
+      <Map address={post.address} />
 
       <Box sx={{ width: "600px", height: "600px", margin: "0 auto" }}>
         <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Gallery</Typography>

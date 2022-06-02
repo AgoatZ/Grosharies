@@ -14,25 +14,32 @@
     "@mui/icons-material": "^5.6.2",
     "@mui/material": "^5.5.3",
     "axios": "^0.26.1",
+    "bingmaps-react": "^1.2.10",
     "chart.js": "^3.7.1",
-    "grosharies": "file:..",
+    "google-map-react": "^2.1.10",
     "http-proxy-middleware": "^2.0.6",
     "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
+    "leaflet": "^1.8.0",
     "material-ui-popup-state": "^3.1.1",
-    "react": "^18.0.0",
+    "react": "^18.1.0",
+    "grosharies": "file:..",
+    "react-azure-maps": "^0.3.0",
     "react-chartjs-2": "^4.1.0",
-    "react-dom": "^18.0.0",
+    "react-dom": "^18.1.0",
+    "react-geocode": "^0.2.3",
     "react-hook-form": "^7.31.0",
     "react-image-gallery": "^1.2.7",
     "react-imask": "^6.4.2",
     "react-input-slider": "^6.0.1",
+    "react-leaflet": "^4.0.0",
     "react-phone-input-2": "^2.15.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.0",
     "sass": "^1.49.11",
     "sweetalert2": "^11.4.9",
     "sweetalert2-react-content": "^5.0.0",
+    "typescript": "^4.7.2",
     "universal-cookie": "^4.0.4",
     "validator": "^13.7.0"
   },
@@ -50,5 +57,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "@types/leaflet": "^1.7.10"
+  }
 }

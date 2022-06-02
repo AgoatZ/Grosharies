@@ -23,6 +23,7 @@ const MyOrders = () => {
   //Pendings from API according to their final status
   const loadPendingPosts = () => {
     axios.get("pendings/collector/current").then((res) => {
+
       console.log(res.data);
       setPendingsPosts(res.data.pendingPosts);
       setFinishedPendings(res.data.finishedPendings);
