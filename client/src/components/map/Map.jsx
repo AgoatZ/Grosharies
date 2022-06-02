@@ -7,7 +7,7 @@ const Map = (props) => {
   const [lat, setLat] = useState();
   const [lng, setLng] = useState();
   const [userLocation, setUserLocation] = useState({})
-  debugger
+
   const defaultProps = {
     center: {
       lat: 32.077299,
