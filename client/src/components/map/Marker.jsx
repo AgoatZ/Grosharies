@@ -1,10 +1,10 @@
 import React from "react";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
-const Marker = () => {
+const Marker = ({ color = "red" }) => {
   return (
     <LocationOnIcon
-      style={{ color: "red", width: "35px", height: "35px" }}
+      style={{ color, width: "35px", height: "35px" }}
     ></LocationOnIcon>
   );
 };

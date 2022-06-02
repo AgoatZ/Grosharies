@@ -19,9 +19,16 @@ const Home = () => {
 
     useEffect(() => loadPosts(), []);
     const loadPosts = () => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                console.log("Latitude is :", position.coords.latitude);
+                console.log("Longitude is :", position.coords.longitude);
+                //TODO: add route to exept the user location to server 
+                axios.get('/posts/').then(res => setNearbyPosts(res.data.posts));
+            });
+        }
         axios.get('posts/suggested/current').then(res => setSuggestedPosts(res.data.posts));
         //TODO: Posts nearby and Posts recently added
-        axios.get('/posts/').then(res => setNearbyPosts(res.data.posts));
         axios.get('/posts/').then(res => setRecentPosts(res.data.posts));
     };
 
