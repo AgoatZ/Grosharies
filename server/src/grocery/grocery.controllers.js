@@ -77,23 +77,6 @@ const updateGrocery = async function (req, res, next) {
     }
 };
 
-// const updateImage = async function (req, res, next) {
-//     // Validate request parameters, queries using express-validator
-
-//     try {
-//         await imageUtil.uploadImage(req, res, answer => {
-//             req.body = { image: answer };
-//             next();
-//         });
-//         //const answer = await GroceryService.uploadImage(req, res);
-//         //return answer;
-//     } catch (e) {
-//         console.log('controller error: ' + e.message);
-
-//         return res.status(400).json({ message: e.message });
-//     }
-// };
-
 module.exports = {
     getGroceries,
     getGroceryById,

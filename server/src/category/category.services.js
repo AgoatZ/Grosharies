@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./category.repository');
-const router = express.Router();
 
 getCategories = async function (query, page, limit) {
     try {

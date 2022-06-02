@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const FederatedCredential = require('./federated-credential.model');
-const router = express.Router();
 
 getFederatedCredentials = async function (query) {
     try {
@@ -30,7 +29,7 @@ getFederatedCredentialByProviderAndSubject = async function (provider, subject) 
         const federatedCredential = await FederatedCredential.findOne({ provider: provider, subject: subject });
         return federatedCredential;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Repository error: ' + e.message);
 
         throw Error('Error while Retrieving federatedCredential');
     }

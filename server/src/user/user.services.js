@@ -1,11 +1,8 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const UserRepository = require('./user.repository');
-const PostRepository = require('../post/post.repository');
 const PendingRepository = require('../pending/pending.repository');
 const AuthService = require('../auth/auth.services');
-const fs = require('fs');
-const router = express.Router();
 
 const getUsers = async function (query, page, limit) {
     try {

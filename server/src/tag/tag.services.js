@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./tag.repository');
-const router = express.Router();
 
 getTags = async function (query, page, limit) {
     try {

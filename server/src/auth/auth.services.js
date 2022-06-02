@@ -1,9 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const UserRepository = require('../user/user.repository');
-const router = express.Router();
-const passport = require('passport');
-const LocalStrategy = require('passport-local');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 

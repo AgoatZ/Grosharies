@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const Grocery = require('./grocery.model');
-const router = express.Router();
 
 const getGroceries = async function (query) {
     try {

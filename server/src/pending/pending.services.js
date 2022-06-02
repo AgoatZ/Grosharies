@@ -5,12 +5,11 @@ const GroceryRepository = require('../grocery/grocery.repository');
 const UserRepository = require('../user/user.repository');
 const PostRepository = require('../post/post.repository');
 const UserService = require('../user/user.services');
-const router = express.Router();
 const oneHour = 60 * 60 * 60 * 1000;
 const Status = require('../enums/pending-status');
 const postStatus = require('../enums/post-status');
-const { PublishCommand } = require('@aws-sdk/client-sns');
-const { snsClient } = require('../common/utils/sns-client');
+const { StartExecutionCommand } = require('@aws-sdk/client-sfn');
+const { sfnClient } = require('../common/utils/sfn-client');
 
 const getPendings = async function (query, page, limit) {
     try {
@@ -120,7 +119,6 @@ const getPendingsByPost = async function (postId) {
 
 const addPending = async function (postDetails) {
     try {
-        //console.log(postDetails);
         const pendingPost = await PendingRepository.addPending(postDetails);
         await interrestedUserReminder(pendingPost.collectorId, pendingPost._id);
 
@@ -199,32 +197,32 @@ const updatePending = async function (pendingId, pendingDetails) {
         }
         if (hasChanged) {
             for (groceryIndex in content) {
-            let grocery = content[groceryIndex];
-            let isThere = false;
-            for (wantedGroceryIndex in groceries) {
-                let wantedGrocery = groceries[wantedGroceryIndex];
-                if (wantedGrocery.name == grocery.original.name) {
-                    //reduce amount and creat json for updating
-                    isThere = true;
-                    let left = grocery.left - amountsToReduce.get(wantedGrocery.name);
-                    if (left < 0 || left > grocery.original.amount) {
-                        throw Error('Requested amount is higher than available');
+                let grocery = content[groceryIndex];
+                let isThere = false;
+                for (wantedGroceryIndex in groceries) {
+                    let wantedGrocery = groceries[wantedGroceryIndex];
+                    if (wantedGrocery.name == grocery.original.name) {
+                        //reduce amount and creat json for updating
+                        isThere = true;
+                        let left = grocery.left - amountsToReduce.get(wantedGrocery.name);
+                        if (left < 0 || left > grocery.original.amount) {
+                            throw Error('Requested amount is higher than available');
+                        }
+                        updatedContent.push({
+                            original: grocery.original,
+                            left: left
+                        });
                     }
-                    updatedContent.push({
-                        original: grocery.original,
-                        left: left
-                    });
+                }
+                if (!isThere) {
+                    updatedContent.push(grocery);
                 }
             }
-            if (!isThere) {
-                updatedContent.push(grocery);
-            }
-        }
-        //console.log('updatedContent: ', updatedContent);
-        await PostRepository.updatePost(post._id, { content: updatedContent });
+            //console.log('updatedContent: ', updatedContent);
+            await PostRepository.updatePost(post._id, { content: updatedContent });
 
-        const updatedPost = await PostRepository.getPostById(post._id);
-}
+            const updatedPost = await PostRepository.getPostById(post._id);
+        }
         return oldPending;
     } catch (e) {
         console.log('Pending service error from updatePending: ', e.message);
@@ -256,7 +254,6 @@ const setCollectorStatement = async function (pendingId, user) {
 const finishPending = async function (pendingPostId, user) {
     try {
         let pendingPost = await PendingRepository.getPendingById(pendingPostId);
-        console.log('pending post id:', pendingPostId);
         if (!pendingPost.status.finalStatus == Status.PENDING) {
             throw Error('Pending Post is not pending anymore!');
         }
@@ -345,21 +342,10 @@ const cancelPending = async function (pendingPostId, user) {
     }
 };
 
-const routine = async () => {
-    const allPendings = await getPendings();
-    for (let i in allPendings) {
-        if ((Date.now() - allPendings[i].pendingTime.from) / (1000 * 60 ) >= 45) {
-            await interrestedUserReminder(allPendings[i].collectorId, allPendings[i]._id);
-        }
-    }
-};
-
 const decide = async (pending) => {
     const publisherStatement = pending.status.publisherStatement;
     const collectorStatement = pending.status.collectorStatement;
-    console.log("ENTERRED DECIDE with id:", pending._id);
     if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
-        console.log("status from decide pending service:", pending.status);
         console.log("WILL CALL NOW CANCEL PENDING POST");
         let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
     }
@@ -378,20 +364,28 @@ const interrestedUserReminder = async (userId, pendingId) => {
         const user = await UserRepository.getUserById(userId);
         const pending = await PendingRepository.getPendingById(pendingId);
         const publisher = await UserRepository.getUserById(pending.publisherId);
-        console.log("ENTERRED REMINDER");
+
+        let content = '';
+        for (i in pending.content) {
+            content += (pending.content[i].amount + ' ' + pending.content[i].name + ',');
+        }
+        content = content.slice(0, -1);
 
         const remind = async (recieverNumber, publisherNumber) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
-            //sendSMSToNumber('Hey from Grosharies! Have you picked up the ${pending.content}? Let us know!', recieverNumber);
-            //sendSMSToNumber('Hey from Grosharies! Have you delivered the ${pending.content}? Let us know!', publisherNumber);
+            //const collectorSMS = sendSMSToNumber(`Hey from Grosharies! Have you picked up the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${publisher.firstName} ${publisher.lastName}? Tell us what you feel!`, recieverNumber);
+            //const publisherSMS = sendSMSToNumber(`Hey from Grosharies! Have you delivered the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${user.firstName} ${user.lastName}? Tell us what you feel!`, publisherNumber);
 
-            const reToId = setTimeout(async function () { await decide(pending) }, (oneHour / 240));
-            reToId.hasRef();
+            //await decide(pending);
+            //const reToId = setTimeout(async function () { await decide(pending) }, (oneHour / 240));
+            //reToId.hasRef();
             return;
+        };
+        if (user && publisher) {
+            await remind(user.phone, publisher.phone);
         }
-
-        const toId = setTimeout(async function () { await remind(user.phoneNumber, publisher.phoneNumber) }, (oneHour / 240));
-        toId.hasRef();
+        //const toId = setTimeout(async function () { await remind(user.phoneNumber, publisher.phoneNumber) }, (oneHour / 240));
+        //toId.hasRef();
     } catch (e) {
         console.log('Pending service error from interrestedUserReminder: ', e.message);
 
@@ -399,22 +393,29 @@ const interrestedUserReminder = async (userId, pendingId) => {
     }
 };
 
-const sendSMSToNumber = async (message, phoneNumber) => {
+const sendSMSToNumber = async (firstMessage, secondMessage, phoneNumber) => {
+    const r = Date.now() + Math.round(Math.random() * 1E9);
     var params = {
-        Message: message,
-        PhoneNumber: phoneNumber
+        stateMachineArn: process.env.AWS_SFN_SENDSMS_ARN,
+        input: JSON.stringify({
+            FirstMessage: firstMessage,
+            SecondMessage: secondMessage,
+            PhoneNumber: phoneNumber
+        }),
+        name: `${phoneNumber}-${r}`
     };
 
     const run = async () => {
         try {
-            const data = await snsClient.send(new PublishCommand(params));
-            console.log("Success sending SMS.", data);
-            return data; // For unit tests.
+            const command = new StartExecutionCommand(params);
+            const response = await sfnClient.send(command);
+            console.log("Success sending SMS.", response);
+            return response; // For unit tests.
         } catch (err) {
             console.log("Error sending SMS", err.stack);
         }
     };
-    run();
+    return run();
 };
 
 const evaluatePostStatus = async (postId) => {
@@ -471,7 +472,6 @@ module.exports = {
     interrestedUserReminder,
     addPending,
     sendSMSToNumber,
-    routine,
     finishPending,
     cancelPending,
     deletePending,

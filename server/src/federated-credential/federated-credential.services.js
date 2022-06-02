@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const Repository = require('./federated-credential.repository');
-const router = express.Router();
 
 getFederatedCredentials = async function (query, page, limit) {
     try {
@@ -16,7 +15,7 @@ getFederatedCredentials = async function (query, page, limit) {
 
 getFederatedCredentialById = async function (federatedCredentialId) {
     try {
-        console.log("FederatedCredential Service federatedCredentialId:", federatedCredentialId);
+        //console.log("FederatedCredential Service federatedCredentialId:", federatedCredentialId);
         const federatedCredential = await Repository.getFederatedCredentialById(federatedCredentialId)
         return federatedCredential;
     } catch (e) {

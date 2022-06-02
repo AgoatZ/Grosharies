@@ -111,6 +111,18 @@ const getSuggestedPosts = async function (req, res, next) {
     }
 };
 
+const getNearbyPosts = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const posts = await PostService.getNearbyPosts(req.user, req.body.coordinates);
+        return res.status(200).json({ posts: posts, message: "Succesfully Nearby Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 const addPost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
@@ -168,6 +180,7 @@ module.exports = {
     getPostsByCollector,
     getPostsByGroceries,
     getSuggestedPosts,
+    getNearbyPosts,
     getPublisherOpenPosts,
     addPost,
     pendPost,

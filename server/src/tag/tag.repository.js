@@ -1,7 +1,6 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const Tag = require('./tag.model');
-const router = express.Router();
 
 getTags = async function (query) {
     try {

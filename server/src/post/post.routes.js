@@ -21,6 +21,8 @@ router.get("/collector/:id", authJwt, PostController.getPostsByCollector);
 
 router.get("/suggested/:userid", authJwt, PostController.getSuggestedPosts);
 
+router.post("/nearby", authJwt, PostController.getNearbyPosts);
+
 router.post(
   "/updateImage/:id",
   imageUtil.uploadImage,
