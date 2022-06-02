@@ -2,15 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import { Typography, Box, CardMedia, Divider, Button, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
+//Icons
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from "@mui/icons-material/Check";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const MyPosts = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => { loadMyPosts(); }, []);
+
 
   const loadMyPosts = async () => {
     let userPosts = []
@@ -39,18 +42,15 @@ const MyPosts = () => {
   return (
     <Box sx={{ m: "5%", mb: "1%" }}>
       <Typography variant="h3" sx={{ mb: "5%" }}>My Posts</Typography>
-      {posts.length > 0 ? (<PostsAccordion posts={posts} />) : null}
+      {posts.length > 0 ? (<PostsAccordion posts={posts} />) : <Typography>No Posts</Typography>}
     </Box>
   );
 };
 
 const PostsAccordion = ({ posts }) => {
-  const [expanded, setExpanded] = useState(false);
-  const handleChange = (panel) => (event, isExpanded) => setExpanded(isExpanded ? panel : false);
-
   return (
-    posts.map((post, index) => (
-      <Accordion onChange={handleChange('panel' + index)} key={post._id} sx={{ mb: '16px' }}>
+    posts.map((post) => (
+      <Accordion key={post._id} sx={{ mb: '16px' }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <PostCard post={post} />
         </AccordionSummary >
@@ -86,7 +86,7 @@ const PostCard = ({ post }) => {
           {/* TODO: {timeLeft ? (<Typography sx={{ color: "red", mr: "2%" }}>{timeLeft}</Typography>) : null} */}
         </Typography>
         <Typography variant="h4" >{post.headline}</Typography>
-        <Typography variant="h6" >Address: {post.address}</Typography>
+        <Typography variant="h6" ><LocationOnIcon /> {post.address}</Typography>
         <Divider />
         <Button variant="text" onClick={() => toPostPage(post)}>Go To Post</Button>
       </Stack>
@@ -100,7 +100,7 @@ const PostCard = ({ post }) => {
 
 const ItemsList = ({ content }) => {
   return (
-    <List disablePadding sx={{ display: { xs: 'none', md: 'block' } }}>
+    <List disablePadding>
       <ListSubheader>Items</ListSubheader>
       {content.map((item) => (
         <ListItemText inset key={item.original._id}>
