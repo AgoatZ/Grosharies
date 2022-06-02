@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Typography, Box, CardMedia, Divider, Button, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-
+//Icons
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const MySwal = withReactContent(Swal);
 
@@ -19,6 +20,7 @@ const MyOrders = () => {
   const [cancelledPendings, setCancelledPendings] = useState([]);
   useEffect(() => { loadPendingPosts(); }, []);
 
+  //Pendings from API according to their final status
   const loadPendingPosts = () => {
     axios.get("pendings/collector/current").then((res) => {
       console.log(res.data);
@@ -42,12 +44,9 @@ const MyOrders = () => {
 };
 
 const PostsAccordion = ({ posts }) => {
-  const [expanded, setExpanded] = useState(false);
-  const handleChange = (panel) => (event, isExpanded) => setExpanded(isExpanded ? panel : false);
-
   return (
-    posts.map((post, index) => (
-      <Accordion onChange={handleChange('panel' + index)} key={post._id} sx={{ mb: '16px' }}>
+    posts.map((post) => (
+      <Accordion key={post._id} sx={{ mb: '16px' }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <PostCard post={post} />
         </AccordionSummary >
@@ -62,7 +61,8 @@ const PostsAccordion = ({ posts }) => {
 
 const PostCard = ({ post }) => {
   let navigate = useNavigate();
-  const toPostPageWithOrderEdit = (post) => navigate("/post/" + post._id, { state: { post: post }, isEdit: true });
+  const toPostPageWithOrderEdit = (post) => navigate("/post/" + post.sourcePost, { state: { postId: post.sourcePost }, isEdit: true });
+  const [isExpired, setExpired] = useState(Boolean(!calculateTimeLeft(post)));
 
   return (
     <>
@@ -72,16 +72,16 @@ const PostCard = ({ post }) => {
         sx={{ padding: 1, borderRadius: "10px", height: "200px", width: "auto", mr: "3%" }}
       />
       <Stack spacing={1} sx={{ width: '50%', flexShrink: 0, mr: "3%", mt: "10px", mb: "10px" }}>
-        <Status post={post} />
-        <Divider />
         <Typography variant="h5" >{post.headline}</Typography>
-        <Typography variant="h6" >Address: {post.address}</Typography>
+        <Typography variant="h6" ><LocationOnIcon /> {post.address}</Typography>
+        <Divider />
+        <Status post={post} />
       </Stack>
 
       <Stack justifyContent="center" alignItems="center" spacing={2} sx={{ width: '33%', flexShrink: 1 }}>
-        <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toPostPageWithOrderEdit(post)}>Change Order</Button>
-        <Button variant="outlined" startIcon={<CheckIcon />} onClick={() => completeOrder(post)}>Complete Order</Button>
-        <Button variant="outlined" startIcon={<CloseIcon />} onClick={() => cancelOrder(post)}>Cancel Order</Button>
+        <Button disabled={isExpired} variant="outlined" startIcon={<EditIcon />} onClick={() => toPostPageWithOrderEdit(post)}>Change Order</Button>
+        <Button disabled={isExpired} variant="outlined" startIcon={<CheckIcon />} onClick={() => completeOrder(post)}>Complete Order</Button>
+        <Button disabled={isExpired} variant="outlined" startIcon={<CloseIcon />} onClick={() => cancelOrder(post)}>Cancel Order</Button>
       </Stack>
     </>
   )
@@ -89,27 +89,41 @@ const PostCard = ({ post }) => {
 
 const Status = ({ post }) => {
   const timeLeft = calculateTimeLeft(post);
+
   return (
     <>
-      {post.status.finalStatus === "pending" && post.status.collectorStatement === "pending" && post.status.publisherStatement === "pending" ?
-        (<Typography variant="overline">Waiting for you</Typography>) : null}
+      {timeLeft && post.status.finalStatus === "pending" && post.status.collectorStatement === "pending" && post.status.publisherStatement === "pending" ?
+        (<Typography variant="overline">Waiting for pickup</Typography>) : null}
 
-      {post.status.finalStatus === "cancelled" && post.status.collectorStatement === "cancelled" && post.status.publisherStatement === "pending" ?
-        (<Typography variant="overline">Canceled by you</Typography>) : null}
-      {post.status.finalStatus === "cancelled" && post.status.collectorStatement === "pending" && post.status.publisherStatement === "cancelled" ?
-        (<Typography variant="overline">Canceled by the publisher</Typography>) : null}
+      {post.status.collectorStatement === "cancelled" ?
+        (<Typography variant="overline">Canceled by you</Typography>) :
+        post.status.publisherStatement === "cancelled" ?
+          (<Typography variant="overline">Canceled by the publisher</Typography>) : null}
 
-      {post.status.finalStatus === "collected" && post.status.collectorStatement === "collected" && post.status.publisherStatement === "pending" ?
-        (<Typography variant="overline">Collected by you</Typography>) : null}
-      {post.status.finalStatus === "collected" && post.status.collectorStatement === "pending" && post.status.publisherStatement === "collected" ?
-        (<Typography variant="overline">Collected by others</Typography>) : null}
+      {post.status.collectorStatement === "collected" ?
+        (<Typography variant="overline">Collected by you</Typography>) :
+        post.status.publisherStatement === "collected" ?
+          (<Typography variant="overline">Collected by unknown</Typography>) : null}
 
-      <Typography variant="overline">
-        {timeLeft ? <Typography variant="overline" sx={{ color: "red" }}>{timeLeft}</Typography> : null}
-      </Typography>
+      {timeLeft ?
+        <Typography variant="p" sx={{ color: "red" }}><AccessTimeIcon /> {timeLeft}</Typography> :
+        <Typography variant="overline"><AccessTimeIcon /> Expired</Typography>}
+
     </>
   )
 }
+
+const calculateTimeLeft = (pendingPost) => {
+  const today = new Date();
+  const untilDate = new Date(pendingPost.pendingTime.until);
+  const days = parseInt((untilDate - today) / (1000 * 60 * 60 * 24));
+  const hours = parseInt((Math.abs(untilDate - today) / (1000 * 60 * 60)) % 24);
+  const minutes = parseInt((Math.abs(untilDate.getTime() - today.getTime()) / (1000 * 60)) % 60);
+  const seconds = parseInt((Math.abs(untilDate.getTime() - today.getTime()) / 1000) % 60);
+
+  return today.getTime() < untilDate.getTime() ?
+    ((" 0" + days).slice(-2) + " days, " + ("0" + hours).slice(-2) + " hours, " + ("0" + minutes).slice(-2) + " minutes left for the order") : null;
+};
 
 //TODO: Add actions to each items - marked picked, etc
 const ItemsList = ({ content }) => {
@@ -127,7 +141,7 @@ const ItemsList = ({ content }) => {
   // };
 
   return (
-    <List disablePadding sx={{ display: { xs: 'none', md: 'block' } }}>
+    <List disablePadding>
       <ListSubheader>Items</ListSubheader>
       {content.map((item) => (
         <ListItemText inset key={item._id}>
@@ -140,19 +154,6 @@ const ItemsList = ({ content }) => {
     </List>
   )
 }
-
-const calculateTimeLeft = (pendingPost) => {
-  const today = new Date();
-  const untilDate = new Date(pendingPost.pendingTime.until);
-  const days = parseInt((untilDate - today) / (1000 * 60 * 60 * 24));
-  const hours = parseInt((Math.abs(untilDate - today) / (1000 * 60 * 60)) % 24);
-  const minutes = parseInt((Math.abs(untilDate.getTime() - today.getTime()) / (1000 * 60)) % 60);
-  const seconds = parseInt((Math.abs(untilDate.getTime() - today.getTime()) / 1000) % 60);
-
-  return today.getTime() > untilDate.getTime() ?
-    (("0" + days).slice(-2) + ":" + ("0" + hours).slice(-2) + ":" + ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2) + " left for the order") :
-    ("The post is expired");
-};
 
 const completeOrder = (postId) => {
   MySwal.fire({
