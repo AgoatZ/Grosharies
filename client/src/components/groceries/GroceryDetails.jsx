@@ -218,7 +218,7 @@ const GroceryDetails = () => {
         {posts.length === 0 ? (
           <h1>There's no posts related to that grocery</h1>
         ) : (
-          <Posts posts={posts} noBorder />
+          <Posts data={posts} noBorder />
         )}
       </Container>
     </>

@@ -6,7 +6,6 @@ import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-
 import serverRoutes from "../../utils/server-routes";
 import axios from "../../utils/axios";
 import Map from "../map/Map";
@@ -16,6 +15,9 @@ const MySwal = withReactContent(Swal);
 
 const Post = () => {
   const res = useLocation().state;
+
+  //TODO: Get Post from api using post ID from URL instaed of props from state (may be null)
+
   const isEdit = res.isEdit;
   let navigate = useNavigate();
   const { handleSubmit, control } = useForm();
@@ -115,11 +117,10 @@ const Post = () => {
             {`Name: ${grocery.name}`}
           </Typography>
           <Typography component="div" variant="h6" mb="2%" fontFamily="Roboto">
-            {`Total Amount: ${
-              isEdit
-                ? groceryWrapper.amount + groceryWrapper.left
-                : groceryWrapper.left
-            }  ${grocery.scale}`}
+            {`Total Amount: ${isEdit
+              ? groceryWrapper.amount + groceryWrapper.left
+              : groceryWrapper.left
+              }  ${grocery.scale}`}
           </Typography>
 
           <Box sx={{ width: "300px" }}>

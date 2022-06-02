@@ -25,6 +25,7 @@
     "express": "^4.16.4",
     "express-session": "^1.17.2",
     "googleapis": "^100.0.0",
+    "grosharies": "file:..",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.5.0",
     "mongoose": "^5.7.5",
