@@ -61,7 +61,9 @@ const PostsAccordion = ({ posts }) => {
 
 const PostCard = ({ post }) => {
   let navigate = useNavigate();
-  const toPostPageWithOrderEdit = (post) => navigate("/post/" + post.sourcePost, { state: { postId: post.sourcePost }, isEdit: true });
+  const toPostPageWithOrderEdit = (post) => navigate("/post/" + post.sourcePost, {
+    state: { postId: post.sourcePost, isEdit: true, content: post.content }
+  });
   const [isExpired, setExpired] = useState(Boolean(!calculateTimeLeft(post)));
 
   return (
