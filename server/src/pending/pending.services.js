@@ -343,9 +343,10 @@ const cancelPending = async function (pendingPostId, user) {
 };
 
 const decide = async (pendingId) => {
-    console.log(pendingId);
+    console.log('decide for pendingId:', pendingId);
     const pending = await PendingRepository.getPendingById(pendingId);
     if (pending) {
+        console.log('decide for address:', pending.address);
         const publisherStatement = pending.status.publisherStatement;
         const collectorStatement = pending.status.collectorStatement;
         if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
