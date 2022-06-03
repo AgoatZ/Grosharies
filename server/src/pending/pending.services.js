@@ -343,20 +343,22 @@ const cancelPending = async function (pendingPostId, user) {
 };
 
 const decide = async (pendingId) => {
+    console.log(pendingId);
     const pending = await PendingRepository.getPendingById(pendingId);
-    const publisherStatement = pending.status.publisherStatement;
-    const collectorStatement = pending.status.collectorStatement;
-    if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
-        console.log("WILL CALL NOW CANCEL PENDING POST");
-        let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+    if (pending) {
+        const publisherStatement = pending.status.publisherStatement;
+        const collectorStatement = pending.status.collectorStatement;
+        if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
+            console.log("WILL CALL NOW CANCEL PENDING POST");
+            let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+        }
+        else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
+            let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+        }
+        else {
+            let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
+        }
     }
-    else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
-        let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
-    }
-    else {
-        let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
-    }
-
     return;
 }
 
