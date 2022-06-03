@@ -1,7 +1,8 @@
 import axios from "axios";
 
-if (process.env.NODE_ENV == "development"){
-const instance = axios.create({
+let instanceConfig;
+if (process.env.NODE_ENV === "development"){
+  instanceConfig = axios.create({
   baseURL: "http://localhost:5000/api/",
   timeout: 20000,
   withCredentials: true,
@@ -16,7 +17,7 @@ const instance = axios.create({
 });
 }
 else {
-  const instance = axios.create({
+  instanceConfig = axios.create({
     baseURL: "/api/",
     timeout: 20000,
     withCredentials: true,
@@ -30,4 +31,5 @@ else {
     },
   });
 }
+const instance = instanceConfig;
 export default instance;
