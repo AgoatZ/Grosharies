@@ -342,7 +342,8 @@ const cancelPending = async function (pendingPostId, user) {
     }
 };
 
-const decide = async (pending) => {
+const decide = async (pendingId) => {
+    const pending = await PendingRepository.getPendingById(pendingId);
     const publisherStatement = pending.status.publisherStatement;
     const collectorStatement = pending.status.collectorStatement;
     if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
@@ -501,5 +502,6 @@ module.exports = {
     deletePending,
     updatePending,
     evaluatePostStatus,
+    decide,
     setCollectorStatement
 }

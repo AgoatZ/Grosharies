@@ -205,6 +205,17 @@ const getPendingsByPost = async (req, res, next) => {
     }
 };
 
+const decide = async (req, res, next) => {
+    try {
+        await PendingService.decide(req.params.id);
+        return res.status(200).json({ pendings: pendings, message: "Succesfully retrieved pendings" });
+    } catch (e) {
+        console.log('Pending controller error from cancelPending: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 module.exports = {
     getPendings,
     getGroupedPendings,
@@ -222,5 +233,6 @@ module.exports = {
     cancelPending,
     deletePending,
     updatePending,
+    decide,
     setCollectorStatement
 }
