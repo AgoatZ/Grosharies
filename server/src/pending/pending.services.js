@@ -427,7 +427,7 @@ const delayUpdate = async (id) => {
     var params = {
         stateMachineArn: process.env.AWS_SFN_DELAYUPDATE_ARN,
         input: JSON.stringify({
-            id: id
+            Id: id
         }),
         name: `${id}-${r}`
     };
