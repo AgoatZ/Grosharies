@@ -342,15 +342,6 @@ const cancelPending = async function (pendingPostId, user) {
     }
 };
 
-const routine = async () => {
-    const allPendings = await getPendings();
-    for (let i in allPendings) {
-        if ((Date.now() - allPendings[i].pendingTime.from) / (1000 * 60) >= 45) {
-            await interrestedUserReminder(allPendings[i].collectorId, allPendings[i]._id);
-        }
-    }
-};
-
 const decide = async (pending) => {
     const publisherStatement = pending.status.publisherStatement;
     const collectorStatement = pending.status.collectorStatement;
@@ -378,20 +369,22 @@ const interrestedUserReminder = async (userId, pendingId) => {
         for (i in pending.content) {
             content += (pending.content[i].amount + ' ' + pending.content[i].name + ',');
         }
-        content = content.slice(0,-1);
+        content = content.slice(0, -1);
 
         const remind = async (recieverNumber, publisherNumber) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
             //const collectorSMS = sendSMSToNumber(`Hey from Grosharies! Have you picked up the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${publisher.firstName} ${publisher.lastName}? Tell us what you feel!`, recieverNumber);
             //const publisherSMS = sendSMSToNumber(`Hey from Grosharies! Have you delivered the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${user.firstName} ${user.lastName}? Tell us what you feel!`, publisherNumber);
-            
+            const delayedUpdate = delayUpdate(pendingId);
+            delayedUpdate.catch(err => console.log('AWS delayUpdate failed', err));
             //await decide(pending);
             //const reToId = setTimeout(async function () { await decide(pending) }, (oneHour / 240));
             //reToId.hasRef();
             return;
         };
-        await remind(user.phone, publisher.phone);
-
+        if (user && publisher) {
+            await remind(user.phone, publisher.phone);
+        }
         //const toId = setTimeout(async function () { await remind(user.phoneNumber, publisher.phoneNumber) }, (oneHour / 240));
         //toId.hasRef();
     } catch (e) {
@@ -420,6 +413,31 @@ const sendSMSToNumber = async (firstMessage, secondMessage, phoneNumber) => {
             console.log("Success sending SMS.", response);
             return response; // For unit tests.
         } catch (err) {
+            console.log("Error sending SMS", err.stack);
+        }
+    };
+    return run();
+};
+
+const delayUpdate = async (id) => {
+    const r = Date.now() + Math.round(Math.random() * 1E9);
+    var params = {
+        stateMachineArn: process.env.AWS_SFN_DELAYUPDATE_ARN,
+        input: JSON.stringify({
+            Id: id
+        }),
+        name: `${id}-${r}`
+    };
+
+    const run = async () => {
+        try {
+            const command = new StartExecutionCommand(params);
+            const response = await sfnClient.send(command);
+            console.log("Success sending SMS.", response);
+            return response; // For unit tests.
+        } catch (err) {
+            console.log(response);
+            console.log(command);
             console.log("Error sending SMS", err.stack);
         }
     };
@@ -480,7 +498,7 @@ module.exports = {
     interrestedUserReminder,
     addPending,
     sendSMSToNumber,
-    routine,
+    delayUpdate,
     finishPending,
     cancelPending,
     deletePending,
