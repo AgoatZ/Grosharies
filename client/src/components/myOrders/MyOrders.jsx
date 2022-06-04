@@ -99,7 +99,9 @@ const calculateTimeLeft = (pendingPost) => {
 };
 
 const myOrderDetails = (orderDetails, navigate) => {
+  console.log(orderDetails)
   axios.get("posts/" + orderDetails.sourcePost).then((res) => {
+    orderDetails.description = res.data.post.description
     res.data.post.content.forEach((grocery, i) => {
       orderDetails.content[i].left = grocery.left;
     });

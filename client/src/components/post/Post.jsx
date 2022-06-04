@@ -1,6 +1,6 @@
 import { useForm, Controller } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Typography, Box, Button, Slider, CardMedia } from "@mui/material";
+import { Typography, Box, Button, Slider, CardMedia, Alert, Collapse } from "@mui/material";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Swal from "sweetalert2";
@@ -195,7 +195,7 @@ const Post = () => {
         />
       </Box>
 
-      <Map address={res.post.address} />
+      <Map locations={res.post.addressCoordinates && [{ ...res.post.addressCoordinates, address: res.post.address }]} center={res.post.addressCoordinates} />
 
       <Box sx={{ width: "600px", height: "600px", margin: "0 auto" }}>
         <Typography
@@ -215,6 +215,21 @@ const Post = () => {
         fontWeight="bold"
         color="text.secondary"
       >
+        <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+          {res.post.pickUpDates.map((date) => {
+            return (
+              <Alert severity="info" sx={{ width: "100%", display: "flex" }}>
+                <div>
+                  <label style={{ display: "inline-block", marginRight: "5px" }}>From:</label>
+                  <h5 style={{ display: "inline-block" }}>{date.from}</h5>
+                </div>
+                <div>
+                  <label style={{ display: "inline-block", marginRight: "5px" }}>To:</label>
+                  <h5 style={{ display: "inline-block" }}>{date.until}</h5>
+                </div>
+              </Alert>)
+          })}
+        </Box>
         Products
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -231,6 +246,8 @@ const Post = () => {
         </Button>
       </form>
     </Box>
+
+
   );
 };
 
