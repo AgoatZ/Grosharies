@@ -9,7 +9,8 @@ export const UserDummy = {
     posts: [],
     profileImage: "",
     source: "grosharies",
-    collectedHistory: []
+    collectedHistory: [],
+    notifications: []
 }
 
 export const PostDummy = {

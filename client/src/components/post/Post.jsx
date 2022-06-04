@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Typography, Box, Button, Slider, CardMedia } from "@mui/material";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import serverRoutes from "../../utils/server-routes";
 import axios from "../../utils/axios";
 import { PostDummy } from "../../utils/dummies";
 import Map from "../map/Map";
@@ -19,13 +18,40 @@ const Post = () => {
   const { handleSubmit, control } = useForm();
   const [post, setPost] = useState(PostDummy);
   const passedState = useLocation().state;
+  const sourcePostId = passedState.postId;
   const isEdit = passedState.isEdit ? passedState.isEdit : false;
-  const postId = passedState.postId;
-  const content = passedState.content; //TODO:
+  const pendingPostId = passedState.isEdit ? passedState.pendingPostId : null;
+  useEffect(() => loadPost(), []);
 
+  const loadPost = () => {
+    console.log("Passed State", passedState);
 
-  //axios.get('posts/' + postId).then((res) => setPost(res.data.post)).catch(console.log("ERROR"));
-  axios.get('posts/' + postId).then((res) => setPost(res.data.post));
+    axios.get('posts/' + sourcePostId).then((res) => {
+      const post = res.data.post;
+
+      //Add to each grocery item the user's order amount
+      post.content.forEach((grocery) => grocery.currentOrder = 0);
+
+      //Cross post content with order content acording to grocery name
+      if (isEdit && pendingPostId) {
+        axios.get('pendings/' + pendingPostId).then((res) => {
+          const pendingPost = res.data.post;
+
+          //Add to each grocery item the user's order amount
+          pendingPost.content.forEach((orderGrocery) => {
+            post.content.find((grocery) => grocery.original.name === orderGrocery.name).currentOrder = orderGrocery.amount;
+          });
+
+          setPost(post);
+        });
+      }
+      else {
+        setPost(post);
+      }
+
+      console.log("Post Content", post.content);
+    });
+  }
 
   const imagesAndVideos = [
     {
@@ -43,9 +69,6 @@ const Post = () => {
   ];
 
   const Products = ({ post }) => {
-    //const grocery = groceryWrapper.original ? groceryWrapper.original : groceryWrapper;
-
-    //console.log(grocery);
     return (
       post.content.map((grocery) => (
         <Box key={grocery._id} sx={{ display: "flex", margin: "3% 0", justifyContent: "space-evenly", width: "45%", }}>
@@ -55,23 +78,25 @@ const Post = () => {
               {`Name: ${grocery.original.name}`}
             </Typography>
             <Typography component="div" variant="h6" mb="2%" >
-              {`Total Amount: ${isEdit ? grocery.original.amount + grocery.left :
-                grocery.left}  ${grocery.original.scale}`}
+              {`Original Amount: ${grocery.original.amount}  ${grocery.original.scale}`}
+            </Typography>
+            <Typography component="div" variant="h6" mb="2%" >
+              {`Available Amount: ${grocery.left + grocery.currentOrder}  ${grocery.original.scale}`}
             </Typography>
 
             <Box sx={{ width: "300px" }}>
               <Controller
                 control={control}
                 name={grocery.original.name}
-                defaultValue={isEdit ? grocery.original.amount : 0}
+                defaultValue={grocery.currentOrder}
+
                 render={({ field: { value, onChange } }) => (
                   <Typography variant="h6" color="red" component="div">
                     {`Your Amount: ${value} ${grocery.original.scale}`}
                     <Slider
-                      marks
                       step={1}
                       min={0}
-                      max={isEdit ? grocery.original.amount + grocery.left : grocery.left}
+                      max={Number(grocery.left + grocery.currentOrder)}
                       valueLabelDisplay="auto"
                       onChange={(e) => { onChange(e.target.value); }}
                       name={grocery.original.name}
@@ -88,23 +113,19 @@ const Post = () => {
   };
 
   const onSubmit = (data) => {
-    //TODO: 
-    console.log(data)
+    const orderGroceries = post.content
+      .filter((grocery) => data[grocery.original.name] > 0)
+      .map((grocery) => {
+        grocery.original.amount = data[grocery.original.name];
+        return grocery.original;
+      })
 
-    const updatedGroceries = post.content.map((grocery) => {
-      grocery.original.amount = data[grocery.original.name];
-
-      //console.log(groceryWrapper)
-
-      return grocery.original;
-    });
+    console.log("Form Data", data);
+    console.log("Order Groceries", orderGroceries);
 
     if (!isEdit) {
-      axios.post(serverRoutes.ApplyPost, {
-        postId: post._id,
-        collectorId: "",
-        groceries: updatedGroceries,
-      }).then((res) => {
+      //Create Pending Post
+      axios.post("posts/pend", { postId: sourcePostId, groceries: orderGroceries }).then((res) => {
         console.log(res.data);
         MySwal.fire({
           title: "Successfully Applied Your Order!",
@@ -117,21 +138,22 @@ const Post = () => {
         setTimeout(() => { navigate("/my-orders", {}); }, 1000);
       });
     } else {
-      axios.put("/pendings/" + post._id, { data, })
-        .then((res) => {
-          console.log(res.data);
-          MySwal.fire({
-            title: "Successfully Edited Your Order!",
-            text: "You can now go and take your donation",
-            icon: "success",
-            timer: 1000,
-            showConfirmButton: false,
-          });
-          setTimeout(() => { navigate("/my-orders", {}); }, 1000);
+      //Edit Pending Post
+      axios.put("pendings/" + pendingPostId, { content: orderGroceries }).then((res) => {
+        console.log(res.data);
+        MySwal.fire({
+          title: "Successfully Edited Your Order!",
+          text: "You can now go and take your GroSharies",
+          icon: "success",
+          timer: 1000,
+          showConfirmButton: false,
+          backdrop: false
         });
+        setTimeout(() => { navigate("/my-orders", {}); }, 1000);
+      });
     }
-  };
 
+  };
 
   return (
     <Box sx={{ margin: "0 10%" }}>

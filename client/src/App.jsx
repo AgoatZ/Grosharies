@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Container } from "@mui/material";
 import axios from "./utils/axios";
+import { UserDummy } from "./utils/dummies";
 //FontAwesome Icons Setup
 import { library as iconsLibrary } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -25,7 +26,7 @@ iconsLibrary.add(fas, far);
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState(UserDummy);
 
   useEffect(() => {
     axios

@@ -63,7 +63,7 @@ const PostsAccordion = ({ posts }) => {
 const PostCard = ({ post }) => {
   let navigate = useNavigate();
   const toPostPageWithOrderEdit = (post) => navigate("/post/" + post.sourcePost, {
-    state: { postId: post.sourcePost, isEdit: true, content: post.content }
+    state: { postId: post.sourcePost, isEdit: true, pendingPostId: post._id }
   });
   const [isExpired, setExpired] = useState(Boolean(!calculateTimeLeft(post)));
 
@@ -82,7 +82,7 @@ const PostCard = ({ post }) => {
       </Stack>
 
       <Stack justifyContent="center" alignItems="center" spacing={2} sx={{ width: '33%', flexShrink: 1 }}>
-        <Button disabled={isExpired} variant="outlined" startIcon={<EditIcon />} onClick={() => toPostPageWithOrderEdit(post)}>Change Order</Button>
+        <Button disabled={isExpired} variant="outlined" startIcon={<EditIcon />} onClick={() => toPostPageWithOrderEdit(post)}>Review Order</Button>
         <Button disabled={isExpired} variant="outlined" startIcon={<CheckIcon />} onClick={() => completeOrder(post)}>Complete Order</Button>
         <Button disabled={isExpired} variant="outlined" startIcon={<CloseIcon />} onClick={() => cancelOrder(post)}>Cancel Order</Button>
       </Stack>
@@ -128,21 +128,7 @@ const calculateTimeLeft = (pendingPost) => {
     ((" 0" + days).slice(-2) + " days, " + ("0" + hours).slice(-2) + " hours, " + ("0" + minutes).slice(-2) + " minutes left for the order") : null;
 };
 
-//TODO: Add actions to each items - marked picked, etc
 const ItemsList = ({ content }) => {
-
-  //   //
-  // const myOrderDetails = (orderDetails, navigate) => {
-  //   axios.get("posts/" + orderDetails.sourcePost).then((res) => {
-  //     res.data.post.content.forEach((grocery, i) => {
-  //       orderDetails.content[i].left = grocery.left;
-  //     });
-  //     navigate("/post/" + orderDetails._id, {
-  //       state: { post: orderDetails, isEdit: true },
-  //     });
-  //   });
-  // };
-
   return (
     <List disablePadding>
       <ListSubheader>Items</ListSubheader>
