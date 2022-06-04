@@ -240,9 +240,9 @@ const Post = () => {
         color="text.secondary"
       >
         <Calander style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} tileClassName={tileClassName} tileDisabled={tileDisabled}
-          tileContent={
-            ({ activeStartDate, date, view }) => {
-              return <div className="tooltip"><sapn className="tooltiptext" >Hi</sapn></div>
+          onClickDay={
+            () => {
+              MySwal.fire("Hi")
             }
           }
         >
