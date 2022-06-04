@@ -1,6 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Typography, Box, Button, Slider, CardMedia, Alert, Collapse } from "@mui/material";
+import { Typography, Box, Button, Slider, CardMedia, } from "@mui/material";
+import Calander from "react-calendar"
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Swal from "sweetalert2";
@@ -8,8 +9,15 @@ import withReactContent from "sweetalert2-react-content";
 import serverRoutes from "../../utils/server-routes";
 import axios from "../../utils/axios";
 import Map from "../map/Map";
+import 'react-calendar/dist/Calendar.css';
+import './post.css';
 
 const MySwal = withReactContent(Swal);
+
+function isDateInRange(date, dateFrom, dateTo) {
+  return date >= dateFrom && date <= dateTo;
+}
+
 
 const Post = () => {
   const res = useLocation().state;
@@ -19,8 +27,24 @@ const Post = () => {
   const isEdit = res.isEdit;
   let navigate = useNavigate();
   const { handleSubmit, control } = useForm();
+  const tileClassName = ({ date, view }) => {
+    const dates = res.post.pickUpDates
+    return (view === 'month') && // Block day tiles only
+      dates.some(pickUpDate => {
+        console.log("pickup", pickUpDate)
+        return isDateInRange(date, new Date(pickUpDate.from).setHours(0, 0, 0, 0), new Date(pickUpDate.until))
+      }) ? "active-date" : null;
+  }
+  const tileDisabled = ({ date, view }) => {
+    const dates = res.post.pickUpDates
+    console.log(date)
+    return (view === 'month') && // Block day tiles only
+      dates.some(pickUpDate => {
+        console.log("pickup", pickUpDate)
+        return !isDateInRange(date, new Date(pickUpDate.from).setHours(0, 0, 0, 0), new Date(pickUpDate.until))
+      })
+  }
   const onSubmit = (data) => {
-
 
     if (!isEdit) {
       const updatedGroceries = res.post.content.map((groceryWrapper) => {
@@ -215,23 +239,16 @@ const Post = () => {
         fontWeight="bold"
         color="text.secondary"
       >
-        <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-          {res.post.pickUpDates.map((date) => {
-            return (
-              <Alert severity="info" sx={{ width: "100%", display: "flex" }}>
-                <div>
-                  <label style={{ display: "inline-block", marginRight: "5px" }}>From:</label>
-                  <h5 style={{ display: "inline-block" }}>{date.from}</h5>
-                </div>
-                <div>
-                  <label style={{ display: "inline-block", marginRight: "5px" }}>To:</label>
-                  <h5 style={{ display: "inline-block" }}>{date.until}</h5>
-                </div>
-              </Alert>)
-          })}
-        </Box>
+        <Calander style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} tileClassName={tileClassName} tileDisabled={tileDisabled}
+          tileContent={
+            ({ activeStartDate, date, view }) => {
+              return <div className="tooltip"><sapn className="tooltiptext" >Hi</sapn></div>
+            }
+          }
+        >
+        </Calander>
         Products
-      </Typography>
+      </Typography >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
           {products}
@@ -245,7 +262,7 @@ const Post = () => {
           {isEdit ? "Edit" : "Apply"}
         </Button>
       </form>
-    </Box>
+    </Box >
 
 
   );

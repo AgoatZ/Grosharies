@@ -5,6 +5,7 @@ import axios from "../../utils/axios";
 import Posts from '../posts/Posts';
 import AddPost from '../add-post/AddPost';
 
+
 const tabs = ['Near By', 'Recently Added', 'Add post'];
 
 const Home = () => {
