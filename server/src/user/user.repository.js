@@ -2,10 +2,10 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const User = require('./user.model');
 
-getUsers = async function (query) {
+getUsers = async function (query, options) {
     try {
-        const users = await User.find(query);
-        return users;
+        const users = await User.paginate(query, options);
+        return users.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 

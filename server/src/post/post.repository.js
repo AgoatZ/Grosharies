@@ -4,10 +4,10 @@ const Post = require('./post.model');
 const reply = require('../enums/post-reply');
 const postStatus = require('../enums/post-status');
 
-const getPosts = async (query) => {
+const getPosts = async (query, options) => {
     try {
-        const posts = await Post.find(query);
-        return posts;
+        const posts = await Post.paginate(query, options);
+        return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 
@@ -15,26 +15,37 @@ const getPosts = async (query) => {
     }
 };
 
-const getRelevantPosts = async () => {
+const getRelevantPosts = async (options) => {
     try {
-        const posts = await Post.find({}).where('pickUpDates.from').
-            lt(Date.now()).
-            where('pickUpDates.until').
-            gt(Date.now());
-        return posts;
+        const posts = await Post.paginate({
+                    $and: [
+                        { 'pickUpDates.from': { $lt: Date.now() } },
+                { 'pickUpDates.until': { $gt: Date.now() } }
+            ]
+          }, options);
+    //       .where('pickUpDates.from').
+    // lt(Date.now()).
+    // where('pickUpDates.until').
+    // gt(Date.now());
+return posts.docs;
     } catch (e) {
-        console.log('repository error: ' + e.message);
+    console.log('repository error: ' + e.message);
 
-        throw Error('Error while Retrieving Posts: ' + e.message);
-    }
+    throw Error('Error while Retrieving Posts: ' + e.message);
+}
 };
 
-const getPublisherOpenPosts = async (publisherId) => {
+const getPublisherOpenPosts = async (publisherId, options) => {
     try {
-        const posts = await Post.find({ userId: publisherId }).
-        where('status').
-        in([postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE]);
-        return posts;
+        const posts = await Post.paginate({
+            $and: [
+                { userId: publisherId },
+                { status: {$in : [postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE] }}
+            ]
+        }, options);
+            // where('status').
+            // in([postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE]);
+        return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 
@@ -53,10 +64,10 @@ const getPostById = async (postId) => {
     }
 };
 
-const getPostsByUser = async (userId) => {
+const getPostsByUser = async (userId, options) => {
     try {
-        const posts = await Post.find({ 'userId': userId });
-        return posts;
+        const posts = await Post.paginate({ 'userId': userId }, options);
+        return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 
@@ -64,10 +75,10 @@ const getPostsByUser = async (userId) => {
     }
 };
 
-const getPostsByCategory = async (categoryId) => {
+const getPostsByCategory = async (categoryId, options) => {
     try {
-        const posts = await Post.find({ 'content': { 'category': categoryId } });
-        return posts;
+        const posts = await Post.paginate({ 'content': { 'category': categoryId } }, options);
+        return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 
@@ -75,10 +86,10 @@ const getPostsByCategory = async (categoryId) => {
     }
 };
 
-const getPostsByTag = async (tagId) => {
+const getPostsByTag = async (tagId, options) => {
     try {
-        const posts = await Post.find({ 'tags': tagId });
-        return posts;
+        const posts = await Post.paginate({ 'tags': tagId }, options);
+        return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 
@@ -86,10 +97,10 @@ const getPostsByTag = async (tagId) => {
     }
 };
 
-const getPostsByCollector = async (userId) => {
+const getPostsByCollector = async (userId, options) => {
     try {
-        const posts = await Post.find({ 'repliers': { 'user': userId, 'reply': reply.PARTIALLY_TOOK || reply.TOOK } });
-        return posts;
+        const posts = await Post.paginate({ 'repliers': { 'user': userId, 'reply': reply.PARTIALLY_TOOK || reply.TOOK } }, options);
+        return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 
@@ -97,10 +108,16 @@ const getPostsByCollector = async (userId) => {
     }
 };
 
-const getPostsByGroceries = async (groceries) => {
+const getPostsByGroceries = async (groceries, options) => {
     try {
-        const posts = await Post.find({}).where('content.original.name').in(groceries);
-        return posts;
+        const posts = await Post.paginate({
+            $and: [
+                {},
+            { 'content.original.name': { $in: groceries }}
+            ]
+        }, options);
+        //where('content.original.name').in(groceries);
+        return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 

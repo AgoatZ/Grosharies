@@ -2,10 +2,10 @@ const express = require('express');
 const Pending = require('./pending.model');
 const Status = require('../enums/pending-status');
 
-const getPendings = async (query) => {
+const getPendings = async (query, options) => {
     try {
-        const pendingPosts = await Pending.find(query);
-        return pendingPosts;
+        const pendingPosts = await Pending.paginate(query, options);
+        return pendingPosts.docs;
     } catch (e) {
         console.log('Pending repository error from getPendings: ', e.message);
 
@@ -24,11 +24,14 @@ const getPendingById = async function (postId) {
     }
 };
 
-const getPendingsByPublisher = async function (userId) {
+const getPendingsByPublisher = async function (userId, options) {
     try {
-        const cancelledPendings = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.CANCELLED });
-        const finishedPendings = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.COLLECTED });
-        const pendingPosts = await Pending.find({ 'publisherId': userId, 'status.finalStatus': Status.PENDING });
+        let cancelledPendings = await Pending.paginate({ 'publisherId': userId, 'status.finalStatus': Status.CANCELLED }, options);
+        cancelledPendings = cancelledPendings.docs;
+        let finishedPendings = await Pending.paginate({ 'publisherId': userId, 'status.finalStatus': Status.COLLECTED }, options);
+        finishedPendings = finishedPendings.docs;
+        let pendingPosts = await Pending.paginate({ 'publisherId': userId, 'status.finalStatus': Status.PENDING }, options);
+        pendingPosts = pendingPosts.docs;
         return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending repository error from getPendingsByPublisher: ', e.message);
@@ -37,11 +40,14 @@ const getPendingsByPublisher = async function (userId) {
     }
 };
 
-const getPendingsByCollector = async function (userId) {
+const getPendingsByCollector = async function (userId, options) {
     try {
-        const cancelledPendings = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.CANCELLED });
-        const finishedPendings = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.COLLECTED });
-        const pendingPosts = await Pending.find({ 'collectorId': userId, 'status.finalStatus': Status.PENDING });
+        let cancelledPendings = await Pending.paginate({ 'collectorId': userId, 'status.finalStatus': Status.CANCELLED }, options);
+        cancelledPendings = cancelledPendings.docs;
+        let finishedPendings = await Pending.paginate({ 'collectorId': userId, 'status.finalStatus': Status.COLLECTED }, options);
+        finishedPendings = finishedPendings.docs;
+        let pendingPosts = await Pending.paginate({ 'collectorId': userId, 'status.finalStatus': Status.PENDING }, options);
+        pendingPosts = pendingPosts.docs;
         return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending repository error from getPendingsByCollector: ', e.message);
@@ -50,10 +56,10 @@ const getPendingsByCollector = async function (userId) {
     }
 };
 
-const getPendingsByCategory = async function (categoryId) {
+const getPendingsByCategory = async function (categoryId, options) {
     try {
-        const pendingPosts = await Pending.find({ 'content': { 'category': categoryId }});
-        return pendingPosts;
+        const pendingPosts = await Pending.paginate({ 'content': { 'category': categoryId }}, options);
+        return pendingPosts.docs;
     } catch (e) {
         console.log('Pending repository error from getPendingsByCategory: ', e.message);
 
@@ -61,10 +67,10 @@ const getPendingsByCategory = async function (categoryId) {
     }
 };
 
-const getPendingsByTag = async function (tagId) {
+const getPendingsByTag = async function (tagId, options) {
     try {
-        const pendingPosts = await Pending.find({ 'tags': tagId });
-        return pendingPosts;
+        const pendingPosts = await Pending.paginate({ 'tags': tagId }, options);
+        return pendingPosts.docs;
     } catch (e) {
         console.log('Pending repository error from getPendingsByTag: ', e.message);
 
@@ -72,10 +78,10 @@ const getPendingsByTag = async function (tagId) {
     }
 };
 
-const getPendingsByPost = async function (postId) {
+const getPendingsByPost = async function (postId, options) {
     try {
-        const pendingPosts = await Pending.find({ 'sourcePost': postId });
-        return pendingPosts;
+        const pendingPosts = await Pending.paginate({ 'sourcePost': postId }, options);
+        return pendingPosts.docs;
     } catch (e) {
         console.log('Pending repository error from getPendingsByPost: ', e.message);
 
@@ -83,10 +89,10 @@ const getPendingsByPost = async function (postId) {
     }
 };
 
-const getAllPendingPosts = async function () {
+const getAllPendingPosts = async function (options) {
     try {
-        const pendingPosts = await Pending.find({ 'status.finalStatus': Status.PENDING });
-        return pendingPosts;
+        const pendingPosts = await Pending.paginate({ 'status.finalStatus': Status.PENDING }, options);
+        return pendingPosts.docs;
     } catch (e) {
         console.log('Pending repository error from getAllPendingPosts: ', e.message);
 
@@ -94,10 +100,10 @@ const getAllPendingPosts = async function () {
     }
 };
 
-const getAllFinishedPosts = async function () {
+const getAllFinishedPosts = async function (options) {
     try {
-        const finishedPosts = await Pending.find({ 'status.finalStatus': Status.COLLECTED });
-        return finishedPosts;
+        const finishedPosts = await Pending.paginate({ 'status.finalStatus': Status.COLLECTED }, options);
+        return finishedPosts.docs;
     } catch (e) {
         console.log('Pending repository error from getAllFinishedPosts: ', e.message);
 
@@ -105,10 +111,10 @@ const getAllFinishedPosts = async function () {
     }
 };
 
-const getAllCancelledPosts = async function () {
+const getAllCancelledPosts = async function (options) {
     try {
-        const cancelledPosts = await Pending.find({ 'status.finalStatus': Status.CANCELLED });
-        return cancelledPosts;
+        const cancelledPosts = await Pending.paginate({ 'status.finalStatus': Status.CANCELLED }, options);
+        return cancelledPosts.docs;
     } catch (e) {
         console.log('Pending repository error from getAllCancellededPosts: ', e.message);
 
