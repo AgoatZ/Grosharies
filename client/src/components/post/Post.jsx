@@ -15,41 +15,45 @@ const MySwal = withReactContent(Swal);
 
 const Post = () => {
   let navigate = useNavigate();
-  const { handleSubmit, control } = useForm();
-  const [post, setPost] = useState(PostDummy);
   const passedState = useLocation().state;
   const sourcePostId = passedState.postId;
-  const isEdit = passedState.isEdit ? passedState.isEdit : false;
-  const pendingPostId = passedState.isEdit ? passedState.pendingPostId : null;
+  const [post, setPost] = useState(PostDummy);
+  const [isEdit, setEdit] = useState(false);
+  const { handleSubmit, control } = useForm();
+
   useEffect(() => loadPost(), []);
 
   const loadPost = () => {
     console.log("Passed State", passedState);
+    let post = {}
 
     axios.get('posts/' + sourcePostId).then((res) => {
-      const post = res.data.post;
+      post = res.data.post;
 
-      //Add to each grocery item the user's order amount
+      //Add and Init user's order amount for each grocery item
       post.content.forEach((grocery) => grocery.currentOrder = 0);
 
-      //Cross post content with order content acording to grocery name
-      if (isEdit && pendingPostId) {
-        axios.get('pendings/' + pendingPostId).then((res) => {
-          const pendingPost = res.data.post;
+      //TODO: Add to API getPendingByPostAndByCollector ?
+      //Get user's active order for this post and add it to main post object if exists
+      axios.get("pendings/collector/current").then((res) => {
+        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
 
-          //Add to each grocery item the user's order amount
-          pendingPost.content.forEach((orderGrocery) => {
-            post.content.find((grocery) => grocery.original.name === orderGrocery.name).currentOrder = orderGrocery.amount;
-          });
+        if (userPendingPost) {
+          post.userPendingPostId = userPendingPost._id;
+          console.log("User's open pending post (order) for this post", userPendingPost);
+          //Set the user's order amount for each grocery item
+          userPendingPost.content.forEach((orderGrocery) => (post.content.find((grocery) => grocery.original.name === orderGrocery.name).currentOrder = orderGrocery.amount));
 
+          setEdit(true);
           setPost(post);
-        });
-      }
-      else {
-        setPost(post);
-      }
+        } else {
+          setPost(post);
+        }
+      }).catch(e => console.log("Error getting user's pending posts", e));
 
-      console.log("Post Content", post.content);
+    }).then(() => {
+      console.log("Post", post);
+      console.log("Post Content", post.content)
     });
   }
 
@@ -89,7 +93,6 @@ const Post = () => {
                 control={control}
                 name={grocery.original.name}
                 defaultValue={grocery.currentOrder}
-
                 render={({ field: { value, onChange } }) => (
                   <Typography variant="h6" color="red" component="div">
                     {`Your Amount: ${value} ${grocery.original.scale}`}
@@ -126,7 +129,7 @@ const Post = () => {
     if (!isEdit) {
       //Create Pending Post
       axios.post("posts/pend", { postId: sourcePostId, groceries: orderGroceries }).then((res) => {
-        console.log(res.data);
+        console.log("Create Pending Post Result", res.data);
         MySwal.fire({
           title: "Successfully Applied Your Order!",
           text: "You can now go and take your GroSharies",
@@ -136,10 +139,10 @@ const Post = () => {
           backdrop: false
         });
         setTimeout(() => { navigate("/my-orders", {}); }, 1000);
-      });
+      }).catch(e => console.log("Create Pending Post Error", e));
     } else {
       //Edit Pending Post
-      axios.put("pendings/" + pendingPostId, { content: orderGroceries }).then((res) => {
+      axios.put("pendings/" + post.userPendingPostId, { content: orderGroceries }).then((res) => {
         console.log(res.data);
         MySwal.fire({
           title: "Successfully Edited Your Order!",
@@ -150,7 +153,7 @@ const Post = () => {
           backdrop: false
         });
         setTimeout(() => { navigate("/my-orders", {}); }, 1000);
-      });
+      }).catch(e => console.log("Edit Pending Post Error", e));
     }
 
   };

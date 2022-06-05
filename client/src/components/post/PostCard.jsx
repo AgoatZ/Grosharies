@@ -15,7 +15,7 @@ const cardActionsStyle = {
 
 const PostCard = ({ post }) => {
   let navigate = useNavigate();
-  const toPostPage = () => navigate("/post/" + post._id, { state: { postId: post._id, isEdit: false } });
+  const toPostPage = () => navigate("/post/" + post._id, { state: { postId: post._id } });
 
   return (
     <Card sx={{ padding: 1 }}>
