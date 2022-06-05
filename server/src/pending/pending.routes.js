@@ -27,7 +27,7 @@ router.get("/finished", authJwt, PendingController.getAllFinishedPosts);
 
 router.get("/cancelled", authJwt, PendingController.getAllCancelledPosts);
 
-router.get('/checkandupdatepending/:id', PendingController.decide)
+router.get('/checkandupdatepending/id', PendingController.decide)
 
 router.post("/", authJwt, PendingController.addPending);
 
