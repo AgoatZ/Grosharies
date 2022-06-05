@@ -2,10 +2,11 @@ const express = require('express');
 const Pending = require('./pending.model');
 const Status = require('../enums/pending-status');
 
-const getPendings = async (query) => {
+const getPendings = async (query, page, limit) => {
     try {
-        const pendingPosts = await Pending.find(query);
-        return pendingPosts;
+        const options = { page: page, limit: limit };
+        const pendingPosts = await Pending.paginate(query, options);
+        return pendingPosts.docs;
     } catch (e) {
         console.log('Pending repository error from getPendings: ', e.message);
 

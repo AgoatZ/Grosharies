@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const getGroceries = async function (query, page, limit) {
     try {
-        const groceries = await GroceryRepository.getGroceries(query);
+        const groceries = await GroceryRepository.getGroceries(query, page, limit);
         return groceries;
     } catch (e) {
         console.log('Grocery service error from getGroceries: ', e.message);

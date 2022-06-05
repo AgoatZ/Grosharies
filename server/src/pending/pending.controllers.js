@@ -3,8 +3,8 @@ const PendingService = require('./pending.services');
 const getPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
-    const page = req.params.page ? req.params.page : 1;
-    const limit = req.params.limit ? req.params.limit : 10;
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
     try {
         const posts = await PendingService.getPendings({}, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });

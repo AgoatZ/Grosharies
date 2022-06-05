@@ -4,10 +4,15 @@ const imageUtil = require('../common/middlewares/image-upload');
 const getGroceries = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
-    const page = req.params.page ? req.params.page : 1;
-    const limit = req.params.limit ? req.params.limit : 10;
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
     try {
-        const groceries = await GroceryService.getGroceries({}, page, limit)
+        const groceries = await GroceryService.getGroceries({}, page, limit);
+        let count = 0;
+        for (i in groceries) {
+            count++;
+        }
+        console.log('amount retrieved:', count);
         return res.status(200).json({ groceries: groceries, message: "Succesfully Groceries Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);

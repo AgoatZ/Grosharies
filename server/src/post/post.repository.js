@@ -4,10 +4,11 @@ const Post = require('./post.model');
 const reply = require('../enums/post-reply');
 const postStatus = require('../enums/post-status');
 
-const getPosts = async (query) => {
+const getPosts = async (query, page, limit) => {
     try {
-        const posts = await Post.find(query);
-        return posts;
+        const options = { page: page, limit: limit };
+        const posts = await Post.find(query, options);
+        return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
 

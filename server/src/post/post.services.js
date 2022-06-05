@@ -9,7 +9,7 @@ const { getCoordinates } = require('../common/utils/google-maps-client');
 
 const getPosts = async (query, page, limit) => {
     try {
-        const posts = await PostRepository.getPosts(query);
+        const posts = await PostRepository.getPosts(query, page, limit);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);

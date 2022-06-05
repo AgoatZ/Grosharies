@@ -6,7 +6,7 @@ const AuthService = require('../auth/auth.services');
 
 const getUsers = async function (query, page, limit) {
     try {
-        const users = await UserRepository.getUsers(query);
+        const users = await UserRepository.getUsers(query, page, limit);
         return users;
     } catch (e) {
         console.log('service error: ' + e.message);
