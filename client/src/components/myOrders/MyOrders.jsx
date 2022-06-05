@@ -21,6 +21,7 @@ const MyOrders = () => {
 
   const loadPendingPosts = () => {
     axios.get("pendings/collector/current").then((res) => {
+
       console.log(res.data);
       setPendingsPosts(res.data.pendingPosts);
       setFinishedPendings(res.data.finishedPendings);
@@ -88,13 +89,13 @@ const calculateTimeLeft = (pendingPost) => {
       ? approveOrderComplete("publisher", pendingPost._id)
       : cancelOrder(pendingPost._id)
     : ("0" + days).slice(-2) +
-        ":" +
-        ("0" + hours).slice(-2) +
-        ":" +
-        ("0" + minutes).slice(-2) +
-        ":" +
-        ("0" + seconds).slice(-2) +
-        " left for the order";
+    ":" +
+    ("0" + hours).slice(-2) +
+    ":" +
+    ("0" + minutes).slice(-2) +
+    ":" +
+    ("0" + seconds).slice(-2) +
+    " left for the order";
 };
 
 const myOrderDetails = (orderDetails, navigate) => {
@@ -102,6 +103,7 @@ const myOrderDetails = (orderDetails, navigate) => {
     res.data.post.content.forEach((grocery, i) => {
       orderDetails.content[i].left = grocery.left;
     });
+    console.log("edit mode", JSON.stringify(orderDetails))
     navigate("/post/" + orderDetails._id, {
       state: { post: orderDetails, isEdit: true },
     });
@@ -207,10 +209,10 @@ export const RenderOrders = ({
                 isFinished || isCanceled
                   ? null
                   : {
-                      cursor: "pointer",
-                      bgcolor: "#F2FCF8",
-                      borderRadius: "10px",
-                    },
+                    cursor: "pointer",
+                    bgcolor: "#F2FCF8",
+                    borderRadius: "10px",
+                  },
             }}
           >
             <CardMedia
@@ -263,16 +265,16 @@ export const RenderOrders = ({
             </Box>
             {!timeLeft
               ? handleFinishedOrCanceled(
-                  isFinished && !isCanceled
-                ) /* returns true if finished, and false if canceled*/
+                isFinished && !isCanceled
+              ) /* returns true if finished, and false if canceled*/
               : null}
           </Box>
           {!isFinished && !isCanceled
             ? post.status.collectorStatement === "pending"
               ? approveOrCancelSection(role, post)
               : role === "collector"
-              ? waitForPublisherSection()
-              : approveOrCancelSection(role, post)
+                ? waitForPublisherSection()
+                : approveOrCancelSection(role, post)
             : null}
         </Box>
       </Box>
@@ -376,12 +378,12 @@ export const approveOrCancelSection = (role, post) => {
           <CheckIcon fontSize="large" sx={{ color: "green", mr: "10px" }} />
           <Typography fontSize="18px">
             {role === "publisher" &&
-            post.status.collectorStatement === "collected"
+              post.status.collectorStatement === "collected"
               ? "collector approved, Waiting for your approval"
               : role === "publisher" &&
                 post.status.collectorStatement === "pending"
-              ? "Complete the order"
-              : "I Picked Up the Order"}
+                ? "Complete the order"
+                : "I Picked Up the Order"}
           </Typography>
         </Button>
         <Divider color="black" sx={{ width: "100%" }} />

@@ -1,13 +1,13 @@
 import { useForm, Controller } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Typography, Box, Button, Slider, CardMedia } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import serverRoutes from "../../utils/server-routes";
 import axios from "../../utils/axios";
+import Map from "../map/Map";
 
 const MySwal = withReactContent(Swal);
 
@@ -20,12 +20,13 @@ const Post = () => {
   let navigate = useNavigate();
   const { handleSubmit, control } = useForm();
   const onSubmit = (data) => {
-    const updatedGroceries = res.post.content.map((groceryWrapper) => {
-      groceryWrapper.original.amount = data[groceryWrapper.original.name];
-      return groceryWrapper.original;
-    });
+
 
     if (!isEdit) {
+      const updatedGroceries = res.post.content.map((groceryWrapper) => {
+        groceryWrapper.original.amount = data[groceryWrapper.original.name];
+        return groceryWrapper.original;
+      });
       axios
         .post(serverRoutes.ApplyPost, {
           postId: res.post._id,
@@ -40,6 +41,7 @@ const Post = () => {
             icon: "success",
             timer: 1000,
             showConfirmButton: false,
+            backdrop: false
           });
           setTimeout(() => {
             navigate("/my-orders", {});
@@ -58,6 +60,7 @@ const Post = () => {
             icon: "success",
             timer: 1000,
             showConfirmButton: false,
+            backdrop: false
           });
           setTimeout(() => {
             navigate("/my-orders", {});
@@ -81,12 +84,13 @@ const Post = () => {
     },
   ];
 
-  const products = res.post.content.map((groceryWrapper) => {
+  const products = res.post.content.map((groceryWrapper, index) => {
     const grocery = groceryWrapper.original
       ? groceryWrapper.original
       : groceryWrapper;
     return (
       <Box
+        key={index}
         sx={{
           display: "flex",
           margin: "3% 0",
@@ -156,7 +160,7 @@ const Post = () => {
   });
 
   return (
-    <Box sx={{ margin: "0 10%" }}>
+    <Box style={{ margin: "0 10%", height: "100%", width: "80%" }}>
       <Box
         sx={{
           justifyContent: "space-between",
@@ -178,6 +182,7 @@ const Post = () => {
             {res.post.description}
           </Typography>
         </Box>
+
         <CardMedia
           component="img"
           sx={{
@@ -189,17 +194,8 @@ const Post = () => {
           image="/assets/default-post-image.svg"
         />
       </Box>
-      <Box sx={{ flexDirection: "row", display: "flex" }}>
-        <LocationOnIcon color="primary" fontSize="large" />
-        <Typography
-          gutterBottom
-          fontSize="25px"
-          fontWeight="bold"
-          color="text.secondary"
-        >
-          {res.post.address}
-        </Typography>
-      </Box>
+
+      <Map address={res.post.address} />
 
       <Box sx={{ width: "600px", height: "600px", margin: "0 auto" }}>
         <Typography

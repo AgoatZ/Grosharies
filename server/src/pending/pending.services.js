@@ -187,7 +187,7 @@ const updatePending = async function (pendingId, pendingDetails) {
         let hasChanged = false;
         for (let i in groceries) {
             for (let j in oldPending.content) {
-                if (groceries[i].name.equals(oldPending.content[j].name)) {
+                if (groceries[i].name === oldPending.content[j].name) {
                     amountsToReduce.set(groceries[i].name, groceries[i].amount - oldPending.content[j].amount);
                     if (amountsToReduce.get(groceries[i].name) > 0) {
                         flag = true;
