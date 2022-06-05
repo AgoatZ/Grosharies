@@ -336,6 +336,7 @@ const finishPending = async function (pendingPostId, user) {
         await PendingRepository.updatePending(pendingPostId, { 'status.finalStatus': Status.COLLECTED });
 
         const postCurrentStatus = await evaluatePostStatus(pendingPost.sourcePost);
+        console.log(postCurrentStatus);
         await PostRepository.updatePost(pendingPost.sourcePost, { status: postCurrentStatus });
         const finishedPending = await PendingRepository.getPendingById(pendingPostId);
 
@@ -511,12 +512,6 @@ const delayUpdate = async (id) => {
 
 const evaluatePostStatus = async (postId) => {
     try {
-        let options;
-        if (page && limit) {
-            options = { page: page, limit: limit };
-        } else {
-            options = { pagination: false }
-        }
         const post = await PostRepository.getPostById(postId);
         const pendings = await getPendingsByPost(postId);
         let empty = true;
