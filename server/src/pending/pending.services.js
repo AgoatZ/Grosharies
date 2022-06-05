@@ -28,11 +28,17 @@ const getPendings = async function (query, page, limit) {
     }
 };
 
-const getGroupedPendings = async function () {
+const getGroupedPendings = async function (page, limit) {
     try {
-        const cancelledPendings = await PendingRepository.getAllCancelledPosts();
-        const finishedPendings = await PendingRepository.getAllFinishedPosts();
-        const pendingPosts = await PendingRepository.getAllPendingPosts();
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const cancelledPendings = await PendingRepository.getAllCancelledPosts(options);
+        const finishedPendings = await PendingRepository.getAllFinishedPosts(options);
+        const pendingPosts = await PendingRepository.getAllPendingPosts(options);
         return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending service error from getGropuedPendings: ', e.message);
@@ -52,8 +58,14 @@ const getPendingById = async function (postId) {
     }
 };
 
-const getPendingsByPublisher = async function (publisherId, user) {
+const getPendingsByPublisher = async function (publisherId, user, page, limit) {
     try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         let userId;
         if (userId == 'current' && user) {
             userId = user._id;
@@ -62,7 +74,7 @@ const getPendingsByPublisher = async function (publisherId, user) {
             userId = publisherId;
             //console.log("Service bypublisher from params userId:", userId)
         }
-        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByPublisher(userId);
+        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByPublisher(userId, options);
         return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending service error from getPendingsByUser: ', e.message);
@@ -71,8 +83,14 @@ const getPendingsByPublisher = async function (publisherId, user) {
     }
 };
 
-const getPendingsByCollector = async function (collectorId, user) {
+const getPendingsByCollector = async function (collectorId, user, page, limit) {
     try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         let userId;
         if (collectorId == 'current' && user) {
             userId = user._id;
@@ -81,7 +99,7 @@ const getPendingsByCollector = async function (collectorId, user) {
             userId = collectorId;
             //console.log("Service bypublisher from params userId:", userId)
         }
-        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByCollector(userId);
+        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByCollector(userId, options);
         return { pendingPosts, finishedPendings, cancelledPendings };
     } catch (e) {
         console.log('Pending service error from getPendingsByCollector: ', e.message);
@@ -90,9 +108,15 @@ const getPendingsByCollector = async function (collectorId, user) {
     }
 };
 
-const getPendingsByCategory = async function (categoryId) {
+const getPendingsByCategory = async function (categoryId, page, limit) {
     try {
-        const posts = await PendingRepository.getPendingsByCategory(categoryId);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const posts = await PendingRepository.getPendingsByCategory(categoryId, options);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendingsByCategory: ', e.message);
@@ -101,9 +125,15 @@ const getPendingsByCategory = async function (categoryId) {
     }
 };
 
-const getPendingsByTag = async function (tagId) {
+const getPendingsByTag = async function (tagId, page, limit) {
     try {
-        const posts = await PendingRepository.getPendingsByTag(tagId);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const posts = await PendingRepository.getPendingsByTag(tagId, options);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendingsByTag: ', e.message);
@@ -112,9 +142,15 @@ const getPendingsByTag = async function (tagId) {
     }
 };
 
-const getPendingsByPost = async function (postId) {
+const getPendingsByPost = async function (postId, page, limit) {
     try {
-        const posts = await PendingRepository.getPendingsByPost(postId);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const posts = await PendingRepository.getPendingsByPost(postId, options);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendingsByPost: ', e.message);
@@ -147,9 +183,15 @@ const deletePending = async function (postId) {
     }
 };
 
-const getAllPendingPosts = async function () {
+const getAllPendingPosts = async function (page, limit) {
     try {
-        const pendingPosts = await PendingRepository.getAllPendingPosts();
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const pendingPosts = await PendingRepository.getAllPendingPosts(options);
         return pendingPosts;
     } catch (e) {
         console.log('Pending service error from getAllPendingPosts: ', e.message);
@@ -158,9 +200,15 @@ const getAllPendingPosts = async function () {
     }
 };
 
-const getAllFinishedPosts = async function () {
+const getAllFinishedPosts = async function (page, limit) {
     try {
-        const finishedPosts = await PendingRepository.getAllFinishedPosts();
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const finishedPosts = await PendingRepository.getAllFinishedPosts(options);
         return finishedPosts;
     } catch (e) {
         console.log('Pending service error from getAllFinishedPosts: ', e.message);
@@ -169,9 +217,15 @@ const getAllFinishedPosts = async function () {
     }
 };
 
-const getAllCancelledPosts = async function () {
+const getAllCancelledPosts = async function (page, limit) {
     try {
-        const finishedPosts = await PendingRepository.getAllCancelledPosts();
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const finishedPosts = await PendingRepository.getAllCancelledPosts(options);
         return finishedPosts;
     } catch (e) {
         console.log('Pending service error from getAllCancelledPosts: ', e.message);
@@ -457,6 +511,12 @@ const delayUpdate = async (id) => {
 
 const evaluatePostStatus = async (postId) => {
     try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         const post = await PostRepository.getPostById(postId);
         const pendings = await getPendingsByPost(postId);
         let empty = true;
