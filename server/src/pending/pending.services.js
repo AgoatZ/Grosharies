@@ -13,7 +13,13 @@ const { sfnClient } = require('../common/utils/sfn-client');
 
 const getPendings = async function (query, page, limit) {
     try {
-        const posts = await PendingRepository.getPendings(query, page, limit);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const posts = await PendingRepository.getPendings(query, options);
         return posts;
     } catch (e) {
         console.log('Pending service error from getPendings: ', e.message);

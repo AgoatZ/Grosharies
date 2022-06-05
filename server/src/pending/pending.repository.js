@@ -2,9 +2,8 @@ const express = require('express');
 const Pending = require('./pending.model');
 const Status = require('../enums/pending-status');
 
-const getPendings = async (query, page, limit) => {
+const getPendings = async (query, options) => {
     try {
-        const options = { page: page, limit: limit };
         const pendingPosts = await Pending.paginate(query, options);
         return pendingPosts.docs;
     } catch (e) {

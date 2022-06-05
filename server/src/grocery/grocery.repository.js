@@ -2,10 +2,9 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Grocery = require('./grocery.model');
 
-const getGroceries = async function (query, page, limit) {
+const getGroceries = async function (query, options) {
     try {
         console.log('amount asked in service:', limit);
-        const options = { page: page, limit: limit };
         const groceries = await Grocery.paginate(query, options);
         return groceries.docs;
     } catch (e) {

@@ -9,7 +9,13 @@ const { getCoordinates } = require('../common/utils/google-maps-client');
 
 const getPosts = async (query, page, limit) => {
     try {
-        const posts = await PostRepository.getPosts(query, page, limit);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const posts = await PostRepository.getPosts(query, options);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -34,8 +40,14 @@ const getPostById = async (postId) => {
     }
 };
 
-const getPostsByUser = async (publisherId, user) => {
+const getPostsByUser = async (publisherId, user, page, limit) => {
     try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         let userId;
         if (publisherId == 'current' && user) {
             userId = user._id;
@@ -44,7 +56,7 @@ const getPostsByUser = async (publisherId, user) => {
             userId = publisherId;
             //console.log("Post Service byUser from params userId:", userId);
         }
-        const posts = await PostRepository.getPostsByUser(userId);
+        const posts = await PostRepository.getPostsByUser(userId, options);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -53,8 +65,14 @@ const getPostsByUser = async (publisherId, user) => {
     }
 };
 
-const getPublisherOpenPosts = async (publisherId, user) => {
+const getPublisherOpenPosts = async (publisherId, user, page, limit) => {
     try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         let userId;
         if (publisherId == 'current' && user) {
             userId = user._id;
@@ -63,7 +81,7 @@ const getPublisherOpenPosts = async (publisherId, user) => {
             userId = publisherId;
             //console.log("Post Service getPublisherOpenPosts from params userId:", userId);
         }
-        const posts = await PostRepository.getPublisherOpenPosts(userId);
+        const posts = await PostRepository.getPublisherOpenPosts(userId, options);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -72,9 +90,15 @@ const getPublisherOpenPosts = async (publisherId, user) => {
     }
 };
 
-const getPostsByCategory = async (categoryId) => {
+const getPostsByCategory = async (categoryId, page, limit) => {
     try {
-        const posts = await PostRepository.getPostsByCategory(categoryId);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const posts = await PostRepository.getPostsByCategory(categoryId, options);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -83,9 +107,15 @@ const getPostsByCategory = async (categoryId) => {
     }
 };
 
-const getPostsByTag = async (tagId) => {
+const getPostsByTag = async (tagId, page, limit) => {
     try {
-        const posts = await PostRepository.getPostsByTag(tagId);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const posts = await PostRepository.getPostsByTag(tagId, options);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -94,8 +124,14 @@ const getPostsByTag = async (tagId) => {
     }
 };
 
-const getPostsByCollector = async (collectorId, user) => {
+const getPostsByCollector = async (collectorId, user, page, limit) => {
     try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         let userId;
         if (userId == 'current' && user) {
             userId = user._id;
@@ -104,7 +140,7 @@ const getPostsByCollector = async (collectorId, user) => {
             userId = collectorId;
             //console.log("Service bypublisher from params userId:", userId)
         }
-        const posts = await PostRepository.getPostsByCollector(userId);
+        const posts = await PostRepository.getPostsByCollector(userId, options);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -113,9 +149,15 @@ const getPostsByCollector = async (collectorId, user) => {
     }
 };
 
-const getPostsByGroceries = async (groceries) => {
+const getPostsByGroceries = async (groceries, page, limit) => {
     try {
-        const posts = await PostRepository.getPostsByGroceries(groceries);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const posts = await PostRepository.getPostsByGroceries(groceries, options);
         return posts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -235,8 +277,15 @@ const getPostTags = async (postId) => {
     }
 };
 
-const getSuggestedPosts = async (id, currentUser) => {
+//TODO: DECIDE HOW TO HANDLE PAGINATION
+const getSuggestedPosts = async (id, currentUser, page, limit) => {
     try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         let userId;
         if (id == 'current' && currentUser) {
             userId = currentUser._id;
