@@ -90,7 +90,6 @@ const MyPosts = () => {
     )
   }
 
-  //TODO: DB - mark all as collected by publisher
   const completePost = (post) => {
     MySwal.fire({
       title: <strong>Are you sure you want to mark all as collected?</strong>,
