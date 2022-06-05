@@ -342,20 +342,25 @@ const cancelPending = async function (pendingPostId, user) {
     }
 };
 
-const decide = async (pending) => {
-    const publisherStatement = pending.status.publisherStatement;
-    const collectorStatement = pending.status.collectorStatement;
-    if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
-        console.log("WILL CALL NOW CANCEL PENDING POST");
-        let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+const decide = async (pendingId) => {
+    console.log(pendingId);
+    console.log('decide for pendingId:', pendingId);
+    const pending = await PendingRepository.getPendingById(pendingId);
+    if (pending) {
+        console.log('decide for address:', pending.address);
+        const publisherStatement = pending.status.publisherStatement;
+        const collectorStatement = pending.status.collectorStatement;
+        if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
+            console.log("WILL CALL NOW CANCEL PENDING POST");
+            let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+        }
+        else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
+            let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+        }
+        else {
+            let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
+        }
     }
-    else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
-        let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
-    }
-    else {
-        let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
-    }
-
     return;
 }
 
@@ -375,7 +380,8 @@ const interrestedUserReminder = async (userId, pendingId) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
             //const collectorSMS = sendSMSToNumber(`Hey from Grosharies! Have you picked up the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${publisher.firstName} ${publisher.lastName}? Tell us what you feel!`, recieverNumber);
             //const publisherSMS = sendSMSToNumber(`Hey from Grosharies! Have you delivered the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${user.firstName} ${user.lastName}? Tell us what you feel!`, publisherNumber);
-
+            const delayedUpdate = delayUpdate(pendingId);
+            delayedUpdate.catch(err => console.log('AWS delayUpdate failed', err));
             //await decide(pending);
             //const reToId = setTimeout(async function () { await decide(pending) }, (oneHour / 240));
             //reToId.hasRef();
@@ -412,6 +418,31 @@ const sendSMSToNumber = async (firstMessage, secondMessage, phoneNumber) => {
             console.log("Success sending SMS.", response);
             return response; // For unit tests.
         } catch (err) {
+            console.log("Error sending SMS", err.stack);
+        }
+    };
+    return run();
+};
+
+const delayUpdate = async (id) => {
+    const r = Date.now() + Math.round(Math.random() * 1E9);
+    var params = {
+        stateMachineArn: process.env.AWS_SFN_DELAYUPDATE_ARN,
+        input: JSON.stringify({
+            Id: id
+        }),
+        name: `${id}-${r}`
+    };
+
+    const run = async () => {
+        try {
+            const command = new StartExecutionCommand(params);
+            const response = await sfnClient.send(command);
+            console.log("Success sending SMS.", response);
+            return response; // For unit tests.
+        } catch (err) {
+            console.log(response);
+            console.log(command);
             console.log("Error sending SMS", err.stack);
         }
     };
@@ -471,7 +502,9 @@ module.exports = {
     getAllCancelledPosts,
     interrestedUserReminder,
     addPending,
+    decide,
     sendSMSToNumber,
+    delayUpdate,
     finishPending,
     cancelPending,
     deletePending,

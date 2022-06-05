@@ -31,6 +31,8 @@ router.post("/", authJwt, PendingController.addPending);
 
 router.post("/finish/:id", authJwt, PendingController.finishPending);
 
+router.get('/checkandupdatepending/id', PendingController.decide);
+
 router.post("/collector/finish/:id", authJwt, PendingController.setCollectorStatement);
 
 router.post("/cancel/:id", authJwt, PendingController.cancelPending);
