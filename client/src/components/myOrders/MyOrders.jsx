@@ -24,7 +24,7 @@ const MyOrders = () => {
   const loadPendingPosts = () => {
     axios.get("pendings/collector/current").then((res) => {
 
-      console.log(res.data);
+      console.log("All Pendings(Orders) Of User", res.data);
       setPendingsPosts(res.data.pendingPosts);
       setFinishedPendings(res.data.finishedPendings);
       setCancelledPendings(res.data.cancelledPendings);
