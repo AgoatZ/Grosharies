@@ -14,7 +14,6 @@ const MyPosts = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => { loadMyPosts(); }, []);
 
-
   const loadMyPosts = async () => {
     let userPosts = []
     //Get user's open posts
