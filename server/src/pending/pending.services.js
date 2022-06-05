@@ -461,6 +461,7 @@ const evaluatePostStatus = async (postId) => {
         const pendings = await getPendingsByPost(postId);
         let empty = true;
         let full = true;
+        
         for (groceryIndex in post.content) {
             let grocery = post.content[groceryIndex];
             if (grocery.left != grocery.original.amount) {

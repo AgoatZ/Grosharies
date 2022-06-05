@@ -294,7 +294,7 @@ const getSuggestedPosts = async (id, currentUser, page, limit) => {
             userId = id;
             //console.log("Service bypublisher from params userId:", userId)
         }
-        var posts = await PostRepository.getRelevantPosts();
+        var posts = await PostRepository.getRelevantPosts(options);
         const user = await UserService.getUserById(userId);
         const history = [];
         for (pendingId in user.collectedHistory) {
@@ -316,13 +316,19 @@ const getSuggestedPosts = async (id, currentUser, page, limit) => {
     }
 };
 
-const getNearbyPosts = async (currentUser, coordinates) => {
+const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
     try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         let userId;
         if (currentUser) {
             userId = currentUser._id;
         }
-        const posts = await PostRepository.getRelevantPosts();
+        const posts = await PostRepository.getRelevantPosts(options);
         let nearbyPosts = [];
         for (i in posts) {
             let dist = coordinatesDistance(posts[i].addressCoordinates, coordinates);

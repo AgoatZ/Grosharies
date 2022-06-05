@@ -25,7 +25,10 @@ const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;
 
 mongoose.connect('mongodb://127.0.0.1:27017/grosharies', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connection.once('connected', () => console.log('Database connected successfully for db:init')).then(() => init()).finally(() => mongoose.disconnect().then(() => console.log('Database disconnected successfully!')))
+mongoose.connection.once('connected', () => console.log('Database connected successfully for db:init'))
+    .then(() => init())
+    .finally(() => mongoose.disconnect()
+        .then(() => console.log('Database disconnected successfully!')))
     .catch(() => console.log('Unable to connect to database'));
 
 mongoose.set('useFindAndModify', false);

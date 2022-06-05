@@ -4,7 +4,6 @@ const Grocery = require('./grocery.model');
 
 const getGroceries = async function (query, options) {
     try {
-        console.log('amount asked in service:', limit);
         const groceries = await Grocery.paginate(query, options);
         return groceries.docs;
     } catch (e) {

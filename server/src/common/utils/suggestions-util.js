@@ -55,9 +55,11 @@ const getPostTags = async (postId) => {
     try {
         const post = await PostRepository.getPostById(postId);
         const tags = [];
-        for (tagId in post.tags) {
-            const tag = await TagService.getTagById(post.tags[tagId]);
-            tags.push(tag);
+        if (post && post.tags) {
+            for (tagId in post.tags) {
+                const tag = await TagService.getTagById(post.tags[tagId]);
+                tags.push(tag);
+            }
         }
         return tags;
     } catch (e) {
@@ -71,8 +73,9 @@ const getPostRelevance = async (history, post) => {
     try {
         const { categoriesWeights, groceriesWeights, tagsWeights } = await calcWeights(history);
         //add relevance regarding tags
-        const tags = await getPostTags(post._id);
         var relevance = 0;
+        if (post) {
+        const tags = await getPostTags(post._id);
         if (tags) {
             for (tag in tags) {
                 const tagRank = tagsWeights.get(tags[tag].name);
@@ -94,6 +97,7 @@ const getPostRelevance = async (history, post) => {
                 relevance += groRank;
             }
         }
+    }
         return relevance;
     } catch (e) {
         console.log("get post relevance", e);
