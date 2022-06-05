@@ -342,20 +342,25 @@ const cancelPending = async function (pendingPostId, user) {
     }
 };
 
-const decide = async (pending) => {
-    const publisherStatement = pending.status.publisherStatement;
-    const collectorStatement = pending.status.collectorStatement;
-    if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
-        console.log("WILL CALL NOW CANCEL PENDING POST");
-        let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+const decide = async (pendingId) => {
+    console.log(pendingId);
+    console.log('decide for pendingId:', pendingId);
+    const pending = await PendingRepository.getPendingById(pendingId);
+    if (pending) {
+        console.log('decide for address:', pending.address);
+        const publisherStatement = pending.status.publisherStatement;
+        const collectorStatement = pending.status.collectorStatement;
+        if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
+            console.log("WILL CALL NOW CANCEL PENDING POST");
+            let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+        }
+        else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
+            let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+        }
+        else {
+            let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
+        }
     }
-    else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
-        let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
-    }
-    else {
-        let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
-    }
-
     return;
 }
 
@@ -497,6 +502,7 @@ module.exports = {
     getAllCancelledPosts,
     interrestedUserReminder,
     addPending,
+    decide,
     sendSMSToNumber,
     delayUpdate,
     finishPending,
