@@ -20,7 +20,7 @@ import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import GroceryDetails from "./components/groceries/GroceryDetails";
 import MyOrderDetails from "./components/myOrders/MyOrderDetails";
-import {io} from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 iconsLibrary.add(fas, far);
 
@@ -34,29 +34,58 @@ const App = () => {
       .catch(() => setLoggedIn(false));
   }, []);
 
+  /*
+  #TODO SET UP A CLIENT WEBSOCKET
   useEffect(() => {
-    const socket = io('ws://localhost:5000')
+    let socket;
+    if (process.env.NODE_ENV == "development") {
+      socket = io('ws://localhost:5000', { autoConnect: false }); //Different Ports in Development
+    } else if (process.env.NODE_ENV == "production") {
+      socket = io({ autoConnect: false }); //Same Origin in Production
+    }
 
+    #TODO SEND USER ID IF A USER LOGS/IS LOGGED IN
+    onUsernameSelection(username) {
+      this.usernameAlreadySelected = true;
+      socket.auth = { username };
+      socket.connect();
+    },
+  },
+  #TODO CHECK IF SESSION EXISTS IN LOCAL STORAGE ALREADY
+  created() {
+    const sessionID = localStorage.getItem("sessionID");
+    if (sessionID) {
+      this.usernameAlreadySelected = true;
+      socket.auth = { sessionID };
+      socket.connect();
+    }
     socket.on('connnection', () => {
       console.log('connected to server');
     })
 
-    socket.on('order-added', (newOrders) => {
-      setOrders(newOrders)
+    #TODO HANDLE PEND POST REQUEST NOTIFICATION
+    socket.on('pend post notification', (notification) => {
+      console.log(notification);
     })
 
-    socket.on('message', (message) => {
-      console.log(message);
-    })
+    #TODO HANLE TIMER NOTIFICATION
+    //var el;
+    socket.on('time', function(timeString) {
+      //el = document.getElementById('server-time')
+      //el.innerHTML = 'Server time: ' + timeString;
+      console.log('Server time: ' + timeString);
+    });
 
+    #TODO HANDLE DISCONNECTION
     socket.on('disconnect', () => {
       console.log('Socket disconnecting');
-    })
-
-  }, [])
-
-  //User's info from API
-  const setUser = () => {
+    })                                /\
+                                     //\\
+  }, [])                            //||\\
+  */                               // || \\
+                                  //  ||  \\
+  //User's info from API         //   ||   \\
+  const setUser = () => {       //THAT'S HOW\\
     //TODO: Get user's notifications from API somehow
     const notifications = [
       { postId: "628d1d8759e1381f2401548c", title: "n1", text: "This is notification n1 content" },
