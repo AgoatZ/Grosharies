@@ -6,9 +6,12 @@ import Button from "@mui/material/Button";
 import { SearchOutlined } from "@material-ui/icons";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Stack from '@mui/material/Stack';
+import Stack from "@mui/material/Stack";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Link from "@mui/material/Link";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -20,14 +23,14 @@ import serverRoutes from "../../utils/server-routes";
 import validator from "validator";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import CommentIcon from '@mui/icons-material/Comment';
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import CommentIcon from "@mui/icons-material/Comment";
 import CardMedia from "@mui/material/CardMedia";
 
 const theme = createTheme();
@@ -43,32 +46,36 @@ export default function AddPost() {
   const [isAddressError, setisAddressError] = React.useState(false);
   const [allGroceries, setAllGroceries] = React.useState([]);
   const [groceries, setGroceries] = React.useState([]);
+  const [fromDate, setFromDate] = React.useState();
+  const [endDate, setEndDate] = React.useState();
 
   const [checked, setChecked] = React.useState([]);
 
   const handleToggle = (value) => () => {
-    const currentIndex = checked.findIndex(i => i.grocery._id == value._id);
+    const currentIndex = checked.findIndex((i) => {
+      return i.grocery._id === value._id;
+    });
     const newChecked = [...checked];
 
-    if (currentIndex === -1) {
-      newChecked.push({ grocery: value, amount: 0 });
+    if (!newChecked[currentIndex].isChecked) {
+      newChecked[currentIndex].isChecked = true;
     } else {
-      newChecked.splice(currentIndex, 1);
+      newChecked[currentIndex].isChecked = false;
     }
 
     setChecked(newChecked);
   };
 
   const handleToggleAmount = (e, value) => {
-    const currentIndex = checked.findIndex(i => i.grocery == value);
-    if (currentIndex !== -1) {
-      checked[currentIndex].amount = e.target.value
-    }
-    else {
-      e.target.value = 0
-    }
-    console.log(checked)
-  }
+    const currentIndex = checked.findIndex((i) => {
+      return i.grocery === value;
+    });
+
+    checked[currentIndex].amount = e.target.value;
+
+    console.log(checked);
+  };
+
   React.useEffect(() => {
     loadGroceries();
   }, []);
@@ -76,30 +83,69 @@ export default function AddPost() {
   const loadGroceries = () => {
     axios.get("/groceries/").then((res) => {
       setAllGroceries(res.data.groceries);
-      setGroceries([]);
+      setGroceries(res.data.groceries);
+      const initialChecked = res.data.groceries.map((grocery) => {
+        return { grocery, amount: 0, isChecked: false };
+      });
+
+      setChecked(initialChecked);
     });
   };
 
   const loadFilteredGroceries = (e) => {
     const searchValue = e.target.value;
+
     const filteredGroceries = allGroceries.filter((grocery) => {
       return grocery.name.toLowerCase().includes(searchValue.toLowerCase());
     });
+
+    const checkedGroceries = filteredGroceries.filter((filteredGrocery) => {
+      return checked.some((checkedGrocery) => {
+        return (
+          checkedGrocery.isChecked &&
+          checkedGrocery.grocery._id === filteredGrocery._id
+        );
+      });
+    });
+
+    if (checkedGroceries.length == 0 && searchValue === "") {
+      setGroceries([]);
+      return;
+    } else if (checkedGroceries.length > 0 && searchValue === "") {
+      setGroceries(checkedGroceries);
+      return;
+    }
+
     setGroceries(filteredGroceries);
   };
-
 
   const handleSubmit = (event) => {
     const data = new FormData(event.currentTarget);
 
     const headline = data.get("headline");
     const address = data.get("address");
-    const fromDate = data.get("from_date");
-    const endDate = data.get("end_date");
+    const description = data.get("description");
+
+    const fromDate = fromDate;
+    const endDate = endDate;
+    const repeat = data.get("repeat");
+
+    const groceries = checked;
+    checked.forEach((c) => {
+      if (c.isChecked) {
+        console.log("ggg ", c.grocery.name, c.amount);
+      }
+    });
+
     // const password = data.get("password");
 
     event.preventDefault();
-    if (headline === '' || address == '' || fromDate == null || endDate == null) {
+    if (
+      headline === "" ||
+      address == "" ||
+      fromDate == null ||
+      endDate == null
+    ) {
       MySwal.fire({
         title: <strong>Something went wrong</strong>,
         text: "Some of the fields are empty",
@@ -108,11 +154,10 @@ export default function AddPost() {
       return;
     }
 
-
     axios
       .post(serverRoutes.Register, {
         headline,
-        address
+        address,
       })
       .then((res) => {
         MySwal.fire({
@@ -156,14 +201,11 @@ export default function AddPost() {
           >
             {/* headline */}
             <Grid container spacing={4}>
-
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  error={!isHeadlineError}
-                  onChange={(e) => {
-                  }}
+                  onChange={(e) => {}}
                   type="text"
                   id="headline"
                   label="Headline"
@@ -174,14 +216,11 @@ export default function AddPost() {
 
               {/* address */}
 
-
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  error={!isAddressError}
-                  onChange={(e) => {
-                  }}
+                  onChange={(e) => {}}
                   type="text"
                   id="address"
                   label="address"
@@ -190,39 +229,62 @@ export default function AddPost() {
                 />
               </Grid>
 
+              {/* description */}
 
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  onChange={(e) => {}}
+                  type="text"
+                  id="description"
+                  label="description"
+                  name="description"
+                  autoComplete="description"
+                />
+              </Grid>
 
               {/* fromDate */}
 
               <Grid item xs={12}>
-                <Stack noValidate spacing={6}>
-                  <TextField
-                    id="from_date"
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DateTimePicker
+                    renderInput={(props) => (
+                      <TextField sx={{ width: "100%" }} {...props} />
+                    )}
                     label="From date"
-                    name="from_date"
-                    type="date"
-                    InputLabelProps={{
-                      shrink: true,
+                    value={fromDate}
+                    onChange={(newValue) => {
+                      setFromDate(newValue);
                     }}
                   />
-                </Stack>
+                </LocalizationProvider>
               </Grid>
 
               {/* endDate */}
 
               <Grid item xs={12}>
-                <Stack noValidate spacing={6}>
-                  <TextField
-                    id="end_date"
-                    label="End date"
-                    type="date"
-                    name="end_date"
-                    InputLabelProps={{
-                      shrink: true,
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DateTimePicker
+                    renderInput={(props) => (
+                      <TextField sx={{ width: "100%" }} {...props} />
+                    )}
+                    label="end date"
+                    value={endDate}
+                    onChange={(newValue) => {
+                      setEndDate(newValue);
                     }}
                   />
-                </Stack>
+                </LocalizationProvider>
               </Grid>
+
+              {/* checkbox */}
+
+              <Grid item xs={12}>
+                <Checkbox name="repeat"></Checkbox>
+                <label>Repeat every day same hours</label>
+              </Grid>
+
               <Grid item xs={12}>
                 <TextField
                   fullWidth
@@ -241,53 +303,54 @@ export default function AddPost() {
               </Grid>
 
               <Grid item xs={12}>
-                <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                <List
+                  sx={{
+                    width: "100%",
+                    maxWidth: "500px",
+                    bgcolor: "background.paper",
+                  }}
+                >
                   {groceries.map((value) => {
                     const labelId = `checkbox-list-label-${value._id}`;
 
                     return (
                       <ListItem
                         key={value._id}
-                       
                         disablePadding
+                        sx={{ mb: "5px" }}
                       >
-                        <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
-                          <ListItemIcon>
-                            <Checkbox
-                              edge="start"
-                              checked={checked.findIndex(i => i.grocery._id == value._id) !== -1}
-                              tabIndex={-1}
-                              disableRipple
-                              inputProps={{ 'aria-labelledby': labelId }}
-                            />
-                          </ListItemIcon>
-                          <ListItemText id={labelId} primary={`${value.name}`} />
-                          <TextField
-                            fullWidth
-                            defaultValue={()=>{
-                              const findIndex = checked.findIndex(i => i.grocery._id == value._id)
-                              if(findIndex === -1){
-
-                              }
-                              else{
-                                checked[findIndex].amount
-                              }
-                            }}
-                            variant="outlined"
-                            placeholder="amount"
-                            onChange={(e) => handleToggleAmount(e, value)}
-                          />
-                          <CardMedia
-                            component="img"
-                            sx={{
-                              padding: 1,
-                              width: "50px",
-                              height: "50px",
-                            }}
-                            image="/assets/logo.svg"
-                            alt="Live from space album cover"
-                          />
-                        </ListItemButton>
+                        <Checkbox
+                          edge="start"
+                          onClick={handleToggle(value)}
+                          checked={
+                            checked.findIndex(
+                              (i) =>
+                                i.grocery._id == value._id &&
+                                i.isChecked === true
+                            ) !== -1
+                          }
+                          tabIndex={-1}
+                          disableRipple
+                          inputProps={{ "aria-labelledby": labelId }}
+                        />
+                        <TextField
+                          fullWidth
+                          type="text"
+                          id={`${value.name}`}
+                          label={`${value.name}`}
+                          name={`${value.name}`}
+                          onChange={(e) => handleToggleAmount(e, value)}
+                        />
+                        <CardMedia
+                          component="img"
+                          sx={{
+                            padding: 1,
+                            width: "50px",
+                            height: "50px",
+                          }}
+                          image="/assets/logo.svg"
+                          alt="Live from space album cover"
+                        />
                       </ListItem>
                     );
                   })}
@@ -307,6 +370,6 @@ export default function AddPost() {
           </Box>
         </Box>
       </Container>
-    </ThemeProvider >
+    </ThemeProvider>
   );
 }
