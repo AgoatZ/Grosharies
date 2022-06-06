@@ -20,6 +20,7 @@ import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import GroceryDetails from "./components/groceries/GroceryDetails";
 import MyOrderDetails from "./components/myOrders/MyOrderDetails";
+import {io} from 'socket.io-client';
 
 iconsLibrary.add(fas, far);
 
@@ -32,6 +33,27 @@ const App = () => {
       .get("auth/isLoggedIn").then(() => setUser())
       .catch(() => setLoggedIn(false));
   }, []);
+
+  useEffect(() => {
+    const socket = io('ws://localhost:5000')
+
+    socket.on('connnection', () => {
+      console.log('connected to server');
+    })
+
+    socket.on('order-added', (newOrders) => {
+      setOrders(newOrders)
+    })
+
+    socket.on('message', (message) => {
+      console.log(message);
+    })
+
+    socket.on('disconnect', () => {
+      console.log('Socket disconnecting');
+    })
+
+  }, [])
 
   //User's info from API
   const setUser = () => {
