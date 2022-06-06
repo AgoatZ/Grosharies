@@ -99,7 +99,6 @@ export default function AddPost() {
     // const password = data.get("password");
 
     event.preventDefault();
-    debugger
     if (headline === '' || address == '' || fromDate == null || endDate == null) {
       MySwal.fire({
         title: <strong>Something went wrong</strong>,
