@@ -20,7 +20,6 @@ import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import GroceryDetails from "./components/groceries/GroceryDetails";
-import MyOrderDetails from "./components/myOrders/MyOrderDetails";
 import { io } from 'socket.io-client';
 
 iconsLibrary.add(fas, far);
