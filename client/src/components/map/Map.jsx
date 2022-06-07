@@ -1,7 +1,7 @@
 import GoogleMapReact from "google-map-react";
 import Marker from "./Marker";
 
-const Map = ({ locations, center, addCenterPoint = false, zoom = 15, centerAddress = "Me" }) => {
+const Map = ({ locations, center, addCenterPoint = false, zoom = 15, centerAddress = "Me", sx }) => {
 
   // set with defualt values if not exist
   const centerLocation = center || {
@@ -12,11 +12,12 @@ const Map = ({ locations, center, addCenterPoint = false, zoom = 15, centerAddre
 
   return (
     <div
-      style={{
-        height: "25%",
+      style={sx || {
+        height: "400px",
         width: "60%",
-        margin: "0 auto",
-        marginBottom: "50px",
+        //margin: "0 auto",
+        marginBottom: "100px",
+
       }}
     >
       <GoogleMapReact
@@ -28,7 +29,7 @@ const Map = ({ locations, center, addCenterPoint = false, zoom = 15, centerAddre
         {locations && locations.map(({ lat, lng, address }, index) => <Marker key={index} address={address} lat={lat} lng={lng} pinOnClick={() => { console.log("Clicked on Me!") }}></Marker>)}
         {addCenterPoint && <Marker color={"black"} address={centerAddress} lat={centerLocation.lat} lng={centerLocation.lng} />}
       </GoogleMapReact>
-    </div>
+    </div >
   );
 };
 
