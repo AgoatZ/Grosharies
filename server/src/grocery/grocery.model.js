@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const packing = require('../enums/packing');
 const scale = require('../enums/scale');
 const Category = require('../category/category.model');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const grocery = new mongoose.Schema({
   name: { type: String, required: true },
@@ -12,6 +13,7 @@ const grocery = new mongoose.Schema({
   images: { type: String, required: false , default: ''}
 });
 
+grocery.plugin(mongoosePaginate);
 const Grocery = mongoose.model('Grocery', grocery, 'Grocery');
 
 module.exports = Grocery;

@@ -6,7 +6,13 @@ const fs = require('fs');
 
 const getGroceries = async function (query, page, limit) {
     try {
-        const groceries = await GroceryRepository.getGroceries(query);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const groceries = await GroceryRepository.getGroceries(query, options);
         return groceries;
     } catch (e) {
         console.log('Grocery service error from getGroceries: ', e.message);

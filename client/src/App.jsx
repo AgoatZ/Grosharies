@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Container } from "@mui/material";
 import axios from "./utils/axios";
+import { UserDummy } from "./utils/dummies";
 //FontAwesome Icons Setup
 import { library as iconsLibrary } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -19,13 +20,12 @@ import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import GroceryDetails from "./components/groceries/GroceryDetails";
-import MyOrderDetails from "./components/myOrders/MyOrderDetails";
 
 iconsLibrary.add(fas, far);
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState(UserDummy);
 
   useEffect(() => {
     axios
@@ -78,7 +78,6 @@ const App = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="my-posts" element={<MyPosts />} />
           <Route path="my-orders" element={<MyOrders />} />
-          <Route path="my-order-details" element={<MyOrderDetails />} />
           <Route path="about" element={<About />} />
           <Route path="login" element={<Login loginUser={loginUser} />} />
           <Route path="register" element={<Register loginUser={loginUser} />} />

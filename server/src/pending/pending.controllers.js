@@ -2,9 +2,8 @@ const PendingService = require('./pending.services');
 
 const getPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
-
-    const page = req.params.page ? req.params.page : 1;
-    const limit = req.params.limit ? req.params.limit : 10;
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
     try {
         const posts = await PendingService.getPendings({}, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
@@ -17,8 +16,10 @@ const getPendings = async function (req, res, next) {
 
 const getGroupedPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
     try {
-        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getGroupedPendings();
+        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getGroupedPendings(page, limit);
         return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getGroupedPendings: ' + e.message);
@@ -42,7 +43,9 @@ const getPendingById = async function (req, res, next) {
 const getPendingsByCategory = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getPendingsByCategory(req.params.id);
+        const page = req.query.page ? req.query.page : 1;
+        const limit = req.query.limit ? req.query.limit : 10;
+        const posts = await PendingService.getPendingsByCategory(req.params.id, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByCategory: ' + e.message);
@@ -54,7 +57,9 @@ const getPendingsByCategory = async function (req, res, next) {
 const getPendingsByTag = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getPendingsByTag(req.params.id);
+        const page = req.query.page ? req.query.page : 1;
+        const limit = req.query.limit ? req.query.limit : 10;
+        const posts = await PendingService.getPendingsByTag(req.params.id, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByTag: ' + e.message);
@@ -66,7 +71,9 @@ const getPendingsByTag = async function (req, res, next) {
 const getPendingsByCollector = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getPendingsByCollector(req.params.id, req.user);
+        const page = req.query.page ? req.query.page : 1;
+        const limit = req.query.limit ? req.query.limit : 10;
+        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getPendingsByCollector(req.params.id, req.user, page, limit);
         return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByCollector: ' + e.message);
@@ -78,7 +85,9 @@ const getPendingsByCollector = async function (req, res, next) {
 const getPendingsByPublisher = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getPendingsByPublisher(req.params.id, req.user);
+        const page = req.query.page ? req.query.page : 1;
+        const limit = req.query.limit ? req.query.limit : 10;
+        const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getPendingsByPublisher(req.params.id, req.user, page, limit);
         return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByUser: ' + e.message);
@@ -90,7 +99,9 @@ const getPendingsByPublisher = async function (req, res, next) {
 const getAllPendingPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getAllPendingPosts();
+        const page = req.query.page ? req.query.page : 1;
+        const limit = req.query.limit ? req.query.limit : 10;
+        const posts = await PendingService.getAllPendingPosts(page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getAllPendingPosts: ' + e.message);
@@ -102,7 +113,9 @@ const getAllPendingPosts = async function (req, res, next) {
 const getAllFinishedPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getAllFinishedPosts();
+        const page = req.query.page ? req.query.page : 1;
+        const limit = req.query.limit ? req.query.limit : 10;
+        const posts = await PendingService.getAllFinishedPosts(page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getAllFinishedPosts: ' + e.message);
@@ -114,7 +127,9 @@ const getAllFinishedPosts = async function (req, res, next) {
 const getAllCancelledPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
-        const posts = await PendingService.getAllCancelledPosts();
+        const page = req.query.page ? req.query.page : 1;
+        const limit = req.query.limit ? req.query.limit : 10;
+        const posts = await PendingService.getAllCancelledPosts(page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getAllCancelledPosts: ' + e.message);
@@ -196,11 +211,23 @@ const cancelPending = async function (req, res, next) {
 
 const getPendingsByPost = async (req, res, next) => {
     try {
-        const pendings = await PendingService.getPendingsByPost(req.params.id);
+        const page = req.query.page ? req.query.page : 1;
+        const limit = req.query.limit ? req.query.limit : 10;
+        const pendings = await PendingService.getPendingsByPost(req.params.id, page, limit);
         return res.status(200).json({ pendings: pendings, message: "Succesfully retrieved pendings" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
 
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const decide = async (req, res, next) => {
+    try {
+        await PendingService.decide(req.query.Id);
+        return res.status(200).json({ pendings: pendings, message: "Succesfully retrieved pendings" });
+    } catch (e) {
+        console.log('Pending controller error from cancelPending: ' + e.message);
         return res.status(400).json({ message: e.message });
     }
 };
@@ -218,6 +245,7 @@ module.exports = {
     getAllCancelledPosts,
     getPendingsByPost,
     addPending,
+    decide,
     finishPending,
     cancelPending,
     deletePending,

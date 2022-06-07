@@ -3,7 +3,7 @@ const PostService = require('../post/post.services');
 
 const getUsers = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
-    
+
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
@@ -67,8 +67,10 @@ const updateUser = async function (req, res, next) {
 };
 
 const getPickupHistory = async (req, res, next) => {
-    try{
-        const history = await UserService.getPickupHistory(req.params.id);
+    try {
+        const page = req.params.page ? req.params.page : 1;
+        const limit = req.params.limit ? req.params.limit : 10;
+        const history = await UserService.getPickupHistory(req.params.id, page, limit);
         return res.status(200).json({ history: history, message: "Succesfully History Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -78,8 +80,10 @@ const getPickupHistory = async (req, res, next) => {
 };
 
 const getSuggestedPosts = async (req, res, next) => {
-    try{
-        const posts = await PostService.getSuggestedPosts(req.params.id);
+    try {
+        const page = req.params.page ? req.params.page : 1;
+        const limit = req.params.limit ? req.params.limit : 10;
+        const posts = await PostService.getSuggestedPosts(req.params.id, page, limit);
     } catch (e) {
         console.log('controller error: ' + e.message);
 
@@ -88,11 +92,12 @@ const getSuggestedPosts = async (req, res, next) => {
 };
 
 const getUserProfile = async (req, res, next) => {
-    try{
-        
+    try {
+        const page = req.params.page ? req.params.page : 1;
+        const limit = req.params.limit ? req.params.limit : 10;
         const user = await UserService.getUserById(req.params.id, req.user);
-        const history = await UserService.getPickupHistory(req.params.id, req.user);
-        const posts = await PostService.getPostsByUser(req.params.id, req.user);
+        const history = await UserService.getPickupHistory(req.params.id, req.user, page, limit);
+        const posts = await PostService.getPostsByUser(req.params.id, req.user, page, limit);
         return res.status(200).json({ user: user, history: history, posts: posts, message: "Succesfully History Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
