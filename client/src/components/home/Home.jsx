@@ -9,15 +9,13 @@ const tabs = ['Near By', 'Recently Added', 'Add post'];
 
 const Home = () => {
     const { loggedIn, userData } = useOutletContext();
-
     const [activeTabNumber, setActiveTabNumber] = useState(0);
     const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
-
     const [suggestedPosts, setSuggestedPosts] = useState([]);
     const [nearbyPosts, setNearbyPosts] = useState([]);
     const [recentPosts, setRecentPosts] = useState([]);
-
     useEffect(() => loadPosts(), []);
+
     const loadPosts = () => {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function (position) {
@@ -27,7 +25,9 @@ const Home = () => {
                 axios.get('/posts/').then(res => setNearbyPosts(res.data.posts));
             });
         }
-        axios.get('posts/suggested/current').then(res => setSuggestedPosts(res.data.posts));
+        axios.get('posts/suggested/current')
+            .then(res => setSuggestedPosts(res.data.posts))
+            .catch(e => console.log("Error getting suggested posts"));
         //TODO: Posts nearby and Posts recently added
         axios.get('/posts/').then(res => setRecentPosts(res.data.posts));
     };

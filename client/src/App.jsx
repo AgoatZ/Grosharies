@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Container } from "@mui/material";
 import axios from "./utils/axios";
 import { UserDummy } from "./utils/dummies";
+import { createNotificationSocket, onNewNotification } from './utils/notifications-socket';
 //FontAwesome Icons Setup
 import { library as iconsLibrary } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -20,7 +21,6 @@ import Layout from "./components/layout/Layout";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import GroceryDetails from "./components/groceries/GroceryDetails";
-import { io } from 'socket.io-client';
 
 iconsLibrary.add(fas, far);
 
@@ -29,65 +29,13 @@ const App = () => {
   const [userData, setUserData] = useState(UserDummy);
 
   useEffect(() => {
-    axios
-      .get("auth/isLoggedIn").then(() => setUser())
-      .catch(() => setLoggedIn(false));
+    axios.get("auth/isLoggedIn").then(() => { setUser(); })
+      .catch(e => { console.log("Error getting isLoggedIn"); setLoggedIn(false); });
   }, []);
 
-  //#TODO SET UP A CLIENT WEBSOCKET
-  useEffect(() => {
-    let socket;
-    if (process.env.NODE_ENV === "development") {
-      socket = io('ws://localhost:5000', { autoConnect: false }); //Different Ports in Development
-    } else if (process.env.NODE_ENV === "production") {
-      socket = io({ autoConnect: false }); //Same Origin in Production
-    }
-    let usernameAlreadySelected;
-    //#TODO SEND USER ID IF A USER LOGS/IS LOGGED IN
-    const onUsernameSelection = (username) => {
-      usernameAlreadySelected = true;
-      socket.auth = { username };
-      socket.connect();
-    };
-    //#TODO CHECK IF SESSION EXISTS IN LOCAL STORAGE ALREADY
-    const created = () => {
-      const sessionID = localStorage.getItem("sessionID");
-      if (sessionID) {
-        usernameAlreadySelected = true;
-        socket.auth = { sessionID };
-        socket.connect();
-      } else {
-        socket.connect();
-      }
-    };
-    created();
-    socket.on('connnection', () => {
-      console.log('connected to server');
-    });
-    //socket.connect();
-    //#TODO HANDLE PEND POST REQUEST NOTIFICATION
-    socket.on('pend post notification', (notification) => {
-      console.log(notification);
-    });
-
-    //#TODO HANLE TIMER NOTIFICATION
-    //var el;
-    socket.on('time', function (timeString) {
-      //el = document.getElementById('server-time')
-      //el.innerHTML = 'Server time: ' + timeString;
-      console.log('Server time: ' + timeString);
-    });
-
-    //#TODO HANDLE DISCONNECTION
-    socket.on('disconnect', () => {
-      console.log('Socket disconnecting');
-    });
-  
-  }, []);
-  
-  //User's info from API
+  //User's info from API        
   const setUser = () => {
-    //TODO: Get user's notifications from API somehow
+    //TODO: remove when notifications are added to user's schema
     const notifications = [
       { postId: "628d1d8759e1381f2401548c", title: "n1", text: "This is notification n1 content" },
       { postId: "628d1d8759e1381f240154a2", title: "n2", text: "This is notification n2 content" },
@@ -99,11 +47,21 @@ const App = () => {
 
     axios.get('/users/profile/current').then(res => {
       let userData = res.data.user;
+      console.log("UserData", userData);
+
+      //TODO: remove when notifications are added to user's schema
       userData.notifications = notifications;
 
       setLoggedIn(true);
       setUserData(userData);
-    });
+
+      //Socket Setup
+      createNotificationSocket(userData._id);
+      onNewNotification((notification) => {
+        userData.notifications.push(notification);
+        setUserData(userData);
+      });
+    }).catch(e => { console.log("Error getting user data"); });
   };
 
   const loginUser = () => {
