@@ -1,3 +1,8 @@
+/* abstract */ class SessionStore {
+    findSession(id) {}
+    saveSession(id, session) {}
+    findAllSessions() {}
+  }
 class InMemorySessionStore extends sessionStorage {
     constructor() {
       super();

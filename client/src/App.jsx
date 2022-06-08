@@ -34,58 +34,59 @@ const App = () => {
       .catch(() => setLoggedIn(false));
   }, []);
 
-  /*
-  #TODO SET UP A CLIENT WEBSOCKET
+  //#TODO SET UP A CLIENT WEBSOCKET
   useEffect(() => {
     let socket;
-    if (process.env.NODE_ENV == "development") {
+    if (process.env.NODE_ENV === "development") {
       socket = io('ws://localhost:5000', { autoConnect: false }); //Different Ports in Development
-    } else if (process.env.NODE_ENV == "production") {
+    } else if (process.env.NODE_ENV === "production") {
       socket = io({ autoConnect: false }); //Same Origin in Production
     }
-
-    #TODO SEND USER ID IF A USER LOGS/IS LOGGED IN
-    onUsernameSelection(username) {
-      this.usernameAlreadySelected = true;
+    let usernameAlreadySelected;
+    //#TODO SEND USER ID IF A USER LOGS/IS LOGGED IN
+    const onUsernameSelection = (username) => {
+      usernameAlreadySelected = true;
       socket.auth = { username };
       socket.connect();
-    },
-  },
-  #TODO CHECK IF SESSION EXISTS IN LOCAL STORAGE ALREADY
-  created() {
-    const sessionID = localStorage.getItem("sessionID");
-    if (sessionID) {
-      this.usernameAlreadySelected = true;
-      socket.auth = { sessionID };
-      socket.connect();
-    }
+    };
+    //#TODO CHECK IF SESSION EXISTS IN LOCAL STORAGE ALREADY
+    const created = () => {
+      const sessionID = localStorage.getItem("sessionID");
+      if (sessionID) {
+        usernameAlreadySelected = true;
+        socket.auth = { sessionID };
+        socket.connect();
+      } else {
+        socket.connect();
+      }
+    };
+    created();
     socket.on('connnection', () => {
       console.log('connected to server');
-    })
-
-    #TODO HANDLE PEND POST REQUEST NOTIFICATION
+    });
+    //socket.connect();
+    //#TODO HANDLE PEND POST REQUEST NOTIFICATION
     socket.on('pend post notification', (notification) => {
       console.log(notification);
-    })
+    });
 
-    #TODO HANLE TIMER NOTIFICATION
+    //#TODO HANLE TIMER NOTIFICATION
     //var el;
-    socket.on('time', function(timeString) {
+    socket.on('time', function (timeString) {
       //el = document.getElementById('server-time')
       //el.innerHTML = 'Server time: ' + timeString;
       console.log('Server time: ' + timeString);
     });
 
-    #TODO HANDLE DISCONNECTION
+    //#TODO HANDLE DISCONNECTION
     socket.on('disconnect', () => {
       console.log('Socket disconnecting');
-    })                                /\
-                                     //\\
-  }, [])                            //||\\
-  */                               // || \\
-                                  //  ||  \\
-  //User's info from API         //   ||   \\
-  const setUser = () => {       //THAT'S HOW\\
+    });
+  
+  }, []);
+  
+  //User's info from API
+  const setUser = () => {
     //TODO: Get user's notifications from API somehow
     const notifications = [
       { postId: "628d1d8759e1381f2401548c", title: "n1", text: "This is notification n1 content" },

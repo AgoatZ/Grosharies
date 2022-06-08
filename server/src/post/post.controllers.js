@@ -1,11 +1,13 @@
 const PostService = require('./post.services');
 
-const getPosts = async function (req, res, next) {
+const getPosts = async (req, res, next) => {
     // Validate request parameters, queries using express-validator
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
+    const emitEvent = require(".././../index").emitEvent;
     try {
         const posts = await PostService.getPosts({}, page, limit);
+        emitEvent("pend post notification", "user", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -46,6 +48,7 @@ const getPublisherOpenPosts = async function (req, res, next) {
     const limit = req.params.limit ? req.params.limit : 10;
     try {
         const posts = await PostService.getPublisherOpenPosts(req.params.id, req.user, page, limit);
+        //sio.emit("pend post notification", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -115,6 +118,7 @@ const getSuggestedPosts = async function (req, res, next) {
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
+        //.emit("pend post notification", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         const posts = await PostService.getSuggestedPosts(req.params.userid, req.user, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Suggested Posts Retrieved" });
     } catch (e) {
@@ -153,6 +157,7 @@ const addPost = async function (req, res, next) {
 
 const pendPost = async function (req, res, next) {
     try {
+        //sio.emit("pend post notification", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {
