@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Typography, Box, Button, Slider, CardMedia } from "@mui/material";
+import { Typography, Box, Button, Slider, CardMedia, } from "@mui/material";
+import Calander from "react-calendar"
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Swal from "sweetalert2";
@@ -9,17 +10,52 @@ import withReactContent from "sweetalert2-react-content";
 import axios from "../../utils/axios";
 import { PostDummy } from "../../utils/dummies";
 import Map from "../map/Map";
+import 'react-calendar/dist/Calendar.css';
+import './post.css';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const MySwal = withReactContent(Swal);
 
+function isDateInRange(date, dateFrom, dateTo) {
+  return date >= dateFrom && date <= dateTo;
+}
+
+const findDate = (calDate, dates) => {
+  return dates.find((date) => {
+    console.log(date.from)
+    const from = new Date(date.from).setHours(0, 0, 0, 0)
+    const until = new Date(date.until).setHours(0, 0, 0, 0)
+    const pickedDate = new Date(calDate).setHours(0, 0, 0, 0)
+    console.log("picked up", pickedDate)
+    console.log("from", from)
+    console.log("to", until)
+    console.log(date)
+
+    return from <= pickedDate && pickedDate <= until
+  })
+}
 const Post = () => {
   let navigate = useNavigate();
   const passedState = useLocation().state;
   const sourcePostId = passedState.postId;
   const [post, setPost] = useState(PostDummy);
   const [isEdit, setEdit] = useState(false);
+  const [calanderDate, setCalanderDate] = useState({})
   const { handleSubmit, control } = useForm();
+  const tileClassName = ({ date, view }) => {
+    const dates = post.pickUpDates
+    return (view === 'month') && // Block day tiles only
+      dates.some(pickUpDate => {
+        return isDateInRange(date, new Date(pickUpDate.from).setHours(0, 0, 0, 0), new Date(pickUpDate.until))
+      }) ? "active-date" : null;
+  }
+  const tileDisabled = ({ date, view }) => {
+    const dates = post.pickUpDates
+    return (view === 'month') && // Block day tiles only
+      dates.some(pickUpDate => {
+        return !isDateInRange(date, new Date(pickUpDate.from).setHours(0, 0, 0, 0), new Date(pickUpDate.until))
+      })
+  }
 
   useEffect(() => loadPost(), []);
 
@@ -36,7 +72,7 @@ const Post = () => {
       //TODO: Add to API getPendingByPostAndByCollector ?
       //Get user's active order for this post and add it to main post object if exists
       axios.get("pendings/collector/current").then((res) => {
-        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
+        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost === post._id);
 
         if (userPendingPost) {
           post.userPendingPostId = userPendingPost._id;
@@ -124,7 +160,6 @@ const Post = () => {
       })
 
     console.log("Form Data", data);
-    console.log("Order Groceries", orderGroceries);
 
     if (!isEdit) {
       //Create Pending Post
@@ -143,7 +178,6 @@ const Post = () => {
     } else {
       //Edit Pending Post
       axios.put("pendings/" + post.userPendingPostId, { content: orderGroceries }).then((res) => {
-        console.log(res.data);
         MySwal.fire({
           title: "Successfully Edited Your Order!",
           text: "You can now go and take your GroSharies",
@@ -167,18 +201,48 @@ const Post = () => {
         </Box>
         <CardMedia image="/assets/default-post-image.svg" component="img" sx={{ padding: 1, borderRadius: "10px", height: "250px", width: "auto", }} />
       </Box>
-      <Box sx={{ flexDirection: "row", display: "flex" }}>
+      <Box sx={{ flexDirection: "row", display: "flex", flexWrap: "wrap" }}>
         <LocationOnIcon color="primary" fontSize="large" />
-        <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">{post.address}</Typography>
+        <Typography sx={{ flex: "1 0 38%" }} gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">{post.address}</Typography>
+        <Map sx={{
+          height: "450px",
+          width: "60%",
+          marginBottom: "100px",
+        }} locations={post.addressCoordinates && [{ ...post.addressCoordinates, address: post.address }]} center={post.addressCoordinates} />
       </Box>
 
-      <Map address={post.address} />
 
       <Box sx={{ width: "600px", height: "600px", margin: "0 auto" }}>
         <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Gallery</Typography>
         <ImageGallery items={imagesAndVideos} autoPlay />
       </Box>
+      <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">PickUp Dates</Typography>
+      <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "center" }}>
+        <Calander style={{ flexShrink: 2, display: "flex", flexDirection: "row", flexWrap: "wrap" }} tileClassName={tileClassName} tileDisabled={tileDisabled}
+          onClickDay={
+            (value, event) => {
+              const date = findDate(value, post.pickUpDates)
+              console.log(new Date(date.from).getHours())
+              setCalanderDate({ ...date, current: value, isRepeated: true })
+            }
+          }
+        >
+        </Calander>
 
+        <Box sx={{ bgcolor: "whitesmoke", visibility: !calanderDate.current ? "hidden" : "visible", flexShrink: 2, padding: "1% 3%", border: "solid gray" }}>
+          <h2>{new Date(calanderDate.current).toLocaleString().split(',')[0]}</h2>
+          <b>From:</b>
+          <Typography>
+            {new Date(calanderDate.from).toUTCString().split(' ')[4]}
+          </Typography>
+          <b>To:</b>
+          <Typography>
+            {!calanderDate.isRepeated && new Date(calanderDate.until).setHours(0, 0, 0, 0) === new Date(calanderDate.current).setHours(0, 0, 0, 0) ?
+              new Date(calanderDate.until).toUTCString().split(' ')[4] : calanderDate.isRepeated ? new Date(calanderDate.until).toUTCString().split(' ')[4] : "End Of Day"
+            }
+          </Typography>
+        </Box>
+      </Box>
       <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Products</Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
@@ -186,7 +250,9 @@ const Post = () => {
         </Box>
         <Button sx={{ ml: "10%" }} variant="contained" disableElevation type="submit">{isEdit ? "Edit Order" : "Create Order"}</Button>
       </form>
-    </Box>
+    </Box >
+
+
   );
 };
 

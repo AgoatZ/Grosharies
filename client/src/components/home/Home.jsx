@@ -5,6 +5,7 @@ import axios from "../../utils/axios";
 import Posts from '../posts/Posts';
 import AddPost from '../add-post/AddPost';
 
+
 const tabs = ['Near By', 'Recently Added', 'Add post'];
 
 const Home = () => {
@@ -24,7 +25,8 @@ const Home = () => {
                 console.log("Latitude is :", position.coords.latitude);
                 console.log("Longitude is :", position.coords.longitude);
                 //TODO: add route to exept the user location to server 
-                axios.get('/posts/').then(res => setNearbyPosts(res.data.posts));
+                axios.post('/posts/nearby', { coordinates: { lat: position.coords.latitude, lng: position.coords.longitude } })
+                    .then(res => setNearbyPosts(res.data.posts));
             });
         }
         axios.get('posts/suggested/current').then(res => setSuggestedPosts(res.data.posts));
