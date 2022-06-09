@@ -29,7 +29,7 @@ const post = new mongoose.Schema({
   observers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], //USER ARRAY
   repliers: [{
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    reply: { type: String, enum: reply, required: false }
+    reply: { type: mongoose.Schema.Types.ObjectId, ref: "PendingPost" }
   }]
 });
 

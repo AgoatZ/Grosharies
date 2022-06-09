@@ -14,7 +14,8 @@ const user = new mongoose.Schema({
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   profileImage: String,
   source: { type: String, enum: userSource, required: true, default: userSource.GROSHARIES },
-  collectedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "PendingPost"}]
+  collectedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "PendingPost"}],
+  notifications: []
 });
 user.plugin(mongoosePaginate);
 const User = mongoose.model('User', user, 'User');

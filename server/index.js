@@ -138,8 +138,8 @@ io.use((socket, next) => {
   next();
 });
 */
-const emitEvent = function (notification, room, data) {
-  io.emit(notification, data);
+const emitEvent = function (event, room, data) {
+  io.to(room).emit(event, data);
 };
 console.log(typeof(emitEvent));
 io.on("connection", socket => {

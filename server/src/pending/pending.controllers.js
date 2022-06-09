@@ -1,4 +1,5 @@
 const PendingService = require('./pending.services');
+const UserService = require('../user/user.services');
 
 const getPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
@@ -142,8 +143,19 @@ const addPending = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const post = await PendingService.addPending(req.body);
-        return res.status(200).json({ post: post, message: "Succesfully Pending Added" });
+        const { emitEvent } = require(".././../index");
+        const pendingPost = await PendingService.addPending(req.body);
+        const collector = await UserService.getUserById(pendingPost.collectorId);
+        emitEvent('New Pending Post', pendingPost.publisherId, {
+            sourcePostId: pendingPost.sourcePost,
+            pendingPostId: pendingPost._id
+        });
+        emitEvent('New Notification', pendingPost.publisherId, {
+            text: pendingPost.headline,
+            title: "A new order by " + collector.firstName + " " + collector.lastName,
+            postId: pendingPost.sourcePost
+        });
+        return res.status(200).json({ post: pendingPost, message: "Succesfully Pending Added" });
     } catch (e) {
         console.log('Pending controller error from addPending: ' + e.message);
 
@@ -166,7 +178,14 @@ const updatePending = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
+        const { emitEvent } = require(".././../index");
+
         const oldPost = await PendingService.updatePending(req.params.id, req.body);
+        const collector = await UserService.getUserById(oldPost.collectorId);
+        emitEvent('New Notification', oldPost.publisherId, {
+            text: oldPost.headline,
+            title: "An order was edited by " + collector.firstName + " " + collector.lastName,
+            postId: oldPost.sourcePost });
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('Pending controller error from updatePending: ' + e.message);
@@ -189,7 +208,33 @@ const setCollectorStatement = async function (req, res, next) {
 const finishPending = async function (req, res, next) {
     try {
         console.log('Enterred finishPending Controller')
+        const { emitEvent } = require(".././../index");
+
         const {finishedPending, trafficGroceries} = await PendingService.finishPending(req.params.id, req.user);
+        const collector = await UserService.getUserById(finishedPending.collectorId);
+
+        if (req.user && req.user._id == finishedPending.collectorId) {
+            emitEvent('New Notification', finishedPending.publisherId, {
+                text: finishedPending.headline,
+                title: "An order was completed by " + collector.firstName + " " + collector.lastName,
+                postId: finishedPending.sourcePost
+            });
+        } else if (req.user && req.user._id == finishedPending.publisherId) {
+            emitEvent('New Notification', finishedPending.publisherId, {
+                text: finishedPending.headline,
+                title: "An order was completed",
+                postId: finishedPending.sourcePost
+            });
+            emitEvent('Pending Completed', finishedPending.collectorId, {
+                pendingPostId: finishedPending._id
+            });
+        }
+        emitEvent('New Notification', finishedPending.collectorId, {
+            text: finishedPending.headline,
+            title: "Your order is completed",
+            postId: finishedPending.sourcePost
+        });
+
         return res.status(200).json({ post: finishedPending, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
     } catch (e) {
         console.log('Pending controller error from finishPending: ' + e.message);
@@ -200,7 +245,33 @@ const finishPending = async function (req, res, next) {
 
 const cancelPending = async function (req, res, next) {
     try {
+        const { emitEvent } = require(".././../index");
+
         const { cancelledPost, updatedPost } = await PendingService.cancelPending(req.params.id, req.user);
+        const collector = await UserService.getUserById(finishedPending.collectorId);
+
+        if (req.user && req.user._id == cancelledPost.collectorId) {
+            emitEvent('New Notification', cancelledPost.publisherId, {
+                text: cancelledPost.headline,
+                title: "An order was cancelled by " + collector.firstName + " " + collector.lastName,
+                postId: cancelledPost.sourcePost
+            });
+        } else if (req.user && req.user._id == cancelledPost.publisherId) {
+            emitEvent('New Notification', cancelledPost.publisherId, {
+                text: cancelledPost.headline,
+                title: "An order was cancelled",
+                postId: cancelledPost.sourcePost
+            });
+            emitEvent('Pending Cancelled', cancelledPost.collectorId, {
+                pendingPostId: cancelledPost._id
+            });
+        }
+        emitEvent('New Notification', cancelledPost.collectorId, {
+            text: cancelledPost.headline,
+            title: "Your order is cancelled",
+            postId: cancelledPost.sourcePost
+        });
+        
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
@@ -224,7 +295,23 @@ const getPendingsByPost = async (req, res, next) => {
 
 const decide = async (req, res, next) => {
     try {
+        /**Emit event 'New Notification' to room (collector id) with data: 
+		{ text:"THE POST HEADLINE" 	title: "Your order is expired",	postId: "" }
+
+	Emit event 'Pending Expired' to room (collector id) with data:				
+		{ pendingPostId: "" } */
+        const { emitEvent } = require(".././../index");
+
         await PendingService.decide(req.query.Id);
+        const pendingPost = await PendingService.getPendingById(req.query.Id);
+
+        emitEvent('New Notification', pendingPost.collectorId, {
+            text:pendingPost.headline,
+            title: "Your order is expired",
+            postId: pendingPost.sourcePost
+        });
+        emitEvent('Pending Expired', pendingPost.collectorId, { pendingPostId: pendingPost._id});
+
         return res.status(200).json({ pendings: pendings, message: "Succesfully retrieved pendings" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);

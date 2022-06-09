@@ -168,8 +168,10 @@ const getPostsByGroceries = async (groceries, page, limit) => {
 
 const addPost = async (postDetails) => {
     try {
-        postDetails.content.left = postDetails.content.original.amount;
-        let coordinates = await getCoordinates(post.address);
+        for (i in postDetails.content) {
+            postDetails.content[i].left = postDetails.content[i].original.amount;
+        }
+        let coordinates = await getCoordinates(postDetails.address);
         postDetails.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
         const post = await PostRepository.addPost(postDetails);
 
@@ -183,7 +185,12 @@ const addPost = async (postDetails) => {
 
 const deletePost = async (postId) => {
     try {
-        const deletedPost = await PostRepository.deletePost(postId);
+        //#TODO SO NO STATUS "CANCELLED"? A FIELD OF "DELETED" INSTEAD?
+        const deletedPost = await PostRepository.getPostById(postId);
+        await PostRepository.updatePost(postId, { status: "cancelled" });
+        for (i in deletedPost.repliers) {
+            await PendingService.cancelPending(deletedPost.repliers[i].reply).catch(err => console.log(err));
+        }
         return deletedPost;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -235,7 +242,6 @@ const pendPost = async (postId, collectorId, groceries) => {
                 updatedContent.push(grocery);
             }
         }
-        await PostRepository.updatePost(postId, { content: updatedContent });
 
         const oneHour = 60 * 60 * 1000;
         const pendingPost = await PendingService.addPending({
@@ -251,6 +257,12 @@ const pendPost = async (postId, collectorId, groceries) => {
                 until: Date.now() + oneHour
             }
         });
+
+        post.repliers.push({ user: collectorId, reply: pendingPost._id });
+        console.log(post.repliers);
+        console.log(collectorId);
+        await PostRepository.updatePost(postId, { content: updatedContent, repliers: post.repliers});
+        
         const collector = await UserService.addToHistory(collectorId, pendingPost._id);
 
         const updatedPost = await PostRepository.getPostById(postId);

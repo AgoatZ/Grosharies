@@ -4,10 +4,8 @@ const getPosts = async (req, res, next) => {
     // Validate request parameters, queries using express-validator
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
-    const emitEvent = require(".././../index").emitEvent;
     try {
         const posts = await PostService.getPosts({}, page, limit);
-        emitEvent("pend post notification", "user", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -157,7 +155,6 @@ const addPost = async function (req, res, next) {
 
 const pendPost = async function (req, res, next) {
     try {
-        //sio.emit("pend post notification", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {
@@ -182,7 +179,17 @@ const updatePost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
+        const { emitEvent } = require(".././../index");
         const oldPost = await PostService.updatePost(req.params.id, req.body);
+
+        emitEvent('Post Edited', oldPost._id, {});
+        for (i in oldPost.repliers) {
+            emitEvent('New Notification', oldPost.repliers[i].user, {
+                text: oldPost.headline,
+                title: "A post of your order was edited",
+                postId: oldPost._id
+            });
+        }
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('controller error: ' + e.message);
