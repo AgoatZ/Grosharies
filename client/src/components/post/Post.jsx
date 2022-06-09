@@ -73,15 +73,16 @@ const Post = () => {
 
   const loadPost = () => {
     console.log("Passed State", passedState);
-    let post = {};
+    let postRender = {};
 
     axios
       .get("posts/" + sourcePostId)
       .then((res) => {
-        post = res.data.post;
+        postRender = res.data.post;
+        console.log("alskdfj;laskdfj ", JSON.stringify(postRender));
 
         //Add and Init user's order amount for each grocery item
-        post.content.forEach((grocery) => (grocery.currentOrder = 0));
+        postRender.content.forEach((grocery) => (grocery.currentOrder = 0));
 
         //TODO: Add to API getPendingByPostAndByCollector ?
         //Get user's active order for this post and add it to main post object if exists
@@ -89,11 +90,11 @@ const Post = () => {
           .get("pendings/collector/current")
           .then((res) => {
             const userPendingPost = res.data.pendingPosts.find(
-              (order) => order.sourcePost === post._id
+              (order) => order.sourcePost === postRender._id
             );
 
             if (userPendingPost) {
-              post.userPendingPostId = userPendingPost._id;
+              postRender.userPendingPostId = userPendingPost._id;
               console.log(
                 "User's open pending post (order) for this post",
                 userPendingPost
@@ -101,22 +102,23 @@ const Post = () => {
               //Set the user's order amount for each grocery item
               userPendingPost.content.forEach(
                 (orderGrocery) =>
-                  (post.content.find(
+                  (postRender.content.find(
                     (grocery) => grocery.original.name === orderGrocery.name
                   ).currentOrder = orderGrocery.amount)
               );
 
               setEdit(true);
-              setPost(post);
+              setPost(postRender); // TODO: Fix here
             } else {
-              setPost(post);
+              console.log("hereeeee " + postRender.addressCoordinates.lat);
+              setPost(postRender); // TODO: Fix here
             }
           })
           .catch((e) => console.log("Error getting user's pending posts", e));
       })
       .then(() => {
-        console.log("Post", post);
-        console.log("Post Content", post.content);
+        console.log("Post", postRender);
+        console.log("Post Content", postRender.content);
       });
   };
 
@@ -304,11 +306,7 @@ const Post = () => {
             width: "60%",
             marginBottom: "100px",
           }}
-          locations={
-            post.addressCoordinates && [
-              { ...post.addressCoordinates, address: post.address },
-            ]
-          }
+          locations={[{ ...post.addressCoordinates, address: post.address }]}
           center={post.addressCoordinates}
         />
       </Box>
