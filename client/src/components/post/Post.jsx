@@ -56,54 +56,6 @@ const Post = () => {
         return !isDateInRange(date, new Date(pickUpDate.from).setHours(0, 0, 0, 0), new Date(pickUpDate.until))
       })
   }
-  // const onSubmit = (data) => {
-
-  //   if (!isEdit) {
-  //     const updatedGroceries = res.post.content.map((groceryWrapper) => {
-  //       groceryWrapper.original.amount = data[groceryWrapper.original.name];
-  //       return groceryWrapper.original;
-  //     });
-  //     axios
-  //       .post(serverRoutes.ApplyPost, {
-  //         postId: res.post._id,
-  //         collectorId: "",
-  //         groceries: updatedGroceries,
-  //       })
-  //       .then((res) => {
-  //         console.log(res.data);
-  //         MySwal.fire({
-  //           title: "Successfully Apply Your Order!",
-  //           text: "You can now go and take your donation",
-  //           icon: "success",
-  //           timer: 1000,
-  //           showConfirmButton: false,
-  //           backdrop: false
-  //         });
-  //         setTimeout(() => {
-  //           navigate("/my-orders", {});
-  //         }, 1000);
-  //       });
-  //   } else {
-  //     axios
-  //       .put("/pendings/" + res.post._id, {
-  //         data,
-  //       })
-  //       .then((res) => {
-  //         console.log(res.data);
-  //         MySwal.fire({
-  //           title: "Successfully Edited Your Order!",
-  //           text: "You can now go and take your donation",
-  //           icon: "success",
-  //           timer: 1000,
-  //           showConfirmButton: false,
-  //           backdrop: false
-  //         });
-  //         setTimeout(() => {
-  //           navigate("/my-orders", {});
-  //         }, 1000);
-  //       });
-  //   }
-  // };
 
   useEffect(() => loadPost(), []);
 
@@ -120,7 +72,7 @@ const Post = () => {
       //TODO: Add to API getPendingByPostAndByCollector ?
       //Get user's active order for this post and add it to main post object if exists
       axios.get("pendings/collector/current").then((res) => {
-        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
+        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost === post._id);
 
         if (userPendingPost) {
           post.userPendingPostId = userPendingPost._id;
@@ -264,8 +216,9 @@ const Post = () => {
         <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Gallery</Typography>
         <ImageGallery items={imagesAndVideos} autoPlay />
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly" }}>
-        <Calander style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} tileClassName={tileClassName} tileDisabled={tileDisabled}
+      <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">PickUp Dates</Typography>
+      <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "center" }}>
+        <Calander style={{ flexShrink: 2, display: "flex", flexDirection: "row", flexWrap: "wrap" }} tileClassName={tileClassName} tileDisabled={tileDisabled}
           onClickDay={
             (value, event) => {
               const date = findDate(value, post.pickUpDates)
@@ -276,13 +229,13 @@ const Post = () => {
         >
         </Calander>
 
-        <Box sx={{ visibility: !calanderDate.current ? "hidden" : "visible" }}>
-          <h1>{new Date(calanderDate.current).toLocaleString().split(',')[0]}</h1>
-          <label>From:</label>
+        <Box sx={{ bgcolor: "whitesmoke", visibility: !calanderDate.current ? "hidden" : "visible", flexShrink: 2, padding: "1% 3%", border: "solid gray" }}>
+          <h2>{new Date(calanderDate.current).toLocaleString().split(',')[0]}</h2>
+          <b>From:</b>
           <Typography>
             {new Date(calanderDate.from).toUTCString().split(' ')[4]}
           </Typography>
-          <label>To:</label>
+          <b>To:</b>
           <Typography>
             {!calanderDate.isRepeated && new Date(calanderDate.until).setHours(0, 0, 0, 0) === new Date(calanderDate.current).setHours(0, 0, 0, 0) ?
               new Date(calanderDate.until).toUTCString().split(' ')[4] : calanderDate.isRepeated ? new Date(calanderDate.until).toUTCString().split(' ')[4] : "End Of Day"
