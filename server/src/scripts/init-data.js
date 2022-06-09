@@ -272,9 +272,13 @@ const init = async () => {
             let userPost = JSON.parse(JSON.stringify(useressPost));
             userPost.userId = user._id;
             let post1 = new Post(useressPost);
+            useressPost.headline = "Come and take some " + gross[9];
             let post2 = new Post(useressPost);
+            useressPost.headline = "Come and take some " + gross[2];
             let post3 = new Post(useressPost);
+            useressPost.headline = "Come and take some " + gross[3];
             let post4 = new Post(useressPost);
+            useressPost.headline = "Come and take some " + gross[4];
             let post5 = new Post(useressPost);
             if (i < 3) {
                 post1 = await post1.save();
@@ -286,6 +290,7 @@ const init = async () => {
             }
             else {
                 let post1 = new Post(userPost);
+                userPost.header = "Come and take some " + gross[6];
                 let post2 = new Post(userPost);
                 post1 = await post1.save();
                 post2 = await post2.save();

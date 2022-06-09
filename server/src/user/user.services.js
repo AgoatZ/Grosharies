@@ -128,6 +128,22 @@ const addToHistory = async function (userId, pendingPostId) {
     }
 };
 
+const addToNotifications = async function (userId, newNotifications) {
+    try {
+        let oldUser = await UserRepository.getUserById(userId);
+        let notifications = oldUser.notifications;
+        //console.log(history);
+        //console.log(oldUser);
+        notifications = notifications.concat(newNotifications);
+        oldUser = await UserRepository.updateUser(userId, { notifications: notifications });
+        return oldUser;
+    } catch (e) {
+        console.log('Service error from addToHistory: ' + e.message);
+
+        throw Error('Error while Updating User');
+    }
+};
+
 const getPickupHistory = async function (id, currentUser, page, limit) {
     try {
         let options;
@@ -162,5 +178,6 @@ module.exports = {
     deleteUser,
     updateUser,
     addToHistory,
+    addToNotifications,
     getPickupHistory,
 };

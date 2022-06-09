@@ -1,5 +1,6 @@
 const PendingService = require('./pending.services');
 const UserService = require('../user/user.services');
+const Status = require('../enums/pending-status');
 
 const getPendings = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
@@ -146,15 +147,20 @@ const addPending = async function (req, res, next) {
         const { emitEvent } = require(".././../index");
         const pendingPost = await PendingService.addPending(req.body);
         const collector = await UserService.getUserById(pendingPost.collectorId);
-        emitEvent('New Pending Post', pendingPost.publisherId, {
+        const publisher = await UserService.getUserById(pendingPost.publisherId);
+        const newPendingPost = {
             sourcePostId: pendingPost.sourcePost,
             pendingPostId: pendingPost._id
-        });
-        emitEvent('New Notification', pendingPost.publisherId, {
+        };
+        const newNotification = {
             text: pendingPost.headline,
             title: "A new order by " + collector.firstName + " " + collector.lastName,
             postId: pendingPost.sourcePost
-        });
+        };
+        emitEvent('New Pending Post', publisher._id, newPendingPost);
+        emitEvent('New Notification', publisher._id, newNotification);
+        publisher.notifications.push([ newPendingPost, newNotification ]);
+        await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
         return res.status(200).json({ post: pendingPost, message: "Succesfully Pending Added" });
     } catch (e) {
         console.log('Pending controller error from addPending: ' + e.message);
@@ -182,10 +188,15 @@ const updatePending = async function (req, res, next) {
 
         const oldPost = await PendingService.updatePending(req.params.id, req.body);
         const collector = await UserService.getUserById(oldPost.collectorId);
-        emitEvent('New Notification', oldPost.publisherId, {
+        const publisher = await UserService.getUserById(oldPost.publisherId);
+        const newNotification = {
             text: oldPost.headline,
             title: "An order was edited by " + collector.firstName + " " + collector.lastName,
-            postId: oldPost.sourcePost });
+            postId: oldPost.sourcePost
+        };
+        emitEvent('New Notification', publisher._id, newNotification);
+        publisher.notifications.push([ newPendingPost, newNotification ]);
+        await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('Pending controller error from updatePending: ' + e.message);
@@ -210,30 +221,41 @@ const finishPending = async function (req, res, next) {
         console.log('Enterred finishPending Controller')
         const { emitEvent } = require(".././../index");
 
-        const {finishedPending, trafficGroceries} = await PendingService.finishPending(req.params.id, req.user);
+        const { finishedPending, trafficGroceries } = await PendingService.finishPending(req.params.id, req.user);
         const collector = await UserService.getUserById(finishedPending.collectorId);
+        const publisher = await UserService.getUserById(finishedPending.publisherId);
 
         if (req.user && req.user._id == finishedPending.collectorId) {
-            emitEvent('New Notification', finishedPending.publisherId, {
+            const completedBy = {
                 text: finishedPending.headline,
                 title: "An order was completed by " + collector.firstName + " " + collector.lastName,
                 postId: finishedPending.sourcePost
-            });
+            };
+            emitEvent('New Notification', finishedPending.publisherId, completedBy);
+            publisher.notifications.push(completedBy);
         } else if (req.user && req.user._id == finishedPending.publisherId) {
-            emitEvent('New Notification', finishedPending.publisherId, {
+            const wasCompleted = {
                 text: finishedPending.headline,
                 title: "An order was completed",
                 postId: finishedPending.sourcePost
-            });
-            emitEvent('Pending Completed', finishedPending.collectorId, {
+            };
+            const pendingComplete = {
                 pendingPostId: finishedPending._id
-            });
+            };
+            emitEvent('New Notification', finishedPending.publisherId, wasCompleted);
+            emitEvent('Pending Completed', finishedPending.collectorId, pendingComplete);
+            publisher.notifications.push(wasCompleted);
+            collector.notifications.push(pendingComplete);
         }
-        emitEvent('New Notification', finishedPending.collectorId, {
+        const orderComplete = {
             text: finishedPending.headline,
             title: "Your order is completed",
             postId: finishedPending.sourcePost
-        });
+        };
+        emitEvent('New Notification', finishedPending.collectorId, orderComplete);
+        collector.push(orderComplete);
+        await UserService.updateUser(collector._id, { notifications: collector.notifications });
+        await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
 
         return res.status(200).json({ post: finishedPending, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
     } catch (e) {
@@ -248,30 +270,41 @@ const cancelPending = async function (req, res, next) {
         const { emitEvent } = require(".././../index");
 
         const { cancelledPost, updatedPost } = await PendingService.cancelPending(req.params.id, req.user);
-        const collector = await UserService.getUserById(finishedPending.collectorId);
+        const collector = await UserService.getUserById(cancelledPost.collectorId);
+        const publisher = await UserService.getUserById(cancelledPost.publisherId);
 
         if (req.user && req.user._id == cancelledPost.collectorId) {
-            emitEvent('New Notification', cancelledPost.publisherId, {
+            const completedBy = {
                 text: cancelledPost.headline,
                 title: "An order was cancelled by " + collector.firstName + " " + collector.lastName,
                 postId: cancelledPost.sourcePost
-            });
+            };
+            emitEvent('New Notification', cancelledPost.publisherId, completedBy);
+            publisher.notifications.push(completedBy);
         } else if (req.user && req.user._id == cancelledPost.publisherId) {
-            emitEvent('New Notification', cancelledPost.publisherId, {
+            const wasCompleted = {
                 text: cancelledPost.headline,
                 title: "An order was cancelled",
                 postId: cancelledPost.sourcePost
-            });
-            emitEvent('Pending Cancelled', cancelledPost.collectorId, {
+            };
+            const pendingComplete = {
                 pendingPostId: cancelledPost._id
-            });
+            };
+            emitEvent('New Notification', cancelledPost.publisherId, wasCompleted);
+            emitEvent('Pending Cancelled', cancelledPost.collectorId, pendingComplete);
+            publisher.notifications.push(wasCompleted);
+            collector.notifications.push(pendingComplete);
         }
-        emitEvent('New Notification', cancelledPost.collectorId, {
+        const orderComplete = {
             text: cancelledPost.headline,
-            title: "Your order is cancelled",
+            title: "Your order is Cancelled",
             postId: cancelledPost.sourcePost
-        });
-        
+        };
+        emitEvent('New Notification', cancelledPost.collectorId, orderComplete);
+        collector.push(orderComplete);
+        await UserService.updateUser(collector._id, { notifications: collector.notifications });
+        await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
+
         return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
@@ -295,24 +328,24 @@ const getPendingsByPost = async (req, res, next) => {
 
 const decide = async (req, res, next) => {
     try {
-        /**Emit event 'New Notification' to room (collector id) with data: 
-		{ text:"THE POST HEADLINE" 	title: "Your order is expired",	postId: "" }
-
-	Emit event 'Pending Expired' to room (collector id) with data:				
-		{ pendingPostId: "" } */
+        //#TODO SHALL I ADD ANOTHER TIMER OR IS THE MAIN TIMER GOOD ENOUGH?
         const { emitEvent } = require(".././../index");
 
-        await PendingService.decide(req.query.Id);
         const pendingPost = await PendingService.getPendingById(req.query.Id);
-
-        emitEvent('New Notification', pendingPost.collectorId, {
-            text:pendingPost.headline,
-            title: "Your order is expired",
-            postId: pendingPost.sourcePost
-        });
-        emitEvent('Pending Expired', pendingPost.collectorId, { pendingPostId: pendingPost._id});
-
-        return res.status(200).json({ pendings: pendings, message: "Succesfully retrieved pendings" });
+        if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
+            const newNotification = {
+                text: pendingPost.headline,
+                title: "Your order is expired",
+                postId: pendingPost.sourcePost
+            };
+            const pendingExpired = { pendingPostId: pendingPost._id };
+            emitEvent('New Notification', pendingPost.collectorId, newNotification);
+            emitEvent('Pending Expired', pendingPost.collectorId, pendingExpired);
+            const collector = await UserService.getUserById(pendingPost.collectorId);
+            await UserService.addToNotifications(collector._id, [ newNotification, pendingExpired ]);
+        }
+        await PendingService.decide(req.query.Id);
+        return res.status(200).json({ pending: pendingPost, message: "Succesfully decided PendingPost status" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
         return res.status(400).json({ message: e.message });

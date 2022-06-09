@@ -1,4 +1,5 @@
 const PostService = require('./post.services');
+const UserService = require('../user/user.services');
 
 const getPosts = async (req, res, next) => {
     // Validate request parameters, queries using express-validator
@@ -181,14 +182,15 @@ const updatePost = async function (req, res, next) {
     try {
         const { emitEvent } = require(".././../index");
         const oldPost = await PostService.updatePost(req.params.id, req.body);
-
+        const newNotification = {
+            text: oldPost.headline,
+            title: "A post of your order was edited",
+            postId: oldPost._id
+        };
         emitEvent('Post Edited', oldPost._id, {});
         for (i in oldPost.repliers) {
-            emitEvent('New Notification', oldPost.repliers[i].user, {
-                text: oldPost.headline,
-                title: "A post of your order was edited",
-                postId: oldPost._id
-            });
+            emitEvent('New Notification', oldPost.repliers[i].user, newNotification);
+            await UserService.addToNotifications(oldPost.repliers[i].user, newNotification);
         }
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {

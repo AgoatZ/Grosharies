@@ -259,8 +259,6 @@ const pendPost = async (postId, collectorId, groceries) => {
         });
 
         post.repliers.push({ user: collectorId, reply: pendingPost._id });
-        console.log(post.repliers);
-        console.log(collectorId);
         await PostRepository.updatePost(postId, { content: updatedContent, repliers: post.repliers});
         
         const collector = await UserService.addToHistory(collectorId, pendingPost._id);

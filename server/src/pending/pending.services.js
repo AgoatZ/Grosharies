@@ -325,15 +325,22 @@ const finishPending = async function (pendingPostId, user) {
         }
         const trafficGroceries = [];
         const content = pendingPost.content;
+        let rank = 0;
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
             let trafficGrocery = await GroceryRepository.getGroceryByName(grocery.name);
             let newAmount = grocery.amount + trafficGrocery.amount;
+            rank += grocery.amount;
             await GroceryRepository.updateGrocery(trafficGrocery._id, { amount: newAmount });
             trafficGrocery = await GroceryRepository.getGroceryByName(grocery.name);
             trafficGroceries.push(trafficGrocery);
         }
         await PendingRepository.updatePending(pendingPostId, { 'status.finalStatus': Status.COLLECTED });
+        
+        const publisher = await UserRepository.getUserById(pendingPost.publisherId);
+        await UserRepository.updateUser(publisher._id, { rank: publisher.rank + rank });
+        const collector = await UserRepository.getUserById(pendingPost.collectorId);
+        await UserRepository.updateUser(collector._id, { rank: collector.rank + rank });
 
         const postCurrentStatus = await evaluatePostStatus(pendingPost.sourcePost);
         console.log(postCurrentStatus);
