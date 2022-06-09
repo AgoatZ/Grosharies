@@ -108,11 +108,12 @@ const sessionStore = mongoose.connection.collection('sessions');
 
 const io = socketIO(http, {
   cors: {
-      cors: {
-          origin: "http://localhost:3000"
-      }
+    cors: {
+      origin: "http://localhost:3000"
+    }
   }
 });
+
 let gSocket;
 /*
 io.use((socket, next) => {
@@ -139,69 +140,79 @@ io.use((socket, next) => {
 });
 */
 const emitEvent = function (event, room, data) {
-  io.to(room).emit(event, data);
+  console.log("emitting event", event, "to room", room, "with data", data);
+  io.to(String(room)).emit(event, data);
 };
-console.log(typeof(emitEvent));
+
 io.on("connection", socket => {
-  console.log("New client connected");
-  gSocket = socket;
-  socket.join(socket.userID);
-
-  console.log(`new connection ${socket.id}`);
-  socket.on('whoami', (cb) => {
-    cb(socket.request.user ? socket.request.user.username : '');
-  });
-
+  console.log("new socket connection", socket.id, "with data", socket.handshake.auth);
+  const socketID = socket.id;
+  const userID = socket.handshake.auth.userId;
+  const sessionID = socket.request.sessionID;
   const session = socket.request.session;
-  console.log(`saving sid ${socket.id} in session ${session.id}`);
-  session.socketId = socket.id;
-  session.save();
 
-  const users = [];
-  for (let [id, socket] of io.of("/").sockets) {
-      users.push({
-          sessionID: socket.sessionID,
-          userID: socket.userID,
-          username: socket.username,
-      });
-  }
-  socket.emit("session", {
-      sessionID: socket.sessionID,
-      userID: socket.userID,
-  });
+  socket.join(String(userID));
 
-  socket.emit("users", users);
-  socket.on("pendPost", async (postId, collectorId, publisherId) => {
-      io.emit("pend post notification", { postId: postId, collectorId: collectorId, publisherId: publisherId });
-  });
-  socket.on("pendPost", ({ postId, collectorId, publisherId }) => {
-      socket.to(publisherId).to(collectorId).emit("pend post notification", {
-          postId,
-          from: collectorId,
-          publisherId,
-      });
-  });
+  //gSocket = socket;
+  //UNDEFINED - console.log("socket.request.user", socket.request.user)
+  //UNDEFINED -   console.log("socket.username", socket.username)
+  // socket.on('whoami', (cb) => {
+  //   cb(socket.request.user ? socket.request.user.username : '');
+  // });
 
-  socket.on("disconnect", async () => {
-      const matchingSockets = await io.in(socket.userID).allSockets();
-      const isDisconnected = matchingSockets.size === 0;
-      if (isDisconnected) {
-          // notify other users
-          socket.broadcast.emit("user disconnected", socket.userID);
-          // update the connection status of the session
-          await sessionStore.insertOne({
-              userID: socket.userID,
-              username: socket.username,
-              connected: false,
-          });
-      }
-  });
 
-  setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
+  // console.log("saving socket id", socketID, "in session", sessionID);
+  // session.socketId = socketID;
+  // session.save();
 
-  socket.on("disconnect", () => console.log("Client disconnected"));
+  // const users = [];
+  // for (let [id, socket] of io.of("/").sockets) {
+  //   users.push({
+  //     sessionID: sessionID,
+  //     userID: userID,
+  //   });
+  // }
+
+  // socket.emit("session", {
+  //   sessionID: sessionID,
+  //   userID: userID,
+  // });
+
+  // socket.emit("users", users);
+
+  // socket.on("pendPost", async (postId, collectorId, publisherId) => {
+  //   io.emit("pend post notification", { postId: postId, collectorId: collectorId, publisherId: publisherId });
+  // });
+
+  // socket.on("pendPost", ({ postId, collectorId, publisherId }) => {
+  //   socket.to(publisherId).to(collectorId).emit("pend post notification", {
+  //     postId,
+  //     from: collectorId,
+  //     publisherId,
+  //   });
+  // });
+
+  // socket.on("disconnect", async () => {
+  //   const matchingSockets = await io.in(userID).allSockets();
+  //   const isDisconnected = matchingSockets.size === 0;
+  //   if (isDisconnected) {
+  //     // notify other users
+  //     socket.broadcast.emit("user disconnected", userID);
+  //     // update the connection status of the session
+  //     await sessionStore.insertOne({
+  //       userID: userID,
+  //       connected: false,
+  //     });
+  //   }
+  // });
+
+  //setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
+
+  socket.on("disconnect", () => console.log("socket disconnected"));
 });
-setInterval(() => io.emit('time', '12345679'), 1000);
+
+//setInterval(() => io.emit('time', '12345679'), 1000);
+
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));

@@ -12,6 +12,8 @@ const createSocket = (dataToServer) => {
 }
 
 export const createNotificationSocket = (userId) => {
+  if (!userId) return;
+
   const dataToServer = {
     purpose: "notification",
     userId: userId
@@ -22,16 +24,18 @@ export const createNotificationSocket = (userId) => {
   socket.on('connect', () => { console.log('Notifications Socket connected to server'); })
   socket.on('disconnect', () => { console.log('Notifications Socket disconnected from server'); })
 
+  //socket.on('New Notification', (...args) => { console.log('Notifications Socket - New Notification', args); })
+
+  // socket.on('New Notification', (notification) => {
+  //   console.log("New Notification", notification);
+  // })
+
   socket.connect();
 }
 
-export const onNewNotification = (callback) => {
-  socket.on('new notification', (notification) => {
+export const onNewNotification = (listener) => {
+  socket.on('New Notification', (notification) => {
     console.log("New Notification", notification);
-    callback(notification);
+    listener(notification);
   })
 }
-
-  //socket.on('new notification', (notification, postId) => { console.log(notification); })
-  //socket.on('time', function (timeString) { console.log('Server time: ' + timeString); });
-  //socket.on('pend post notification', (notification) => { console.log(notification); })

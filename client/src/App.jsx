@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Container } from "@mui/material";
 import axios from "./utils/axios";
@@ -24,45 +24,39 @@ import GroceryDetails from "./components/groceries/GroceryDetails";
 
 iconsLibrary.add(fas, far);
 
+export const AppContext = createContext();
+
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [userData, setUserData] = useState(UserDummy);
+  const [userNotifications, setUserNotifications] = useState([]);
 
   useEffect(() => {
-    axios.get("auth/isLoggedIn").then(() => { setUser(); })
+    axios.get("auth/isLoggedIn").then(() => { userSetup(); })
       .catch(e => { console.log("Error getting isLoggedIn"); setLoggedIn(false); });
   }, []);
 
   //User's info from API        
-  const setUser = () => {
-    //TODO: remove when notifications are added to user's schema
-    const notifications = [
-      { postId: "628d1d8759e1381f2401548c", title: "n1", text: "This is notification n1 content" },
-      { postId: "628d1d8759e1381f240154a2", title: "n2", text: "This is notification n2 content" },
-      { postId: "628d1d8759e1381f240154b8", title: "n3", text: "This is notification n3 content" },
-      { postId: "628d1d8759e1381f240154ce", title: "n4", text: "This is notification n4 content" },
-      { postId: "628d1d8759e1381f240154e4", title: "n5", text: "This is notification n5 content" },
-      { postId: "628d1d8759e1381f240154fa", title: "n6", text: "This is notification n6 content" },
-    ]
-
+  const userSetup = () => {
     axios.get('/users/profile/current').then(res => {
       let userData = res.data.user;
       console.log("UserData", userData);
-
-      //TODO: remove when notifications are added to user's schema
-      userData.notifications = notifications;
-
       setLoggedIn(true);
       setUserData(userData);
-
-      //Socket Setup
-      createNotificationSocket(userData._id);
-      onNewNotification((notification) => {
-        userData.notifications.push(notification);
-        setUserData(userData);
-      });
+      setUserNotifications(userData.notifications);
+      socketSetup(userData);
     }).catch(e => { console.log("Error getting user data"); });
   };
+
+  //Socket Setup
+  const socketSetup = (userData) => {
+    createNotificationSocket(userData._id);
+    onNewNotification((notification) => {
+      userData.notifications.push(notification);
+      setUserNotifications([...userData.notifications]);    //Array wont render fix - the spread operator creates a copy on a new memory reference
+      setUserData(userData);
+    });
+  }
 
   const loginUser = () => {
     setLoggedIn(true);
@@ -77,24 +71,26 @@ const App = () => {
 
   //All Routes Componentes are nested under Layout->Outlet
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout loggedIn={loggedIn} userData={userData} logoutUser={logoutUser} />}>
-          <Route index element={<Home />} />
-          <Route path="post/:id" element={<Post />} />
-          <Route path="groceries" element={<Groceries />} />
-          <Route path="events" element={<Events />} />
-          <Route path="groceries/:name" element={<GroceryDetails />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="my-posts" element={<MyPosts />} />
-          <Route path="my-orders" element={<MyOrders />} />
-          <Route path="about" element={<About />} />
-          <Route path="login" element={<Login loginUser={loginUser} />} />
-          <Route path="register" element={<Register loginUser={loginUser} />} />
-          <Route path="*" element={<NoMatch />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser }}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="post/:id" element={<Post />} />
+            <Route path="groceries" element={<Groceries />} />
+            <Route path="events" element={<Events />} />
+            <Route path="groceries/:name" element={<GroceryDetails />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="my-posts" element={<MyPosts />} />
+            <Route path="my-orders" element={<MyOrders />} />
+            <Route path="about" element={<About />} />
+            <Route path="login" element={<Login loginUser={loginUser} />} />
+            <Route path="register" element={<Register loginUser={loginUser} />} />
+            <Route path="*" element={<NoMatch />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AppContext.Provider>
   );
 };
 
