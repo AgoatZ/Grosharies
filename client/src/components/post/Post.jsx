@@ -11,7 +11,7 @@ import axios from "../../utils/axios";
 import { PostDummy } from "../../utils/dummies";
 import Map from "../map/Map";
 import 'react-calendar/dist/Calendar.css';
-import './post.css';
+import './Post.css';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const MySwal = withReactContent(Swal);
@@ -229,7 +229,7 @@ const Post = () => {
         >
         </Calander>
 
-        <Box sx={{ bgcolor: "whitesmoke", visibility: !calanderDate.current ? "hidden" : "visible", flexShrink: 2, padding: "1% 3%", border: "solid gray" }}>
+        <Box sx={{ visibility: !calanderDate.current ? "hidden" : "visible", bgcolor: "whitesmoke", borderRadius: "10px", flexShrink: 2, padding: "1% 3%", border: "solid gray" }}>
           <h2>{new Date(calanderDate.current).toLocaleString().split(',')[0]}</h2>
           <b>From:</b>
           <Typography>
