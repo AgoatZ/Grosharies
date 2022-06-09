@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Typography, Box, Button, Slider, CardMedia } from "@mui/material";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -15,8 +15,7 @@ const MySwal = withReactContent(Swal);
 
 const Post = () => {
   let navigate = useNavigate();
-  const passedState = useLocation().state;
-  const sourcePostId = passedState.postId;
+  const sourcePostId = useParams().id;
   const [post, setPost] = useState(PostDummy);
   const [isEdit, setEdit] = useState(false);
   const { handleSubmit, control } = useForm();
@@ -24,7 +23,6 @@ const Post = () => {
   useEffect(() => loadPost(), []);
 
   const loadPost = () => {
-    console.log("Passed State", passedState);
     let post = {}
 
     axios.get('posts/' + sourcePostId).then((res) => {
@@ -54,7 +52,7 @@ const Post = () => {
     }).then(() => {
       console.log("Post", post);
       console.log("Post Content", post.content)
-    });
+    }).catch(e => console.log("Error getting post", e));
   }
 
   const imagesAndVideos = [
