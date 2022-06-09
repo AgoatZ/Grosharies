@@ -159,7 +159,7 @@ const addPending = async function (req, res, next) {
         };
         emitEvent('New Pending Post', publisher._id, newPendingPost);
         emitEvent('New Notification', publisher._id, newNotification);
-        publisher.notifications.push([ newPendingPost, newNotification ]);
+        publisher.notifications.push([newPendingPost, newNotification]);
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
         return res.status(200).json({ post: pendingPost, message: "Succesfully Pending Added" });
     } catch (e) {
@@ -195,7 +195,7 @@ const updatePending = async function (req, res, next) {
             postId: oldPost.sourcePost
         };
         emitEvent('New Notification', publisher._id, newNotification);
-        publisher.notifications.push([ newPendingPost, newNotification ]);
+        publisher.notifications.push(newNotification);
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
@@ -214,6 +214,7 @@ const setCollectorStatement = async function (req, res, next) {
 
         throw Error('Error while changing statement Posts');
     }
+    //TODO: Add relevant notification
 };
 
 const finishPending = async function (req, res, next) {
@@ -342,7 +343,7 @@ const decide = async (req, res, next) => {
             emitEvent('New Notification', pendingPost.collectorId, newNotification);
             emitEvent('Pending Expired', pendingPost.collectorId, pendingExpired);
             const collector = await UserService.getUserById(pendingPost.collectorId);
-            await UserService.addToNotifications(collector._id, [ newNotification, pendingExpired ]);
+            await UserService.addToNotifications(collector._id, [newNotification, pendingExpired]);
         }
         await PendingService.decide(req.query.Id);
         return res.status(200).json({ pending: pendingPost, message: "Succesfully decided PendingPost status" });
