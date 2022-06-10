@@ -202,7 +202,9 @@ io.on("connection", socket => {
   socket.on("disconnect", () => console.log("Client disconnected"));
 });
 setInterval(() => io.emit('time', '12345679'), 1000);
-const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+const wrap = (middleware) => {
+  (socket, next) => middleware(socket.request, {}, next)
+};
 io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));

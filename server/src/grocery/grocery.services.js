@@ -79,11 +79,22 @@ const updateGrocery = async function (groceryId, groceryDetails) {
     }
 };
 
+const searchGrocery = async (searchValue, page, limit) => {
+    let options;
+    if (page && limit) {
+        options = { page: page, limit: limit };
+    } else {
+        options = { pagination: false }
+    }
+    const filteredGroceries = await GroceryRepository.searchGroceries(searchValue, options);
+    return filteredGroceries;
+};
 module.exports = {
     getGroceries,
     getGroceryById,
     getGroceryByName,
     addGrocery,
     deleteGrocery,
-    updateGrocery
+    updateGrocery,
+    searchGrocery
 }

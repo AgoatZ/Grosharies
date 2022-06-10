@@ -18,21 +18,21 @@ const getPosts = async (query, options) => {
 const getRelevantPosts = async (options) => {
     try {
         const posts = await Post.paginate({
-                    $and: [
-                        { 'pickUpDates.from': { $lt: Date.now() } },
+            $and: [
+                { 'pickUpDates.from': { $lt: Date.now() } },
                 { 'pickUpDates.until': { $gt: Date.now() } }
             ]
-          }, options);
-    //       .where('pickUpDates.from').
-    // lt(Date.now()).
-    // where('pickUpDates.until').
-    // gt(Date.now());
-return posts.docs;
+        }, options);
+        //       .where('pickUpDates.from').
+        // lt(Date.now()).
+        // where('pickUpDates.until').
+        // gt(Date.now());
+        return posts.docs;
     } catch (e) {
-    console.log('repository error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
-    throw Error('Error while Retrieving Posts: ' + e.message);
-}
+        throw Error('Error while Retrieving Posts: ' + e.message);
+    }
 };
 
 const getPublisherOpenPosts = async (publisherId, options) => {
@@ -40,11 +40,11 @@ const getPublisherOpenPosts = async (publisherId, options) => {
         const posts = await Post.paginate({
             $and: [
                 { userId: publisherId },
-                { status: {$in : [postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE] }}
+                { status: { $in: [postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE] } }
             ]
         }, options);
-            // where('status').
-            // in([postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE]);
+        // where('status').
+        // in([postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE]);
         return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -113,7 +113,7 @@ const getPostsByGroceries = async (groceries, options) => {
         const posts = await Post.paginate({
             $and: [
                 {},
-            { 'content.original.name': { $in: groceries }}
+                { 'content.original.name': { $in: groceries } }
             ]
         }, options);
         //where('content.original.name').in(groceries);
@@ -171,6 +171,16 @@ const updateContent = async (postId, content) => {
     }
 };
 
+const searchPosts = async (searchValue, options) => {
+    const filteredPosts = await Post.paginate({
+        $or: [
+            { name: { $regex: searchValue, $options: i } },
+            { 'content.original.name': { $regex: searchValue, $options: i } }
+        ]
+    }, options);
+    return filteredPosts.docs;
+};
+
 module.exports = {
     getPosts,
     getPostById,
@@ -184,5 +194,6 @@ module.exports = {
     addPost,
     deletePost,
     updatePost,
-    updateContent
-}
+    updateContent,
+    searchPosts
+};

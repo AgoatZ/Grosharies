@@ -1,6 +1,7 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const PostRepository = require('./post.repository');
+const PostStatus = require('../enums/post-status');
 const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
 const TagRepository = require('../tag/tag.repository');
@@ -185,7 +186,6 @@ const addPost = async (postDetails) => {
 
 const deletePost = async (postId) => {
     try {
-        //#TODO SO NO STATUS "CANCELLED"? A FIELD OF "DELETED" INSTEAD?
         const deletedPost = await PostRepository.getPostById(postId);
         await PostRepository.updatePost(postId, { status: "cancelled" });
         for (i in deletedPost.repliers) {
@@ -219,7 +219,11 @@ const pendPost = async (postId, collectorId, groceries) => {
         const post = await PostRepository.getPostById(postId);
         const updatedContent = [];
         const content = post.content;
+        if (post.status == PostStatus.CANCELLED || post.status == PostStatus.COLLECTED) {
+            console.log('This post is not open for new orders, status:', post.status);
 
+            throw Error('This post is not open for new orders, status:', post.status);
+        }
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
             let isThere = false;
@@ -267,7 +271,7 @@ const pendPost = async (postId, collectorId, groceries) => {
 
         return { updatedPost, pendingPost };
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log('Post service error in pendPost:', e.message);
 
         throw Error('Error while Pending Post');
     }
@@ -299,10 +303,8 @@ const getSuggestedPosts = async (id, currentUser, page, limit) => {
         let userId;
         if (id == 'current' && currentUser) {
             userId = currentUser._id;
-            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
             userId = id;
-            //console.log("Service bypublisher from params userId:", userId)
         }
         var posts = await PostRepository.getRelevantPosts(options);
         const user = await UserService.getUserById(userId);
@@ -355,6 +357,17 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
     }
 };
 
+const searchPosts = async (searchValue, page, limit) => {
+    let options;
+    if (page && limit) {
+        options = { page: page, limit: limit };
+    } else {
+        options = { pagination: false }
+    }
+    const filteredPosts = await PostRepository.searchPosts(searchValue, options);
+    return filteredPosts;
+};
+
 const coordinatesDistance = (coor1, coor2) => {
     const lat1 = coor1.lat;
     const lng1 = coor1.lng;
@@ -390,4 +403,5 @@ module.exports = {
     pendPost,
     deletePost,
     updatePost,
+    searchPosts
 };

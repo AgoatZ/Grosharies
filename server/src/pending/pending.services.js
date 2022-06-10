@@ -336,7 +336,7 @@ const finishPending = async function (pendingPostId, user) {
             trafficGroceries.push(trafficGrocery);
         }
         await PendingRepository.updatePending(pendingPostId, { 'status.finalStatus': Status.COLLECTED });
-        
+        console.log(rank);
         const publisher = await UserRepository.getUserById(pendingPost.publisherId);
         await UserRepository.updateUser(publisher._id, { rank: publisher.rank + rank });
         const collector = await UserRepository.getUserById(pendingPost.collectorId);

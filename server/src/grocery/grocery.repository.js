@@ -79,6 +79,13 @@ const updateAmount = async function (groceryId, amount) {
     }
 };
 
+const searchGrocery = async (searchValue, options) => {
+    const filteredGroceries = await Grocery.paginate({
+        name: { $regex: searchValue, $options: i }
+    }, options);
+    return filteredGroceries.docs;
+};
+
 module.exports = {
     getGroceries,
     getGroceryById,
@@ -86,5 +93,6 @@ module.exports = {
     addGrocery,
     deleteGrocery,
     updateGrocery,
-    updateAmount
-}
+    updateAmount,
+    searchGrocery
+};
