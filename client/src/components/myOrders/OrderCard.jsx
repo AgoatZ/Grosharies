@@ -22,7 +22,8 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
     const viewdByCollector = (role === "collector");
     const viewdByPublisher = (role === "publisher");
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(pendingPost));
-    const [isFinished, setIsFinished] = useState(finished);
+    //TODO: When post mark as collected by the collector stil appears under pending posts in MyOrders page
+    const [isFinished, setIsFinished] = useState(finished || (viewdByCollector && pendingPost.status.collectorStatement === "collected"));
     const [isCancelled, setIsCancelled] = useState(cancelled);
 
     useEffect(() => {
@@ -39,17 +40,19 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
                     pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
                         pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by the publisher</Typography> :
                             pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by you</Typography> :
-                                pendingPost.status.publisherStatement === "collected" ? <Typography variant="overline">Collected by unknown</Typography> :
-                                    null : null}
+                                pendingPost.status.publisherStatement === "collected" ? <Typography variant="overline">Collected by publisher</Typography> :
+                                    pendingPost.status.finalStatus === "collected" ? <Typography variant="overline">Collected</Typography> :
+                                        null : null}
 
                 {viewdByPublisher ?
                     pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by collector</Typography> :
                         pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
                             pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by collector</Typography> :
                                 pendingPost.status.publisherStatement === "collected" ? <Typography variant="overline">Collected by you</Typography> :
-                                    null : null}
+                                    pendingPost.status.finalStatus === "collected" ? <Typography variant="overline">Collected</Typography> :
+                                        null : null}
 
-                {timeLeft && !isFinished && !isCancelled ?
+                {timeLeft ?
                     <Typography variant="p" sx={{ color: "red" }}><AccessTimeIcon /> {timeLeft}</Typography> :
                     <Typography variant="overline"><AccessTimeIcon /> Expired</Typography>}
 
