@@ -351,7 +351,7 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
       );
       let dist = coordinatesDistance(posts[i].addressCoordinates, coordinates);
       console.log("dist is " + dist);
-      if (dist < 100000000000000) {
+      if (dist < 666) {
         nearbyPosts.push(posts[i]);
         console.log("distance of results:", dist);
       }
