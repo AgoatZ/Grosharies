@@ -20,7 +20,7 @@ const searchPosts = async (req, res, next) => {
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getPosts(req.params.search, page, limit);
+        const posts = await PostService.searchPosts(req.params.search, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);

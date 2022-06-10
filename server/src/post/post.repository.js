@@ -172,15 +172,18 @@ const updateContent = async (postId, content) => {
 };
 
 const searchPosts = async (searchValue, options) => {
+    console.log('searching');
+    const regex = new RegExp(searchValue, 'i');
     const filteredPosts = await Post.paginate({
         $or: [
-            { name: { $regex: searchValue, $options: i } },
-            { 'content.original.name': { $regex: searchValue, $options: i } }
+            { name: { "$regex": regex } },
+            { 'content.original.name': { "$regex": regex } }
         ]
     }, options);
+    console.log(regex);
     return filteredPosts.docs;
 };
-
+  
 module.exports = {
     getPosts,
     getPostById,
