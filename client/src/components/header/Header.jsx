@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
+import { AppContext } from "../../App";
+import axios from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, IconButton, Menu, MenuList, MenuItem, Container, Button, Tooltip, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider, Popper } from "@mui/material";
+import { AppBar, Box, Toolbar, IconButton, Menu, MenuList, MenuItem, Container, Button, Tooltip, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider, Popper, Typography, Badge, ListItemSecondaryAction, ListItemButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { UserImageThumbnail } from "../common/Images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Cookies from "universal-cookie";
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import CloseIcon from '@mui/icons-material/Close';
 
 const cookies = new Cookies();
 
@@ -19,10 +23,11 @@ const userOptions = [
   { name: "Logout", path: "logout", },
 ];
 
-const Header = ({ loggedIn, userData, logoutUser }) => {
+const Header = () => {
   //Generic item click navigation
   let navigate = useNavigate();
   const navigateToPage = (path) => navigate("./" + path, {});
+  const { loggedIn, userData, userNotifications, logoutUser } = useContext(AppContext);
 
   const logout = () => {
     cookies.remove("jwt_token");
@@ -105,8 +110,17 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
 
   const UserNotifications = () => {
     const [userNotificationsAnchorEl, setUserNotificationsAnchorEl] = useState(null);
-    const handleOpenNotifications = (event) => setUserNotificationsAnchorEl(event.currentTarget);
-    const handleCloseNotifications = (event) => setUserNotificationsAnchorEl(null);
+    const handleOpenNotifications = (event) => { setUserNotificationsAnchorEl(event.currentTarget); };
+    const handleCloseNotifications = (event) => { setUserNotificationsAnchorEl(null); };
+
+    const removeNotification = (notification) => {
+      const index = userData.notifications.indexOf(notification);
+      userData.notifications.splice(index, 1);
+      //TODO: Fix Rout on server - router.put('/:id', authJwt, UserController.updateUser);
+      //axios.put('users/current', { ..... }).then((res) => {
+      axios.put('users/' + userData._id, { notifications: userData.notifications }).catch(e => console.log("Error updating user"));
+      setUserNotificationsAnchorEl(null);
+    };
 
     if (!loggedIn)
       return;
@@ -116,7 +130,9 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
         {/* User Notifications Area*/}
         <Tooltip title="Open Notifications">
           <IconButton onClick={handleOpenNotifications}>
-            <FontAwesomeIcon icon="fa-regular fa-bell" color="white" size="lg" />
+            <Badge badgeContent={userNotifications.length} color="error" invisible={userNotifications == 0}>
+              <NotificationsIcon htmlColor="white" fontSize="large" />
+            </Badge>
           </IconButton>
         </Tooltip>
         <Menu
@@ -129,16 +145,19 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
           open={Boolean(userNotificationsAnchorEl)}
           onClose={handleCloseNotifications}
         >
-          {userData.notifications.map((n) => (
-            <MenuItem key={n.postId}
-              onClick={navigateToPage.bind(this, 'post/' + n.postId)}>
-              <ListItemText
-                primary={n.title}
-                secondary={n.text} />
-            </MenuItem >
-          ))}
-        </Menu>
-      </Box>
+          {userNotifications.length == 0 ?
+            <Typography sx={{ margin: 1 }}>No Notifications</Typography> :
+            userNotifications.map((notification, index) => (
+              <ListItem disablePadding key={index}
+                secondaryAction={<IconButton edge="end" onClick={() => removeNotification(notification)}> <CloseIcon /></IconButton>}>
+                <ListItemButton dense onClick={() => navigate("/post/" + notification.postId)}>
+                  <ListItemText primary={notification.title} secondary={notification.text} />
+                </ListItemButton>
+              </ListItem >
+            ))
+          }
+        </Menu >
+      </Box >
     )
   }
 
@@ -153,7 +172,7 @@ const Header = ({ loggedIn, userData, logoutUser }) => {
     return (
       <Box sx={{ flexGrow: 0 }} hidden={!loggedIn}>
         {/* User Options Menu */}
-        <Tooltip title="Open User Menu">
+        <Tooltip title={userData.firstName + ' ' + userData.lastName}>
           <IconButton onClick={handleOpenUserMenu}>
             <UserImageThumbnail src={userData.profileImage} />
           </IconButton>

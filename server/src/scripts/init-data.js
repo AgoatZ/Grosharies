@@ -25,7 +25,10 @@ const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;
 
 mongoose.connect('mongodb://127.0.0.1:27017/grosharies', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connection.once('connected', () => console.log('Database connected successfully for db:init')).then(() => init()).finally(() => mongoose.disconnect().then(() => console.log('Database disconnected successfully!')))
+mongoose.connection.once('connected', () => console.log('Database connected successfully for db:init'))
+    .then(() => init())
+    .finally(() => mongoose.disconnect()
+        .then(() => console.log('Database disconnected successfully!')))
     .catch(() => console.log('Unable to connect to database'));
 
 mongoose.set('useFindAndModify', false);
@@ -182,12 +185,22 @@ const init = async () => {
             });
             await user.save();
 
+            let useress = new User({
+                "firstName": "Dolores" + i,
+                "lastName": "Soledad" + i,
+                "emailAddress": "dolores" + i + "@web.de",
+                "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
+                "phone": "052373666" + i,
+                "source": "grosharies"
+            });
+            await useress.save();
+
             let postImg1 = fs.readFileSync(postImgPaths[i % 6], "base64");
-            let postImg2 = fs.readFileSync(postImgPaths[(i+1) % 6], "base64");
-            let post = new Post({
+            let postImg2 = fs.readFileSync(postImgPaths[(i + 1) % 6], "base64");
+            let useressPost = {
                 "headline": "Come and take some " + gross[i % 11],
-                "userId": user._id,
-                "address": '' + i + " Nowhere Street",
+                "userId": useress._id,
+                "address": '' + (i + 1) + " King George, Tel Aviv",
                 "pickUpDates": {
                     "from": Date.now(),
                     "until": Date.now() + oneDay
@@ -255,12 +268,47 @@ const init = async () => {
                     postImg2
                 ],
                 "description": desc[i % 5]
-            });
-            post = await post.save();
+            };
+            let userPost = JSON.parse(JSON.stringify(useressPost));
+            userPost.userId = user._id;
+            let post1 = new Post(useressPost);
+            useressPost.headline = "Come and take some " + gross[9];
+            let post2 = new Post(useressPost);
+            useressPost.headline = "Come and take some " + gross[2];
+            let post3 = new Post(useressPost);
+            useressPost.headline = "Come and take some " + gross[3];
+            let post4 = new Post(useressPost);
+            useressPost.headline = "Come and take some " + gross[4];
+            let post5 = new Post(useressPost);
+            if (i < 3) {
+                post1 = await post1.save();
+                post2 = await post2.save();
+                post3 = await post3.save();
+                post4 = await post4.save();
+                post5 = await post5.save();
+                await useress.updateOne({ posts: [post1._id, post2._id, post3._id, post4._id, post5._id] });
+            }
+            else {
+                let post1 = new Post(userPost);
+                userPost.header = "Come and take some " + gross[6];
+                let post2 = new Post(userPost);
+                post1 = await post1.save();
+                post2 = await post2.save();
+                await user.updateOne({ posts: [post1._id, post2._id] });
+            }
 
+            let publisherId;
+            let collectorId;
+            if (i < 3) {
+                publisherId = useress._id;
+                collectorId = user._id;
+            } else {
+                publisherId = user._id;
+                collectorId = useress._id;
+            }
             let pending = new Pending({
-                "headline": post.headline,
-                "address": post.address,
+                "headline": post1.headline,
+                "address": post1.address,
                 "content": {
                     "name": gross[i % 11],
                     "amount": i + 3,
@@ -268,9 +316,9 @@ const init = async () => {
                     "packing": packs[i % 10],
                     "category": cats[i % 11]._id
                 },
-                "sourcePost": post._id,
-                "publisherId": user._id,
-                "collectorId": user._id,
+                "sourcePost": post1._id,
+                "publisherId": publisherId,
+                "collectorId": collectorId,
                 "status": "pending",
                 "pendingTime": {
                     "from": Date.now(),
@@ -278,15 +326,11 @@ const init = async () => {
                 }
             });
             pending = await pending.save()
-            await user.updateOne({
-                "firstName": "Jacob" + i,
-                "lastName": "Padre" + i,
-                "emailAddress": "jacob" + i + "@yahoo.com",
-                "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
-                "phone": "052373555" + i,
-                "collectedHistory": pending._id
-            });
-
+            if (i < 3) {
+                await user.updateOne({ collectedHistory: pending._id });
+            } else {
+                await useress.updateOne({ collectedHistory: pending._id });
+            }
             let event = new Event({
                 "headline": "An Event " + i,
                 "userId": user._id,

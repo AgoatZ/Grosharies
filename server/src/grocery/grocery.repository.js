@@ -2,10 +2,10 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const Grocery = require('./grocery.model');
 
-const getGroceries = async function (query) {
+const getGroceries = async function (query, options) {
     try {
-        const groceries = await Grocery.find(query);
-        return groceries;
+        const groceries = await Grocery.paginate(query, options);
+        return groceries.docs;
     } catch (e) {
         console.log('Grocery repository error from getGroceries: ', e.message);
 
@@ -79,6 +79,13 @@ const updateAmount = async function (groceryId, amount) {
     }
 };
 
+const searchGrocery = async (searchValue, options) => {
+    const filteredGroceries = await Grocery.paginate({
+        name: { $regex: searchValue, $options: i }
+    }, options);
+    return filteredGroceries.docs;
+};
+
 module.exports = {
     getGroceries,
     getGroceryById,
@@ -86,5 +93,6 @@ module.exports = {
     addGrocery,
     deleteGrocery,
     updateGrocery,
-    updateAmount
-}
+    updateAmount,
+    searchGrocery
+};

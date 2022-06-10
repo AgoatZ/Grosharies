@@ -8,7 +8,9 @@ router.get('/', GroceryController.getGroceries);
 
 router.get('/:id', GroceryController.getGroceryById);
 
-router.get('/name=:name', GroceryController.getGroceryByName);
+router.get('/name/:name', GroceryController.getGroceryByName);
+
+router.get('/search/:search', GroceryController.searchGrocery);
 
 router.post('/', GroceryController.addGrocery);
 

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const status = require('../enums/post-status');
 const Grocery = require('../grocery/grocery.model');
 const reply = require('../enums/post-reply');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const post = new mongoose.Schema({
   headline: { type: String, required: true },
@@ -28,10 +29,11 @@ const post = new mongoose.Schema({
   observers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], //USER ARRAY
   repliers: [{
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    reply: { type: String, enum: reply, required: false }
+    reply: { type: mongoose.Schema.Types.ObjectId, ref: "PendingPost" }
   }]
 });
 
+post.plugin(mongoosePaginate);
 const Post = mongoose.model('Post', post, 'Post');
 
 module.exports = Post;

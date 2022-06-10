@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import { AppContext } from "../../App";
 import { Outlet } from "react-router-dom";
 import { Grid } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -31,8 +32,7 @@ const appTheme = createTheme({
   },
 });
 
-const Layout = ({ loggedIn, userData, logoutUser }) => {
-
+const Layout = () => {
   return (
     <ThemeProvider theme={appTheme}>
       <Grid
@@ -43,10 +43,10 @@ const Layout = ({ loggedIn, userData, logoutUser }) => {
         gridTemplateRows="auto 1fr auto"
       >
         <Grid item component="header">
-          <Header loggedIn={loggedIn} userData={userData} logoutUser={logoutUser} />
+          <Header />
         </Grid>
         <Grid item component="main">
-          <Outlet context={{ loggedIn, userData }} />
+          <Outlet />
         </Grid>
         <Grid item component="footer">
           <Footer />

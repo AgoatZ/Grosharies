@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Grocery = require('../grocery/grocery.model');
 const status = require('../enums/pending-status');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const pending = new mongoose.Schema({
   headline: { type: String, required: true },
@@ -24,6 +25,7 @@ const pending = new mongoose.Schema({
   }
 });
 
+pending.plugin(mongoosePaginate);
 const Pending = mongoose.model('PendingPost', pending, 'PendingPost');
 
 module.exports = Pending;

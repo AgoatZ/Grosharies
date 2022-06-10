@@ -19,7 +19,11 @@ router.get("/tag/:id", authJwt, PostController.getPostsByTag);
 
 router.get("/collector/:id", authJwt, PostController.getPostsByCollector);
 
+router.get("/search/:search", authJwt, PostController.searchPosts);
+
 router.get("/suggested/:userid", authJwt, PostController.getSuggestedPosts);
+
+router.post("/nearby", authJwt, PostController.getNearbyPosts);
 
 router.post(
   "/updateImage/:id",

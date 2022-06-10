@@ -1,8 +1,9 @@
-import { useOutletContext } from "react-router-dom";
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from "../../App";
 import { Container, Typography } from "@mui/material";
 
 const Profile = () => {
-  const { loggedIn, userData } = useOutletContext();
+  const { userData } = useContext(AppContext);
 
   return (
     <Container>

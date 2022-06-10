@@ -1,12 +1,26 @@
 const PostService = require('./post.services');
+const UserService = require('../user/user.services');
 
-const getPosts = async function (req, res, next) {
+const getPosts = async (req, res, next) => {
     // Validate request parameters, queries using express-validator
-
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
         const posts = await PostService.getPosts({}, page, limit);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const searchPosts = async (req, res, next) => {
+    // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
+    try {
+        const posts = await PostService.searchPosts(req.params.search, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -29,8 +43,10 @@ const getPostById = async function (req, res, next) {
 
 const getPostsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getPostsByUser(req.params.id, req.user);
+        const posts = await PostService.getPostsByUser(req.params.id, req.user, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -41,8 +57,10 @@ const getPostsByUser = async function (req, res, next) {
 
 const getPublisherOpenPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getPublisherOpenPosts(req.params.id, req.user);
+        const posts = await PostService.getPublisherOpenPosts(req.params.id, req.user, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -53,8 +71,10 @@ const getPublisherOpenPosts = async function (req, res, next) {
 
 const getPostsByCategory = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getPostsByCategory(req.params.id);
+        const posts = await PostService.getPostsByCategory(req.params.id, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -65,8 +85,10 @@ const getPostsByCategory = async function (req, res, next) {
 
 const getPostsByTag = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getPostsByTag(req.params.id);
+        const posts = await PostService.getPostsByTag(req.params.id, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -77,8 +99,10 @@ const getPostsByTag = async function (req, res, next) {
 
 const getPostsByCollector = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getPostsByCollector(req.params.id, req.user);
+        const posts = await PostService.getPostsByCollector(req.params.id, req.user, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -89,8 +113,10 @@ const getPostsByCollector = async function (req, res, next) {
 
 const getPostsByGroceries = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getPostsByGroceries(req.body.groceries);
+        const posts = await PostService.getPostsByGroceries(req.body.groceries, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -101,9 +127,26 @@ const getPostsByGroceries = async function (req, res, next) {
 
 const getSuggestedPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const posts = await PostService.getSuggestedPosts(req.params.userid, req.user);
+        //.emit("pend post notification", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        const posts = await PostService.getSuggestedPosts(req.params.userid, req.user, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Suggested Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
+const getNearbyPosts = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
+    try {
+        const posts = await PostService.getNearbyPosts(req.user, req.body.coordinates, page, limit);
+        return res.status(200).json({ posts: posts, message: "Succesfully Nearby Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
 
@@ -150,7 +193,18 @@ const updatePost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
+        const { emitEvent } = require(".././../index");
         const oldPost = await PostService.updatePost(req.params.id, req.body);
+        const newNotification = {
+            text: oldPost.headline,
+            title: "A post of your order was edited",
+            postId: oldPost._id
+        };
+        emitEvent('Post Edited', oldPost._id, {});
+        for (i in oldPost.repliers) {
+            emitEvent('New Notification', oldPost.repliers[i].user, newNotification);
+            await UserService.addToNotifications(oldPost.repliers[i].user, newNotification);
+        }
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -168,9 +222,11 @@ module.exports = {
     getPostsByCollector,
     getPostsByGroceries,
     getSuggestedPosts,
+    getNearbyPosts,
     getPublisherOpenPosts,
     addPost,
     pendPost,
     deletePost,
-    updatePost
+    updatePost,
+    searchPosts
 }

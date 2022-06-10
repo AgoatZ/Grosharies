@@ -6,7 +6,13 @@ const AuthService = require('../auth/auth.services');
 
 const getUsers = async function (query, page, limit) {
     try {
-        const users = await UserRepository.getUsers(query);
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
+        const users = await UserRepository.getUsers(query, options);
         return users;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -92,7 +98,7 @@ const updateUser = async function (userId, userDetails) {
         const exists = await UserRepository.getUserByEmail(userDetails.emailAddress);
         if (exists && exists._id !== userId) throw Error('This email address belongs to another user');
         else {
-            if(userDetails.image) {
+            if (userDetails.image) {
                 userDetails.profileImage = userDetails.image;
                 delete userDetails['image'];
             }
@@ -122,8 +128,30 @@ const addToHistory = async function (userId, pendingPostId) {
     }
 };
 
-const getPickupHistory = async function (id, currentUser) {
+const addToNotifications = async function (userId, newNotifications) {
     try {
+        let oldUser = await UserRepository.getUserById(userId);
+        let notifications = oldUser.notifications;
+        //console.log(history);
+        //console.log(oldUser);
+        notifications = notifications.concat(newNotifications);
+        oldUser = await UserRepository.updateUser(userId, { notifications: notifications });
+        return oldUser;
+    } catch (e) {
+        console.log('Service error from addToHistory: ' + e.message);
+
+        throw Error('Error while Updating User');
+    }
+};
+
+const getPickupHistory = async function (id, currentUser, page, limit) {
+    try {
+        let options;
+        if (page && limit) {
+            options = { page: page, limit: limit };
+        } else {
+            options = { pagination: false }
+        }
         let userId;
         if (id == 'current' && currentUser) {
             userId = currentUser._id;
@@ -132,7 +160,7 @@ const getPickupHistory = async function (id, currentUser) {
             userId = id;
             //console.log("Service bypublisher from params userId:", userId)
         }
-        const pendingPosts = await PendingRepository.getPendingsByCollector(userId);
+        const pendingPosts = await PendingRepository.getPendingsByCollector(userId, options);
         return pendingPosts;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -150,5 +178,6 @@ module.exports = {
     deleteUser,
     updateUser,
     addToHistory,
+    addToNotifications,
     getPickupHistory,
 };

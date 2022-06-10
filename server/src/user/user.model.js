@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const userType = require('../enums/user-type');
 const userSource = require('../enums/user-source');
-const Pending = require('../pending/pending.model');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const user = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -14,9 +14,10 @@ const user = new mongoose.Schema({
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   profileImage: String,
   source: { type: String, enum: userSource, required: true, default: userSource.GROSHARIES },
-  collectedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "PendingPost"}]
+  collectedHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "PendingPost"}],
+  notifications: []
 });
-
+user.plugin(mongoosePaginate);
 const User = mongoose.model('User', user, 'User');
 
 module.exports = User;
