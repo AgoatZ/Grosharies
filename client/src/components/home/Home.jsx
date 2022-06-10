@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useOutletContext } from "react-router-dom";
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from "../../App";
 import { Stack, Box, Tabs, Tab, Typography, Divider } from '@mui/material';
 import axios from "../../utils/axios";
 import Posts from '../posts/Posts';
@@ -8,7 +8,7 @@ import AddPost from '../add-post/AddPost';
 const tabs = ['Near By', 'Recently Added', 'Add post'];
 
 const Home = () => {
-    const { loggedIn, userData } = useOutletContext();
+    const { loggedIn } = useContext(AppContext);
     const [activeTabNumber, setActiveTabNumber] = useState(0);
     const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
     const [suggestedPosts, setSuggestedPosts] = useState([]);

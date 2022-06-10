@@ -15,6 +15,20 @@ const getPosts = async (req, res, next) => {
     }
 };
 
+const searchPosts = async (req, res, next) => {
+    // Validate request parameters, queries using express-validator
+    const page = req.params.page ? req.params.page : 1;
+    const limit = req.params.limit ? req.params.limit : 10;
+    try {
+        const posts = await PostService.getPosts(req.params.search, page, limit);
+        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 const getPostById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
@@ -47,7 +61,6 @@ const getPublisherOpenPosts = async function (req, res, next) {
     const limit = req.params.limit ? req.params.limit : 10;
     try {
         const posts = await PostService.getPublisherOpenPosts(req.params.id, req.user, page, limit);
-        //sio.emit("pend post notification", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -214,5 +227,6 @@ module.exports = {
     addPost,
     pendPost,
     deletePost,
-    updatePost
+    updatePost,
+    searchPosts
 }

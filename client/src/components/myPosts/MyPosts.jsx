@@ -46,7 +46,7 @@ const MyPosts = () => {
   const PostsAccordion = ({ posts }) => {
     //TODO: Edit Post Page
     let navigate = useNavigate();
-    const toEditPostPage = (post) => navigate("/post/" + post._id, { state: { postId: post._id } });
+    const toEditPostPage = (post) => navigate("/post/" + post._id);
 
     return (
       posts.map((post) => (
