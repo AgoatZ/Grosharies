@@ -207,6 +207,8 @@ const updatePending = async function (req, res, next) {
 
 const setCollectorStatement = async function (req, res, next) {
     try {
+        const { emitEvent } = require(".././../index");
+        
         const oldPending = await PendingService.setCollectorStatement(req.params.id, req.user);
         const collector = await UserService.getUserById(oldPending.collectorId);
         const publisher = await UserService.getUserById(oldPending.publisherId);
