@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from "../../App";
-import { Stack, Box, Tabs, Tab, Typography, Divider } from '@mui/material';
+import { useNavigate } from "react-router-dom";
+import { Stack, Box, Tabs, Tab, Typography, Divider, Switch } from '@mui/material';
 import axios from "../../utils/axios";
 import Posts from "../posts/Posts";
 import AddPost from "../add-post/AddPost";
@@ -10,7 +11,7 @@ const tabs = ["Near By", "Recently Added", "Add post"];
 
 const Home = () => {
   const navigate = useNavigate();
-  const { loggedIn, userData } = useOutletContext();
+  const { loggedIn, userData } = useContext(AppContext);
 
   const [activeTabNumber, setActiveTabNumber] = useState(0);
   const handleTabChange = (event, newTabNumber) =>
