@@ -24,12 +24,6 @@ export const createNotificationSocket = (userId) => {
   socket.on('connect', () => { console.log('Notifications Socket connected to server'); })
   socket.on('disconnect', () => { console.log('Notifications Socket disconnected from server'); })
 
-  //socket.on('New Notification', (...args) => { console.log('Notifications Socket - New Notification', args); })
-
-  // socket.on('New Notification', (notification) => {
-  //   console.log("New Notification", notification);
-  // })
-
   socket.connect();
 }
 

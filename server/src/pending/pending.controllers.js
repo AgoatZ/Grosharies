@@ -254,7 +254,7 @@ const finishPending = async function (req, res, next) {
             postId: finishedPending.sourcePost
         };
         emitEvent('New Notification', finishedPending.collectorId, orderComplete);
-        collector.push(orderComplete);
+        collector.notifications.push(orderComplete);
         await UserService.updateUser(collector._id, { notifications: collector.notifications });
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
 
@@ -302,7 +302,7 @@ const cancelPending = async function (req, res, next) {
             postId: cancelledPost.sourcePost
         };
         emitEvent('New Notification', cancelledPost.collectorId, orderComplete);
-        collector.push(orderComplete);
+        collector.notifications.push(orderComplete);
         await UserService.updateUser(collector._id, { notifications: collector.notifications });
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
 

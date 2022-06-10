@@ -35,8 +35,9 @@ const Post = () => {
       //Get user's active order for this post and add it to main post object if exists
       axios.get("pendings/collector/current").then((res) => {
         const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
+        const valid = userPendingPost && userPendingPost.status.finalStatus === "pending" && userPendingPost.status.collectorStatement === "pending" && userPendingPost.status.publisherStatement === "pending";
 
-        if (userPendingPost) {
+        if (valid) {
           post.userPendingPostId = userPendingPost._id;
           console.log("User's open pending post (order) for this post", userPendingPost);
           //Set the user's order amount for each grocery item
