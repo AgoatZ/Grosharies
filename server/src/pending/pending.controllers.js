@@ -208,6 +208,18 @@ const updatePending = async function (req, res, next) {
 const setCollectorStatement = async function (req, res, next) {
     try {
         const oldPending = await PendingService.setCollectorStatement(req.params.id, req.user);
+        const collector = await UserService.getUserById(oldPending.collectorId);
+        const publisher = await UserService.getUserById(oldPending.publisherId);
+
+        const statement = {
+            text: oldPending.headline,
+            title: "A collection was stated by " + collector.firstName + " " + collector.lastName,
+            postId: oldPending.sourcePost
+        };
+        emitEvent('New Notification', oldPending.publisherId, statement);
+        publisher.notifications.push(statement);
+        await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
+
         return res.status(200).json({ oldPending: oldPending, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('Pending service error from setCollectorStatement: ', e.message);
