@@ -52,7 +52,7 @@ const App = () => {
   const socketSetup = (userData) => {
     createNotificationSocket(userData._id);
     onNewNotification((notification) => {
-      userData.notifications.push(notification);
+      userData.notifications.unshift(notification);
       setUserNotifications([...userData.notifications]);    //Array wont render fix - the spread operator creates a copy on a new memory reference
       setUserData(userData);
     });

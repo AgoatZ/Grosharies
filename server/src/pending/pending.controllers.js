@@ -238,7 +238,7 @@ const finishPending = async function (req, res, next) {
         const collector = await UserService.getUserById(finishedPending.collectorId);
         const publisher = await UserService.getUserById(finishedPending.publisherId);
 
-        if (req.user && String(req.user._id) == String(finishedPending.collectorId)) {
+        if (req.user && String(req.user._id) === String(finishedPending.collectorId)) {
             const completedBy = {
                 text: finishedPending.headline,
                 title: "An order was completed by " + collector.firstName + " " + collector.lastName,
@@ -246,7 +246,7 @@ const finishPending = async function (req, res, next) {
             };
             emitEvent('New Notification', finishedPending.publisherId, completedBy);
             publisher.notifications.push(completedBy);
-        } else if (req.user && String(req.user._id) == String(finishedPending.publisherId)) {
+        } else if (req.user && String(req.user._id) === String(finishedPending.publisherId)) {
             const wasCompleted = {
                 text: finishedPending.headline,
                 title: "An order was completed",
@@ -266,7 +266,7 @@ const finishPending = async function (req, res, next) {
             postId: finishedPending.sourcePost
         };
         emitEvent('New Notification', finishedPending.collectorId, orderComplete);
-        collector.push(orderComplete);
+        collector.notifications.push(orderComplete);
         await UserService.updateUser(collector._id, { notifications: collector.notifications });
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
 
@@ -286,7 +286,7 @@ const cancelPending = async function (req, res, next) {
         const collector = await UserService.getUserById(cancelledPost.collectorId);
         const publisher = await UserService.getUserById(cancelledPost.publisherId);
 
-        if (req.user && String(req.user._id) == String(cancelledPost.collectorId)) {
+        if (req.user && String(req.user._id) === String(cancelledPost.collectorId)) {
             const completedBy = {
                 text: cancelledPost.headline,
                 title: "An order was cancelled by " + collector.firstName + " " + collector.lastName,
@@ -294,7 +294,7 @@ const cancelPending = async function (req, res, next) {
             };
             emitEvent('New Notification', cancelledPost.publisherId, completedBy);
             publisher.notifications.push(completedBy);
-        } else if (req.user && String(req.user._id) == String(cancelledPost.publisherId)) {
+        } else if (req.user && String(req.user._id) === String(cancelledPost.publisherId)) {
             const wasCompleted = {
                 text: cancelledPost.headline,
                 title: "An order was cancelled",
@@ -314,7 +314,7 @@ const cancelPending = async function (req, res, next) {
             postId: cancelledPost.sourcePost
         };
         emitEvent('New Notification', cancelledPost.collectorId, orderComplete);
-        collector.push(orderComplete);
+        collector.notifications.push(orderComplete);
         await UserService.updateUser(collector._id, { notifications: collector.notifications });
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
 
