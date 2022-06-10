@@ -188,15 +188,15 @@ const addPost = async (postDetails) => {
 };
 
 const deletePost = async (postId) => {
-    try {
-        const deletedPost = await PostRepository.getPostById(postId);
-        await PostRepository.updatePost(postId, { status: "cancelled" });
-        for (i in deletedPost.repliers) {
-            await PendingService.cancelPending(deletedPost.repliers[i].reply).catch(err => console.log(err));
-        }
-        return deletedPost;
-    } catch (e) {
-        console.log('service error: ' + e.message);
+  try {
+    const deletedPost = await PostRepository.getPostById(postId);
+    await PostRepository.updatePost(postId, { status: "cancelled" });
+    for (i in deletedPost.repliers) {
+        await PendingService.cancelPending(deletedPost.repliers[i].reply).catch(err => console.log(err));
+    }    
+    return deletedPost;
+  } catch (e) {
+    console.log("Post Service error from deletePost:", e.message);
 
     throw Error("Error while Deleting Post");
   }
@@ -218,65 +218,36 @@ const updatePost = async (postId, postDetails) => {
 };
 
 const pendPost = async (postId, collectorId, groceries) => {
-    try {
-        const post = await PostRepository.getPostById(postId);
-        const updatedContent = [];
-        const content = post.content;
-        if (post.status == PostStatus.CANCELLED || post.status == PostStatus.COLLECTED) {
-            console.log('This post is not open for new orders, status:', post.status);
+  try {
+    const post = await PostRepository.getPostById(postId);
+    const updatedContent = [];
+    const content = post.content;
+    if (post.status == PostStatus.CANCELLED || post.status == PostStatus.COLLECTED) {
+        console.log('This post is not open for new orders, status:', post.status);
 
-            throw Error('This post is not open for new orders, status:', post.status);
+        throw Error('This post is not open for new orders, status:', post.status);
+    }
+    for (groceryIndex in content) {
+      let grocery = content[groceryIndex];
+      let isThere = false;
+      for (wantedGroceryIndex in groceries) {
+        let wantedGrocery = groceries[wantedGroceryIndex];
+        if (wantedGrocery.name === grocery.original.name) {
+          //reduce amount and creat json for updating
+          isThere = true;
+          let left = grocery.left - wantedGrocery.amount;
+          if (left < 0) {
+            throw Error("Requested amount is higher than available");
+          }
+          updatedContent.push({
+            original: grocery.original,
+            left: left
+          });
         }
-        for (groceryIndex in content) {
-            let grocery = content[groceryIndex];
-            let isThere = false;
-            for (wantedGroceryIndex in groceries) {
-                let wantedGrocery = groceries[wantedGroceryIndex];
-                if (wantedGrocery.name === grocery.original.name) {
-                    //reduce amount and creat json for updating
-                    isThere = true;
-                    let left = grocery.left - wantedGrocery.amount;
-                    if (left < 0) {
-                        throw Error('Requested amount is higher than available');
-                    }
-                    updatedContent.push({
-                        original: grocery.original,
-                        left: left
-                    });
-                }
-            }
-            if (!isThere) {
-                updatedContent.push(grocery);
-            }
-        }
-
-        const oneHour = 60 * 60 * 1000;
-        const pendingPost = await PendingService.addPending({
-            headline: post.headline,
-            address: post.address,
-            addressCoordinates: post.addressCoordinates,
-            content: groceries,
-            sourcePost: post._id,
-            publisherId: post.userId,
-            collectorId: collectorId,
-            pendingTime: {
-                from: Date.now(),
-                until: Date.now() + oneHour
-            }
-        });
-
-        post.repliers.push({ user: collectorId, reply: pendingPost._id });
-        await PostRepository.updatePost(postId, { content: updatedContent, repliers: post.repliers});
-        
-        const collector = await UserService.addToHistory(collectorId, pendingPost._id);
-
-        const updatedPost = await PostRepository.getPostById(postId);
-
-        return { updatedPost, pendingPost };
-    } catch (e) {
-        console.log('Post service error in pendPost:', e.message);
-
-        throw Error('Error while Pending Post');
+      }
+      if (!isThere) {
+        updatedContent.push(grocery);
+      }
     }
     await PostRepository.updatePost(postId, { content: updatedContent });
 
@@ -325,38 +296,12 @@ const getPostTags = async (postId) => {
 
 //TODO: DECIDE HOW TO HANDLE PAGINATION
 const getSuggestedPosts = async (id, currentUser, page, limit) => {
-    try {
-        let options;
-        if (page && limit) {
-            options = { page: page, limit: limit };
-        } else {
-            options = { pagination: false }
-        }
-        let userId;
-        if (id == 'current' && currentUser) {
-            userId = currentUser._id;
-        } else {
-            userId = id;
-        }
-        var posts = await PostRepository.getRelevantPosts(options);
-        const user = await UserService.getUserById(userId);
-        const history = [];
-        for (pendingId in user.collectedHistory) {
-            let id = user.collectedHistory[pendingId];
-            let pending = await PendingService.getPendingById(id);
-            history.push(pending);
-        }
-        const relevanceMap = new Map();
-        for (post in posts) {
-            let rPost = posts[post];
-            let postRelevance = await SuggestionsUtil.getPostRelevance(history, rPost);
-            relevanceMap.set(rPost, postRelevance);
-        }
-        return posts.sort((p1, p2) => relevanceMap.get(p2) - relevanceMap.get(p1));
-    } catch (e) {
-        console.log('Service error from getSuggestedPosts', e);
-
-        throw Error('Error while suggesting posts');
+  try {
+    let options;
+    if (page && limit) {
+      options = { page: page, limit: limit };
+    } else {
+      options = { pagination: false };
     }
     let userId;
     if (id == "current" && currentUser) {
@@ -464,19 +409,19 @@ const coordinatesDistance = (coor1, coor2) => {
 };
 
 module.exports = {
-    getPosts,
-    getPostById,
-    getPostsByUser,
-    getPostsByCategory,
-    getPostsByTag,
-    getPostsByCollector,
-    getPostsByGroceries,
-    getSuggestedPosts,
-    getNearbyPosts,
-    getPublisherOpenPosts,
-    addPost,
-    pendPost,
-    deletePost,
-    updatePost,
-    searchPosts
+  getPosts,
+  getPostById,
+  getPostsByUser,
+  getPostsByCategory,
+  getPostsByTag,
+  getPostsByCollector,
+  getPostsByGroceries,
+  getSuggestedPosts,
+  getNearbyPosts,
+  getPublisherOpenPosts,
+  addPost,
+  pendPost,
+  deletePost,
+  updatePost,
+  searchPosts
 };
