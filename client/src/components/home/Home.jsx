@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
+import Switch from '@mui/material/Switch';
 import { Stack, Box, Tabs, Tab, Typography, Divider } from "@mui/material";
 import axios from "../../utils/axios";
 import Posts from "../posts/Posts";
@@ -19,17 +20,12 @@ const Home = () => {
   const [suggestedPosts, setSuggestedPosts] = useState([]);
   const [nearbyPosts, setNearbyPosts] = useState([]);
   const [recentPosts, setRecentPosts] = useState([]);
-  const [userLocation, setUserLocation] = useState();
-  const [nearbyPostsLocations, setNearbyPostsLocations] = useState([]);
+  const [showAsMap, setShowAsMap] = useState(false)
 
   useEffect(() => loadPosts(), []);
   const loadPosts = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
         console.log("Latitude is :", position.coords.latitude);
         console.log("Longitude is :", position.coords.longitude);
         //TODO: add route to exept the user location to server
@@ -41,22 +37,6 @@ const Home = () => {
             },
           })
           .then((res) => {
-            setNearbyPostsLocations(
-              res.data.posts.map((post) => {
-                console.log("DEBUG ", post.addressCoordinates);
-                return {
-                  ...post.addressCoordinates,
-                  address: post.address,
-                  onClick: () => {
-                    console.log("id ", post._id);
-                    navigate("/post/" + post._id, {
-                      state: { postId: post._id },
-                    });
-                  },
-                };
-              })
-            );
-
             setNearbyPosts(res.data.posts);
           });
       });
@@ -110,29 +90,20 @@ const Home = () => {
         <Posts data={suggestedPosts} noBorder />
       </Box>
 
+
       <Box sx={{ width: "auto" }}>
+        <Switch sx={{ left: 0 }} title="Map Visualize" onChange={() => setShowAsMap(!showAsMap)} checked={showAsMap} />
         <Tabs value={activeTabNumber} onChange={handleTabChange}>
           <Tab label={tabs[0]} />
           <Tab label={tabs[1]} />
           <Tab label={tabs[2]} />
         </Tabs>
         <TabPanel value={activeTabNumber} index={0}>
-          {/* <Posts data={nearbyPosts} /> */}
+          <Posts data={nearbyPosts} showMap={showAsMap} />
 
-          <Map
-            sx={{
-              height: "450px",
-              width: "800px",
-              marginBottom: "100px",
-            }}
-            addCenterPoint={true}
-            locations={nearbyPostsLocations}
-            center={userLocation}
-            zoom={12}
-          />
         </TabPanel>
         <TabPanel value={activeTabNumber} index={1}>
-          <Posts data={recentPosts} />
+          <Posts data={recentPosts} showMap={showAsMap} />
         </TabPanel>
         <TabPanel value={activeTabNumber} index={2}>
           <AddPost />

@@ -1,5 +1,7 @@
 import GoogleMapReact from "google-map-react";
 import Marker from "./Marker";
+import { Box } from "@mui/material";
+
 
 const Map = ({
   locations,
@@ -9,12 +11,10 @@ const Map = ({
   centerAddress = "Me",
   sx,
 }) => {
-  // set with defualt values if not exist
-  console.log(locations);
 
   return (
-    <div
-      style={
+    <Box
+      sx={
         sx || {
           height: "400px",
           width: "60%",
@@ -27,7 +27,8 @@ const Map = ({
         //TODO: remove api key
         bootstrapURLKeys={{ key: "AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc" }}
         defaultZoom={zoom}
-        defaultCenter={center}
+        defaultCenter={{ lat: 35, lng: 35 }}
+        center={center}
       >
         {locations &&
           locations.map(({ lat, lng, address, onClick }, index) => (
@@ -48,7 +49,7 @@ const Map = ({
           />
         )}
       </GoogleMapReact>
-    </div>
+    </Box>
   );
 };
 
