@@ -21,7 +21,7 @@ const PostCard = ({ post }) => {
             {/* Large Screen Setup */}
             <Box sx={{ display: { xs: "none", md: "flex" }, width: "100%" }}>
                 <Stack direction="column" spacing={1} sx={{ mr: 2, width: "33%" }}>
-                    <CardMedia component="img" image="/assets/default-post-image.svg"
+                    <CardMedia component="img" image={"data:image/jpg;base64, " + post.images[0]}
                         sx={{ padding: 1, borderRadius: "10px", height: "auto", width: "200px" }} />
                 </Stack>
                 <Stack direction="column" spacing={1} sx={{ flexShrink: 0, width: "50%", mr: 2 }}>
@@ -41,7 +41,7 @@ const PostCard = ({ post }) => {
             <Stack direction="column" spacing={1}
                 sx={{ display: { xs: "flex", md: "none" }, width: "100%" }}>
                 <Typography variant="overline">{post.status}</Typography>
-                <CardMedia component="img" image="/assets/default-post-image.svg"
+                <CardMedia component="img" image={"data:image/jpg;base64, " + post.images[0]}
                     sx={{ padding: 1, borderRadius: "10px", height: "130px", width: "auto" }} />
                 <Typography variant="h5" >{post.headline}</Typography>
                 <Typography variant="h6" ><LocationOnIcon /> {post.address}</Typography>

@@ -15,7 +15,11 @@ import "react-calendar/dist/Calendar.css";
 import "./PostStyle.css";
 
 const MySwal = withReactContent(Swal);
-
+const convertImagesToItems = (post) => {
+  return post.images.map((image) => {
+    return { original: "data:image/jpg;base64, " + image, originalHeight: "500px", originalWidth: "400px" }
+  })
+}
 function isDateInRange(date, dateFrom, dateTo) {
   return date >= dateFrom && date <= dateTo;
 }
@@ -125,7 +129,7 @@ const Post = () => {
     return (
       post.content.map((grocery) => (
         <Box key={grocery._id} sx={{ display: "flex", margin: "3% 0", justifyContent: "space-evenly", width: "45%", }}>
-          <CardMedia image="/assets/default-post-image.svg" component="img" sx={{ padding: 1, borderRadius: "10px", height: "160px", width: "auto", }} />
+          <CardMedia image={"data:image/jpg;base64, " + grocery.images} component="img" sx={{ padding: 1, borderRadius: "10px", height: "160px", width: "auto", }} />
           <Box sx={{ display: "flex", flexDirection: "column", margin: "auto 10% auto 0", }}>
             <Typography component="div" variant="h6" mb="2%" >
               {`Name: ${grocery.original.name}`}
@@ -214,7 +218,7 @@ const Post = () => {
           <Typography component="div" variant="h3" mb="2%" >{post.headline}</Typography>
           <Typography variant="h6" color="text.secondary" component="div">{post.description}</Typography>
         </Box>
-        <CardMedia image="/assets/default-post-image.svg" component="img" sx={{ padding: 1, borderRadius: "10px", height: "250px", width: "auto", }} />
+        <CardMedia image={"data:image/jpg;base64, " + post.images[0]} component="img" sx={{ padding: 1, borderRadius: "10px", height: "250px", width: "auto", }} />
       </Box>
       <Box sx={{ flexDirection: "row", display: "flex" }}>
         <LocationOnIcon color="primary" fontSize="large" />
@@ -222,14 +226,14 @@ const Post = () => {
       </Box>
 
       <Map
-        sx={{ height: "450px", width: "60%", marginBottom: "100px", }}
+        sx={{ height: "450px", width: "400px", marginBottom: "100px", }}
         locations={[{ ...post.addressCoordinates, address: post.address }]}
         center={post.addressCoordinates}
       />
 
       <Box sx={{ width: "600px", height: "600px", margin: "0 auto" }}>
         <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Gallery</Typography>
-        <ImageGallery items={imagesAndVideos} autoPlay />
+        <ImageGallery items={convertImagesToItems(post)} autoPlay />
       </Box>
 
       <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">PickUp Dates</Typography>

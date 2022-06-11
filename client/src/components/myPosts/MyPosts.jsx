@@ -3,7 +3,7 @@ import axios from "../../utils/axios";
 import PostCard from "../myPosts/PostCard";
 import ProductsList from "../myPosts/ProductsList";
 import OrderCard from "../myOrders/OrderCard";
-import { Typography, Box, CardMedia, Divider, Button, ButtonGroup, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
+import { Typography, Box, Divider, Accordion, AccordionDetails, AccordionSummary, List, ListItemText, ListSubheader } from "@mui/material";
 //Icons
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
