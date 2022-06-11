@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import Avatar from "@mui/material/Avatar";
@@ -43,6 +44,7 @@ const alertStyle = {
 const MySwal = withReactContent(Swal);
 
 export default function AddPost() {
+  const navigate = useNavigate();
   const [isHeadlineError, setIsHeadlineError] = React.useState(false);
   const [isAddressError, setIsAddressError] = React.useState(false);
   const [isDescriptionError, setIsDescriptionError] = React.useState(false);
@@ -131,6 +133,7 @@ export default function AddPost() {
   };
 
   const handleSubmit = (event) => {
+    event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     const headline = data.get("headline");
@@ -157,8 +160,6 @@ export default function AddPost() {
       }
     });
 
-    event.preventDefault();
-
     axios
       .post(serverRoutes.AddPost, {
         headline,
@@ -174,7 +175,12 @@ export default function AddPost() {
             MySwal.fire({
               title: <strong>Post created Successfully!</strong>,
               icon: "success",
+              showConfirmButton: false,
+              backdrop: false,
             });
+            setTimeout(() => {
+              navigate("/", {});
+            }, 1000);
           });
       })
       .catch((e) => {
