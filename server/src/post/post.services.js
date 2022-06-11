@@ -1,6 +1,7 @@
 const express = require('express');
 const { status } = require('express/lib/response');
 const PostRepository = require('./post.repository');
+const PostStatus = require('../enums/post-status');
 const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
 const TagRepository = require('../tag/tag.repository');
@@ -185,7 +186,6 @@ const addPost = async (postDetails) => {
 
 const deletePost = async (postId) => {
     try {
-        //#TODO SO NO STATUS "CANCELLED"? A FIELD OF "DELETED" INSTEAD?
         const deletedPost = await PostRepository.getPostById(postId);
         await PostRepository.updatePost(postId, { status: "cancelled" });
         for (i in deletedPost.repliers) {
@@ -193,7 +193,7 @@ const deletePost = async (postId) => {
         }
         return deletedPost;
     } catch (e) {
-        console.log('service error: ' + e.message);
+        console.log("Post Service error from deletePost:", e.message);
 
         throw Error('Error while Deleting Post');
     }
@@ -219,7 +219,11 @@ const pendPost = async (postId, collectorId, groceries) => {
         const post = await PostRepository.getPostById(postId);
         const updatedContent = [];
         const content = post.content;
+        if (post.status == PostStatus.CANCELLED || post.status == PostStatus.COLLECTED) {
+            console.log('This post is not open for new orders, status:', post.status);
 
+            throw Error('This post is not open for new orders, status:', post.status);
+        }
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
             let isThere = false;
@@ -230,7 +234,7 @@ const pendPost = async (postId, collectorId, groceries) => {
                     isThere = true;
                     let left = grocery.left - wantedGrocery.amount;
                     if (left < 0) {
-                        throw Error('Requested amount is higher than available');
+                        throw Error("Requested amount is higher than available");
                     }
                     updatedContent.push({
                         original: grocery.original,
@@ -259,8 +263,8 @@ const pendPost = async (postId, collectorId, groceries) => {
         });
 
         post.repliers.push({ user: collectorId, reply: pendingPost._id });
-        await PostRepository.updatePost(postId, { content: updatedContent, repliers: post.repliers});
-        
+        await PostRepository.updatePost(postId, { content: updatedContent, repliers: post.repliers });
+
         const collector = await UserService.addToHistory(collectorId, pendingPost._id);
 
         const updatedPost = await PostRepository.getPostById(postId);
@@ -355,6 +359,17 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
     }
 };
 
+const searchPosts = async (searchValue, page, limit) => {
+    let options;
+    if (page && limit) {
+        options = { page: page, limit: limit };
+    } else {
+        options = { pagination: false }
+    }
+    const filteredPosts = await PostRepository.searchPosts(searchValue, options);
+    return filteredPosts;
+};
+
 const coordinatesDistance = (coor1, coor2) => {
     const lat1 = coor1.lat;
     const lng1 = coor1.lng;
@@ -390,4 +405,5 @@ module.exports = {
     pendPost,
     deletePost,
     updatePost,
+    searchPosts
 };

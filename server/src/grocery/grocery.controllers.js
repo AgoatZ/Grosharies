@@ -81,11 +81,26 @@ const updateGrocery = async function (req, res, next) {
     }
 };
 
+const searchGrocery = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
+    try {
+        const groceries = await GroceryService.searchGrocery(req.params.search, page, limit);
+        return res.status(200).json({ groceries: groceries, message: "Succesfully Groceries Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 module.exports = {
     getGroceries,
     getGroceryById,
     getGroceryByName,
     addGrocery,
     deleteGrocery,
-    updateGrocery
-}
+    updateGrocery,
+    searchGrocery
+};

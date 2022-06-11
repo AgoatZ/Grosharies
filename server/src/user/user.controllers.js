@@ -106,8 +106,6 @@ const getUserProfile = async (req, res, next) => {
     }
 };
 
-//TODO: Post Done
-
 module.exports = {
     getUsers,
     getUserById,

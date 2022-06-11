@@ -18,21 +18,17 @@ const getPosts = async (query, options) => {
 const getRelevantPosts = async (options) => {
     try {
         const posts = await Post.paginate({
-                    $and: [
-                        { 'pickUpDates.from': { $lt: Date.now() } },
+            $and: [
+                { 'pickUpDates.from': { $lt: Date.now() } },
                 { 'pickUpDates.until': { $gt: Date.now() } }
             ]
-          }, options);
-    //       .where('pickUpDates.from').
-    // lt(Date.now()).
-    // where('pickUpDates.until').
-    // gt(Date.now());
-return posts.docs;
+        }, options);
+        return posts.docs;
     } catch (e) {
-    console.log('repository error: ' + e.message);
+        console.log('repository error: ' + e.message);
 
-    throw Error('Error while Retrieving Posts: ' + e.message);
-}
+        throw Error('Error while Retrieving Posts: ' + e.message);
+    }
 };
 
 const getPublisherOpenPosts = async (publisherId, options) => {
@@ -40,11 +36,9 @@ const getPublisherOpenPosts = async (publisherId, options) => {
         const posts = await Post.paginate({
             $and: [
                 { userId: publisherId },
-                { status: {$in : [postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE] }}
+                { status: { $in: [postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE] } }
             ]
         }, options);
-            // where('status').
-            // in([postStatus.PARTIALLY_COLLECTED, postStatus.STILL_THERE]);
         return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);
@@ -171,6 +165,19 @@ const updateContent = async (postId, content) => {
     }
 };
 
+const searchPosts = async (searchValue, options) => {
+    console.log('searching');
+    const regex = new RegExp(searchValue, 'i');
+    const filteredPosts = await Post.paginate({
+        $or: [
+            { name: { "$regex": regex } },
+            { 'content.original.name': { "$regex": regex } }
+        ]
+    }, options);
+    console.log(regex);
+    return filteredPosts.docs;
+};
+  
 module.exports = {
     getPosts,
     getPostById,
@@ -184,5 +191,6 @@ module.exports = {
     addPost,
     deletePost,
     updatePost,
-    updateContent
-}
+    updateContent,
+    searchPosts
+};
