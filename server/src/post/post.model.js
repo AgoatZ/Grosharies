@@ -17,7 +17,6 @@ const post = new mongoose.Schema({
     {
       from: Date,
       until: Date,
-      repeated: { type: boolean, default: false },
     },
   ],
   status: { type: String, enum: status, required: true },
