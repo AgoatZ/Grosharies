@@ -35,18 +35,24 @@ const appTheme = createTheme({
 const Layout = () => {
   return (
     <ThemeProvider theme={appTheme}>
-      <Grid container direction="column" display="grid" height="100%" gridTemplateRows="auto 1fr auto">
+      <Grid
+        container
+        direction="column"
+        display="grid"
+        height="100%"
+        gridTemplateRows="auto 1fr auto"
+      >
         <Grid item component="header">
           <Header />
         </Grid>
-        <Grid item component="main" sx={{ mt: 5 }}>
+        <Grid item component="main">
           <Outlet />
         </Grid>
         <Grid item component="footer">
           <Footer />
         </Grid>
       </Grid>
-    </ThemeProvider >
+    </ThemeProvider>
   );
 };
 
