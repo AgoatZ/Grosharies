@@ -29,13 +29,16 @@ const Groceries = () => {
 
     setTimeoutState(
       setTimeout(() => {
-        console.log("request");
+        if (searchValue === "") {
+          setGroceries(allGroceries);
+        }
+
         axios.get("/api/groceries/search/" + searchValue).then((res) => {
           setGroceries(res.data.groceries);
         });
 
         setClearLatestTimeout(true);
-      }, 2000)
+      }, 1000)
     );
     setClearLatestTimeout(false);
   };
