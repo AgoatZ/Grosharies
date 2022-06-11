@@ -35,10 +35,10 @@ export default function Login({ loginUser }) {
           backdrop: false
         });
         setTimeout(() => {
+          debugger
           cookies.set("jwt_token", res.data.accessToken, { httpOnly: false });
           const userAccessToken = jwt(res.data.accessToken); // decode your token here
-          console.log(userAccessToken);
-          console.log(res.data);
+          cookies.set("userId", userAccessToken.id, { httpOnly: false });
           loginUser();
         }, 1000);
       })

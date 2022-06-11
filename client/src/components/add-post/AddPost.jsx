@@ -44,14 +44,21 @@ const MySwal = withReactContent(Swal);
 
 export default function AddPost() {
   const [isHeadlineError, setIsHeadlineError] = React.useState(false);
-  const [isAddressError, setisAddressError] = React.useState(false);
+  const [isAddressError, setIsAddressError] = React.useState(false);
+  const [isDescriptionError, setIsDescriptionError] = React.useState(false);
+  const [isFromDateError, setIsFromDateError] = React.useState(false);
+  const [isEndDateError, setIsEndDateError] = React.useState(false);
+
   const [allGroceries, setAllGroceries] = React.useState([]);
   const [groceries, setGroceries] = React.useState([]);
+  const [checked, setChecked] = React.useState([]);
+
+  const [headline, setHeadline] = React.useState("");
+  const [address, setAddress] = React.useState("");
+  const [description, setDescription] = React.useState("");
   const [fromDate, setFromDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
   const [images, setImages] = React.useState();
-
-  const [checked, setChecked] = React.useState([]);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.findIndex((i) => {
@@ -66,20 +73,22 @@ export default function AddPost() {
     }
 
     setChecked(newChecked);
+    console.log(checked);
   };
 
   const handleToggleAmount = (e, value) => {
     const currentIndex = checked.findIndex((i) => {
       return i.grocery === value;
     });
-
-    checked[currentIndex].amount = e.target.value;
-
+    checked[currentIndex].amount =
+      e.target.value == "" ? 0 : parseInt(e.target.value);
     console.log(checked);
   };
 
   React.useEffect(() => {
     loadGroceries();
+    setFromDate(new Date());
+    setEndDate(new Date());
   }, []);
 
   const loadGroceries = () => {
@@ -128,6 +137,16 @@ export default function AddPost() {
     const address = data.get("address");
     const description = data.get("description");
 
+    if (
+      isHeadlineError !== "" ||
+      isDescriptionError !== "" ||
+      isAddressError != "" ||
+      isFromDateError !== "" ||
+      isEndDateError !== ""
+    ) {
+      return;
+    }
+
     const from = fromDate;
     const until = endDate;
     const repeated = data.get("repeat");
@@ -139,19 +158,6 @@ export default function AddPost() {
     });
 
     event.preventDefault();
-    if (
-      headline === "" ||
-      address == "" ||
-      fromDate == null ||
-      endDate == null
-    ) {
-      MySwal.fire({
-        title: <strong>Something went wrong</strong>,
-        text: "Some of the fields are empty",
-        icon: "error",
-      });
-      return;
-    }
 
     axios
       .post(serverRoutes.AddPost, {
@@ -213,14 +219,27 @@ export default function AddPost() {
               <Grid item xs={12}>
                 <TextField
                   required
+                  error={isHeadlineError !== ""}
                   fullWidth
-                  onChange={(e) => {}}
+                  onChange={(e) => {
+                    if (e.target.value.length < 2) {
+                      setIsHeadlineError(
+                        "headline must be at least 2 characters"
+                      );
+                    } else {
+                      setIsHeadlineError("");
+                    }
+                    setHeadline(e.target.value);
+                  }}
                   type="text"
                   id="headline"
                   label="Headline"
                   name="headline"
                   autoComplete="headline"
                 />
+                {isHeadlineError ? (
+                  <label style={alertStyle}>{isHeadlineError}</label>
+                ) : null}
               </Grid>
 
               {/* address */}
@@ -228,14 +247,27 @@ export default function AddPost() {
               <Grid item xs={12}>
                 <TextField
                   required
+                  error={isAddressError !== ""}
                   fullWidth
-                  onChange={(e) => {}}
+                  onChange={(e) => {
+                    if (e.target.value.length < 2) {
+                      setIsAddressError(
+                        "address must be at least 2 characters"
+                      );
+                    } else {
+                      setIsAddressError("");
+                    }
+                    setAddress(e.target.value);
+                  }}
                   type="text"
                   id="address"
                   label="address"
                   name="address"
                   autoComplete="address"
                 />
+                {isAddressError ? (
+                  <label style={alertStyle}>{isAddressError}</label>
+                ) : null}
               </Grid>
 
               {/* description */}
@@ -243,14 +275,27 @@ export default function AddPost() {
               <Grid item xs={12}>
                 <TextField
                   required
+                  error={isDescriptionError !== ""}
                   fullWidth
-                  onChange={(e) => {}}
+                  onChange={(e) => {
+                    if (e.target.value.length < 2) {
+                      setIsDescriptionError(
+                        "description must be at least 2 characters"
+                      );
+                    } else {
+                      setIsDescriptionError("");
+                    }
+                    setDescription(e.target.value);
+                  }}
                   type="text"
                   id="description"
                   label="description"
                   name="description"
                   autoComplete="description"
                 />
+                {isDescriptionError ? (
+                  <label style={alertStyle}>{isDescriptionError}</label>
+                ) : null}
               </Grid>
 
               {/* fromDate */}
@@ -261,13 +306,25 @@ export default function AddPost() {
                     renderInput={(props) => (
                       <TextField sx={{ width: "100%" }} {...props} />
                     )}
+                    error={isFromDateError !== ""}
                     label="From date"
                     value={fromDate}
                     onChange={(newValue) => {
+                      const today = new Date();
+                      if (newValue < today) {
+                        setIsFromDateError(
+                          "From date is required and must be greater from now"
+                        );
+                      } else {
+                        setIsFromDateError("");
+                      }
                       setFromDate(newValue);
                     }}
                   />
                 </LocalizationProvider>
+                {isFromDateError ? (
+                  <label style={alertStyle}>{isFromDateError}</label>
+                ) : null}
               </Grid>
 
               {/* endDate */}
@@ -278,12 +335,24 @@ export default function AddPost() {
                     renderInput={(props) => (
                       <TextField sx={{ width: "100%" }} {...props} />
                     )}
+                    error={isEndDateError !== ""}
                     label="end date"
                     value={endDate}
                     onChange={(newValue) => {
+                      debugger;
+                      if (newValue <= fromDate) {
+                        setIsEndDateError(
+                          "end date must be greater from fromDate"
+                        );
+                      } else {
+                        setIsEndDateError("");
+                      }
                       setEndDate(newValue);
                     }}
                   />
+                  {isEndDateError ? (
+                    <label style={alertStyle}>{isEndDateError}</label>
+                  ) : null}
                 </LocalizationProvider>
               </Grid>
 
@@ -344,7 +413,7 @@ export default function AddPost() {
                         />
                         <TextField
                           fullWidth
-                          type="text"
+                          type="number"
                           id={`${value.name}`}
                           label={`${value.name}`}
                           name={`${value.name}`}
