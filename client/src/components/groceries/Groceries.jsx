@@ -30,9 +30,10 @@ const Groceries = () => {
     setTimeoutState(
       setTimeout(() => {
         console.log("request");
-        /*Axios.get("/asdf", (req) => {
-        setGroceries(req.groceries);
-      });*/
+        axios.get("/groceries/search/" + searchValue, (req) => {
+          console.log("answer, " + JSON.stringify(req));
+          //setGroceries(req.groceries);
+        });
 
         setClearLatestTimeout(true);
       }, 2000)
