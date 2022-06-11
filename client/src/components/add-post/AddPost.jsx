@@ -32,6 +32,7 @@ import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import CommentIcon from "@mui/icons-material/Comment";
 import CardMedia from "@mui/material/CardMedia";
+import Input from "@mui/material/Input";
 
 const theme = createTheme();
 
@@ -48,6 +49,7 @@ export default function AddPost() {
   const [groceries, setGroceries] = React.useState([]);
   const [fromDate, setFromDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
+  const [images, setImages] = React.useState();
 
   const [checked, setChecked] = React.useState([]);
 
@@ -126,18 +128,15 @@ export default function AddPost() {
     const address = data.get("address");
     const description = data.get("description");
 
-    const fromDate = fromDate;
-    const endDate = endDate;
-    const repeat = data.get("repeat");
+    const from = fromDate;
+    const until = endDate;
+    const repeated = data.get("repeat");
 
-    const groceries = checked;
-    checked.forEach((c) => {
-      if (c.isChecked) {
-        console.log("ggg ", c.grocery.name, c.amount);
+    const groceries = checked.map((grocery) => {
+      if (grocery.isChecked) {
+        return { id: grocery._id, amount: grocery.amount };
       }
     });
-
-    // const password = data.get("password");
 
     event.preventDefault();
     if (
@@ -155,16 +154,22 @@ export default function AddPost() {
     }
 
     axios
-      .post(serverRoutes.Register, {
+      .post(serverRoutes.AddPost, {
         headline,
         address,
+        description,
+        pickUpDates: [{ from, until /*, repeated*/ }],
+        groceries,
       })
       .then((res) => {
-        MySwal.fire({
-          title: <strong>Post created Successfully!</strong>,
-          icon: "success",
-        });
-        console.log(res.data);
+        axios
+          .post("/posts/updateImage " + res.post._id, { images })
+          .then((res) => {
+            MySwal.fire({
+              title: <strong>Post created Successfully!</strong>,
+              icon: "success",
+            });
+          });
       })
       .catch((e) => {
         MySwal.fire({
@@ -173,6 +178,10 @@ export default function AddPost() {
         });
         console.log(e);
       });
+  };
+
+  const onChangeImages = (event) => {
+    setImages(event.target.files);
   };
 
   return (
@@ -355,6 +364,9 @@ export default function AddPost() {
                     );
                   })}
                 </List>
+              </Grid>
+              <Grid item xs={12}>
+                <Input type="file" onChange={onChangeImages}></Input>
               </Grid>
               <Grid item xs={12}>
                 <Button
