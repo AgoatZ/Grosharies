@@ -9,7 +9,12 @@ const getCoordinates = async (address) => {
         }
     };
     const geoResult = await googleMapsClient.geocode(args);
-    return geoResult.data.results[0].geometry.location;
+    if (geoResult.data.results[0].geometry) {
+        return geoResult.data.results[0].geometry.location;
+    } else {
+        console.log('Address is not valid from utils getCoordinates');
+        throw Error('Address is not valid');
+    }
 };
 
 module.exports = {

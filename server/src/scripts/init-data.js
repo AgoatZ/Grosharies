@@ -24,18 +24,19 @@ const imgsFolderPath = path.join(folderPath, 'common', 'imgs');
 const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;
 
-mongoose.connect('mongodb://127.0.0.1:27017/grosharies', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connection.once('connected', () => console.log('Database connected successfully for db:init'))
-    .then(() => init())
-    .finally(() => mongoose.disconnect()
-        .then(() => console.log('Database disconnected successfully!')))
-    .catch(() => console.log('Unable to connect to database'));
+//mongoose.connect('mongodb://127.0.0.1:27017/grosharies', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://Grosharies:FyWfIJSz5Bt9hnmi@grosharies.glcd8.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connection.once('connected', () => console.log('Database connected successfully for db:init'));
+    // .then(() => init())
+    // .finally(() => mongoose.disconnect()
+    //     .then(() => console.log('Database disconnected successfully!')))
+    // .catch(() => console.log('Unable to connect to database'));
 
 mongoose.set('useFindAndModify', false);
 
 const init = async () => {
     try {
-        await mongoose.connection.dropDatabase();
+        //await mongoose.connection.dropDatabase();
         let healthy = new Tag({
             "name": "Healthy"
         });
@@ -174,7 +175,7 @@ const init = async () => {
             groImages.push(img.toString());
         };
 
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 5; i++) {
             let user = new User({
                 "firstName": "Jacob" + i,
                 "lastName": "Padre" + i,
@@ -344,4 +345,5 @@ const init = async () => {
             event = await event.save();
         }
     } catch (err) { console.log(err) }
-}
+};
+init().then(()=>mongoose.disconnect());
