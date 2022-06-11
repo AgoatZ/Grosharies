@@ -81,7 +81,7 @@ const Home = () => {
       </Box>
 
 
-      <Box sx={{ width: "auto" }}>
+      <Box sx={{ width: { sm: "500px", md: "1000px" } }}>
         <Switch sx={{ left: 0 }} title="Map Visualize" onChange={() => setShowAsMap(!showAsMap)} checked={showAsMap} />
         <Tabs value={activeTabNumber} onChange={handleTabChange}>
           <Tab label={tabs[0]} />
