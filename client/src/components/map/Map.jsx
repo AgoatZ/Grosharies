@@ -2,7 +2,6 @@ import GoogleMapReact from "google-map-react";
 import Marker from "./Marker";
 import { Box } from "@mui/material";
 
-
 const Map = ({
   locations,
   center,
@@ -11,7 +10,6 @@ const Map = ({
   centerAddress = "Me",
   sx,
 }) => {
-
   return (
     <Box
       sx={
@@ -31,15 +29,17 @@ const Map = ({
         center={center}
       >
         {locations &&
-          locations.map(({ lat, lng, address, onClick }, index) => (
-            <Marker
-              key={index}
-              address={address}
-              lat={lat}
-              lng={lng}
-              pinOnClick={onClick}
-            ></Marker>
-          ))}
+          locations.map(({ lat, lng, address, onClick }, index) =>
+            lat || lng ? (
+              <Marker
+                key={index}
+                address={address}
+                lat={lat}
+                lng={lng}
+                pinOnClick={onClick}
+              ></Marker>
+            ) : null
+          )}
         {center && addCenterPoint && (
           <Marker
             color={"black"}
