@@ -249,15 +249,7 @@ const finishPending = async function (req, res, next) {
         const collector = await UserService.getUserById(finishedPending.collectorId);
         const publisher = await UserService.getUserById(finishedPending.publisherId);
 
-        if (req.user && String(req.user._id) === String(finishedPending.collectorId)) {
-            const completedBy = {
-                text: finishedPending.headline,
-                title: "An order was completed by " + collector.firstName + " " + collector.lastName,
-                postId: finishedPending.sourcePost
-            };
-            emitEvent('New Notification', finishedPending.publisherId, completedBy);
-            publisher.notifications.push(completedBy);
-        } else if (req.user && String(req.user._id) === String(finishedPending.publisherId)) {
+        if (req.user && String(req.user._id) === String(finishedPending.publisherId)) {
             const wasCompleted = {
                 text: finishedPending.headline,
                 title: "An order was completed",
@@ -267,9 +259,7 @@ const finishPending = async function (req, res, next) {
                 pendingPostId: finishedPending._id
             };
             emitEvent('New Notification', finishedPending.publisherId, wasCompleted);
-            emitEvent('Pending Completed', finishedPending.collectorId, pendingComplete);
             publisher.notifications.push(wasCompleted);
-            collector.notifications.push(pendingComplete);
         }
         const orderComplete = {
             text: finishedPending.headline,
@@ -311,13 +301,8 @@ const cancelPending = async function (req, res, next) {
                 title: "An order was cancelled",
                 postId: cancelledPost.sourcePost
             };
-            const pendingComplete = {
-                pendingPostId: cancelledPost._id
-            };
             emitEvent('New Notification', cancelledPost.publisherId, wasCompleted);
-            emitEvent('Pending Cancelled', cancelledPost.collectorId, pendingComplete);
             publisher.notifications.push(wasCompleted);
-            collector.notifications.push(pendingComplete);
         }
         const orderComplete = {
             text: cancelledPost.headline,
@@ -362,11 +347,9 @@ const decide = async (req, res, next) => {
                 title: "Your order is expired",
                 postId: pendingPost.sourcePost
             };
-            const pendingExpired = { pendingPostId: pendingPost._id };
             emitEvent('New Notification', pendingPost.collectorId, newNotification);
-            emitEvent('Pending Expired', pendingPost.collectorId, pendingExpired);
             const collector = await UserService.getUserById(pendingPost.collectorId);
-            await UserService.addToNotifications(collector._id, [newNotification, pendingExpired]);
+            await UserService.addToNotifications(collector._id, newNotification);
         }
         await PendingService.decide(req.query.Id);
         return res.status(200).json({ pending: pendingPost, message: "Succesfully decided PendingPost status" });

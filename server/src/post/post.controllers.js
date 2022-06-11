@@ -215,7 +215,6 @@ const updatePost = async function (req, res, next) {
             title: "A post of your order was edited",
             postId: oldPost._id
         };
-        emitEvent('Post Edited', oldPost._id, {});
         for (i in oldPost.repliers) {
             emitEvent('New Notification', oldPost.repliers[i].user, newNotification);
             await UserService.addToNotifications(oldPost.repliers[i].user, newNotification);
