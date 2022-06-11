@@ -1,130 +1,120 @@
-import { connect, io } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-let socket;
-let usernameAlreadySelected = false;
+export function createNotificationSocket(userId = sessionStorage.getItem('userId')) {
 
-export const create = (userId) => {
+  if (!userId) {
+    console.log("Socket: Couldnt find userId");
+  } else {
 
-  const auth = {
-    purpose: "notification",
-    userId: userId
-  }
+    const dataToServer = { userId: userId }
 
-  const auth2 = {
-    purpose: "post",
-    postId: postId
-  }
+    let socket;
+    if (process.env.NODE_ENV == "development") {
+      //Different Ports in Development
+      socket = io('ws://localhost:5000', { autoConnect: false, auth: dataToServer });
+    } else if (process.env.NODE_ENV == "production") {
+      //Same Origin in Production
+      socket = io({ autoConnect: false, auth: dataToServer });
+    }
 
-  if (process.env.NODE_ENV == "development") {
-    //Different Ports in Development
-    socket = io('ws://localhost:5000', {
-      autoConnect: false,
-      auth: auth
+    socket.on('connect', () => { console.log('User Notification Socket connected to server'); });
+    socket.on('disconnect', () => { console.log('User Notification Socket disconnected from server'); });
+
+    //Custom Events from server
+    //data: { text:"THE POST HEADLINE" 	title: "",	postId: "" }
+    socket.on('New Notification', (data) => {
+      console.log('Socket: New Notification', data);
     });
 
-  } else if (process.env.NODE_ENV == "production") {
-    //Same Origin in Production
-    socket = io({
-      autoConnect: false,
-      auth: auth
+    return socket;
+  }
+}
+
+export function createSocket(userId = sessionStorage.getItem('userId')) {
+
+  if (!userId) {
+    console.log("Socket: Couldnt find userId");
+  } else {
+
+    const dataToServer = { userId: userId }
+
+    let socket;
+    if (process.env.NODE_ENV == "development") {
+      //Different Ports in Development
+      socket = io('ws://localhost:5000', { autoConnect: false, auth: dataToServer });
+    } else if (process.env.NODE_ENV == "production") {
+      //Same Origin in Production
+      socket = io({ autoConnect: false, auth: dataToServer });
+    }
+    socket.on('connect', () => { console.log('User General Socket connected to server'); });
+    socket.on('disconnect', () => { console.log('User General Socket disconnected from server'); });
+
+    //EVENTS    
+
+    //Affected pages for all - relevant post
+    //Affected pages for relevant collectors - my-orders page
+    //data: { postId: "" }
+    socket.on('Post Edited', (data) => {
+      console.log("Socket: Post Edited", data);
+      if (window.location.pathname == "/my-orders" || window.location.pathname == "/post/" + data.postId)
+        window.location.reload();
     });
+
+    //Affected pages for all - relevant post
+    //Affected pages for relevant collectors - my-orders page
+    //data: { postId: "" }
+    socket.on('Post Deleted', (data) => {
+      console.log("Socket: Post Deleted", data);
+      if (window.location.pathname == "/my-orders" || window.location.pathname == "/post/" + data.postId)
+        window.location.reload();
+    });
+
+    //Affected pages for publisher - my-posts
+    //data: { pendingPostId:"", sourcePostId: "", collectorId: "", publisherId: "" }
+    socket.on('Pending Created', (data) => {
+      console.log("Socket: Pending Created", data);
+      if (window.location.pathname == "/my-posts")
+        window.location.reload();
+    });
+
+    //Affected pages for publisher - my-posts
+    //data: { pendingPostId:"", sourcePostId: "", collectorId: "", publisherId: "" }
+    socket.on('Pending Edited', (data) => {
+      console.log("Socket: Pending Edited", data);
+      if (window.location.pathname == "/my-posts")
+        window.location.reload();
+    });
+
+    //Affected pages for collector - my-orders page, relevant post
+    //Affected pages for publisher - my-posts
+    //data: { by:"RELEVANT USER ID" pendingPostId:"", sourcePostId: "", collectorId: "", publisherId: "" }
+    socket.on('Pending Status Changed', (data) => {
+      console.log("Socket: Pending Status Changed", data);
+
+      if (userId != data.by && userId == data.collectorId &&
+        (window.location.pathname == "/my-orders" || window.location.pathname == "/post/" + data.postId))
+        window.location.reload();
+
+      if (userId != data.by && userId == data.publisherId &&
+        (window.location.pathname == "/my-posts"))
+        window.location.reload();
+    });
+
+    //Affected pages for collector - my-orders page, relevant post
+    //Affected pages for publisher - my-posts
+    //data: { pendingPostId:"", sourcePostId: "", collectorId: "", publisherId: "" }
+    socket.on('Pending Expired', (data) => {
+      console.log("Socket: Pending Expired", data);
+
+      if (userId != data.by && userId == data.collectorId &&
+        (window.location.pathname == "/my-orders" || window.location.pathname == "/post/" + data.postId))
+        window.location.reload();
+
+      if (userId != data.by && userId == data.publisherId &&
+        (window.location.pathname == "/my-posts"))
+        window.location.reload();
+    });
+
+    return socket;
   }
-
-  socket.on('connect', () => { console.log('Socket connected to server'); })
-  socket.on('disconnect', () => { console.log('Socket disconnected ftom server'); })
-
-  socket.connect();
 }
-
-//SEND USER ID IF A USER LOGS/IS LOGGED IN
-export const connectUser = (username) => {
-
-  //CHECK IF SESSION EXISTS IN LOCAL STORAGE ALREADY
-  const sessionID = localStorage.getItem("sessionID");
-
-  if (sessionID) {
-    usernameAlreadySelected = true;
-    socket.auth = { sessionID };
-    socket.connect();
-  }
-  else {
-    usernameAlreadySelected = true;
-    socket.auth = { username };
-    socket.connect();
-  }
-}
-
-export const created = () => {
-
-  socket.on('connnection', () => { console.log('connected to server'); })
-
-  //HANDLE PEND POST REQUEST NOTIFICATION
-  socket.on('pend post notification', (notification) => {
-    console.log(notification);
-  })
-
-  //???
-  //HANLE TIMER NOTIFICATION
-  //var el;
-  socket.on('time', function (timeString) {
-    //el = document.getElementById('server-time')
-    //el.innerHTML = 'Server time: ' + timeString;
-    console.log('Server time: ' + timeString);
-  });
-
-  //HANDLE DISCONNECTION
-  socket.on('disconnect', () => { console.log('Socket disconnecting'); })
-}
-
-
-/*
-    //TODO SET UP A CLIENT WEBSOCKET
-    useEffect(() => {
-      let socket;
-      if (process.env.NODE_ENV == "development") {
-        socket = io('ws://localhost:5000', { autoConnect: false }); //Different Ports in Development
-      } else if (process.env.NODE_ENV == "production") {
-        socket = io({ autoConnect: false }); //Same Origin in Production
-      }
-  
-      //TODO SEND USER ID IF A USER LOGS/IS LOGGED IN
-      onUsernameSelection(username) {
-        this.usernameAlreadySelected = true;
-        socket.auth = { username };
-        socket.connect();
-      },
-    },
-      //TODO CHECK IF SESSION EXISTS IN LOCAL STORAGE ALREADY
-      created() {
-      
-      const sessionID = localStorage.getItem("sessionID");
-
-      if(sessionID) {
-        this.usernameAlreadySelected = true;
-        socket.auth = { sessionID };
-        socket.connect();
-      }
-      socket.on('connnection', () => {
-        console.log('connected to server');
-      })
-  
-     //TODO HANDLE PEND POST REQUEST NOTIFICATION
-      socket.on('pend post notification', (notification) => {
-        console.log(notification);
-      })
-  
-     //TODO HANLE TIMER NOTIFICATION
-      //var el;
-      socket.on('time', function (timeString) {
-        //el = document.getElementById('server-time')
-        //el.innerHTML = 'Server time: ' + timeString;
-        console.log('Server time: ' + timeString);
-      });
-  
-      //TODO HANDLE DISCONNECTION
-      socket.on('disconnect', () => {
-        console.log('Socket disconnecting');
-      })
-  
-    }, [])
-  */
