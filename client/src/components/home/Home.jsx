@@ -5,12 +5,10 @@ import { Stack, Box, Tabs, Tab, Typography, Divider } from "@mui/material";
 import axios from "../../utils/axios";
 import Posts from "../posts/Posts";
 import AddPost from "../add-post/AddPost";
-import Map from "../map/Map";
 
 const tabs = ["Near By", "Recently Added", "Add post"];
 
 const Home = () => {
-  const navigate = useNavigate();
   const { loggedIn, userData } = useOutletContext();
 
   const [activeTabNumber, setActiveTabNumber] = useState(0);
