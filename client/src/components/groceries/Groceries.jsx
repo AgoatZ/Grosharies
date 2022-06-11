@@ -30,9 +30,8 @@ const Groceries = () => {
     setTimeoutState(
       setTimeout(() => {
         console.log("request");
-        axios.get("/groceries/search/" + searchValue, (req) => {
-          console.log("answer, " + JSON.stringify(req));
-          //setGroceries(req.groceries);
+        axios.get("/api/groceries/search/" + searchValue).then((res) => {
+          setGroceries(res.data.groceries);
         });
 
         setClearLatestTimeout(true);
