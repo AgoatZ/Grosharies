@@ -39,7 +39,7 @@ const Layout = () => {
         <Grid item component="header">
           <Header />
         </Grid>
-        <Grid item component="main" sx={{ mt: 5 }}>
+        <Grid item component="main">
           <Outlet />
         </Grid>
         <Grid item component="footer">
