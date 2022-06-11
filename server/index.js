@@ -144,6 +144,11 @@ const emitEvent = function (event, room, data) {
   io.to(String(room)).emit(event, data);
 };
 
+const broadcastEvent = function (event, data) {
+  console.log("broadcasting event", event, "with data", data);
+  io.emit(event, data);
+};
+
 io.on("connection", socket => {
   console.log("new socket connection", socket.id, "with data", socket.handshake.auth);
   const socketID = socket.id;
@@ -211,8 +216,6 @@ io.on("connection", socket => {
   socket.on("disconnect", () => console.log("socket disconnected"));
 });
 
-//setInterval(() => io.emit('time', '12345679'), 1000);
-
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));
@@ -222,8 +225,10 @@ io.use((socket, next) => {
   //console.log(socket.request);
   next();
 });
+
 module.exports = {
   app,
   http,
-  emitEvent
+  emitEvent,
+  broadcastEvent
 };

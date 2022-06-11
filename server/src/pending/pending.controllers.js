@@ -148,18 +148,14 @@ const addPending = async function (req, res, next) {
         const pendingPost = await PendingService.addPending(req.body);
         const collector = await UserService.getUserById(pendingPost.collectorId);
         const publisher = await UserService.getUserById(pendingPost.publisherId);
-        const newPendingPost = {
-            sourcePostId: pendingPost.sourcePost,
-            pendingPostId: pendingPost._id
-        };
+
         const newNotification = {
             text: pendingPost.headline,
             title: "A new order by " + collector.firstName + " " + collector.lastName,
             postId: pendingPost.sourcePost
         };
-        emitEvent('New Pending Post', publisher._id, newPendingPost);
         emitEvent('New Notification', publisher._id, newNotification);
-        publisher.notifications.push([newPendingPost, newNotification]);
+        publisher.notifications.push(newNotification);
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
         return res.status(200).json({ post: pendingPost, message: "Succesfully Pending Added" });
     } catch (e) {
@@ -184,7 +180,7 @@ const updatePending = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const { emitEvent } = require(".././../index");
+        const { emitEvent, broadcastEvent } = require(".././../index");
 
         const oldPost = await PendingService.updatePending(req.params.id, req.body);
         const collector = await UserService.getUserById(oldPost.collectorId);
@@ -194,9 +190,16 @@ const updatePending = async function (req, res, next) {
             title: "An order was edited by " + collector.firstName + " " + collector.lastName,
             postId: oldPost.sourcePost
         };
+        const publisherNote = {
+            pendingPostId: pendingPost._id,
+            sourcePostId: updatePost._id,
+            collectorId: pendingPost.collectorId,
+            publisherId: updatedPost.userId
+        };
+        emitEvent('Pending Edited', publisher._id, publisherNote);
         emitEvent('New Notification', publisher._id, newNotification);
-        publisher.notifications.push(newNotification);
-        await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
+        
+        await UserService.addToNotifications(publisher._id, [publisherNote, newNotification]);
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('Pending controller error from updatePending: ' + e.message);
@@ -218,18 +221,15 @@ const setCollectorStatement = async function (req, res, next) {
             title: "A collection was stated by " + collector.firstName + " " + collector.lastName,
             postId: oldPending.sourcePost
         };
-        const noteToCollector = {
-            text: oldPending.headline,
-            title: "Your order is completed",
-            postId: oldPending.sourcePost
-        };
-        emitEvent('New Notification', publisher._id, noteToPublisher);
-        emitEvent('New Notification', collector._id, noteToCollector);
-        publisher.notifications.push(noteToPublisher);
-        collector.notifications.push(noteToCollector);
+        emitEvent('New Notification', oldPending.publisherId, statement);
+        publisher.notifications.push(statement);
+        await UserService.addToNotifications(publisher._id, statement);
 
-        await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
-        await UserService.updateUser(collector._id, { notifications: collector.notifications });
+        const statusChanged = { by: collector._id, pendingPostId: oldPending._id, sourcePostId: pendingPostId.sourcePost, collectorId: collector._id, publisherId: publisher._id };
+        emitEvent("Pending Status Changed", publisher._id, statusChanged);
+        emitEvent("Pending Status Changed", collector._id, statusChanged);
+        await UserService.addToNotifications(publisher._id, statusChanged);
+        await UserService.addToNotifications(collector._id, statusChanged);
 
         return res.status(200).json({ oldPending: oldPending, message: "Succesfully Post Updated" });
     } catch (e) {

@@ -169,22 +169,25 @@ const addPost = async function (req, res, next) {
 
 const pendPost = async function (req, res, next) {
     try {
-        const { emitEvent } = require(".././../index");
+         //data: { pendingPostId:"", sourcePostId: "", collectorId: "", publisherId: "" }
+        //socket.on('Pending Created',
+        const { emitEvent, broadcastEvent } = require(".././../index");
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
-        const collector = await UserService.getUserById(pendingPost.collectorId);
-        const publisher = await UserService.getUserById(pendingPost.publisherId);
-        const newPendingPost = {
-            sourcePostId: pendingPost.sourcePost,
-            pendingPostId: pendingPost._id
-        };
         const newNotification = {
             text: pendingPost.headline,
             title: "A new order by " + collector.firstName + " " + collector.lastName,
             postId: pendingPost.sourcePost
         };
-        emitEvent('New Notification', publisher._id, newNotification);
-        publisher.notifications.push([newPendingPost, newNotification]);
-
+        const publisherNote = {
+            pendingPostId: pendingPost._id,
+            sourcePostId: updatePost._id,
+            collectorId: pendingPost.collectorId,
+            publisherId: updatedPost.userId
+        };
+        emitEvent('Pending Created', updatePost.userId, publisherNote);
+        emitEvent("New Notification", updatedPost.userId, [publisherNote, newNotification]);
+        
+        await UserService.addToNotifications(updatedPost.userId, newNotification);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {
         console.log('controller error from pendPost: ' + e.message);
@@ -195,8 +198,19 @@ const pendPost = async function (req, res, next) {
 
 const deletePost = async function (req, res, next) {
     try {
-        const post = await PostService.deletePost(req.params.id);
-        return res.status(200).json({ post: post, message: "Succesfully Posts Deleted" });
+        const { emitEvent, broadcastEvent } = require(".././../index");
+        const oldPost = await PostService.deletePost(req.params.id);
+        const newNotification = {
+            text: oldPost.headline,
+            title: "A post of your order was deleted",
+            postId: oldPost._id
+        };
+        broadcastEvent('Post Deleted', { postId: oldPost._id });
+        for (i in oldPost.repliers) {
+            emitEvent('New Notification', oldPost.repliers[i].user, newNotification);
+            await UserService.addToNotifications(oldPost.repliers[i].user, newNotification);
+        }
+        return res.status(200).json({ post: oldPost, message: "Succesfully Posts Deleted" });
     } catch (e) {
         console.log('controller error: ' + e.message);
 
@@ -208,13 +222,16 @@ const updatePost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const { emitEvent } = require(".././../index");
+        const { emitEvent, broadcastEvent } = require(".././../index");
         const oldPost = await PostService.updatePost(req.params.id, req.body);
         const newNotification = {
             text: oldPost.headline,
             title: "A post of your order was edited",
             postId: oldPost._id
         };
+        const publisherNote = { postId: oldPost._id };
+        emitEvent('Post Edited', oldPost.userId, publisherNote);
+        await UserService.addToNotifications(oldPost.userId, publisherNote);
         for (i in oldPost.repliers) {
             emitEvent('New Notification', oldPost.repliers[i].user, newNotification);
             await UserService.addToNotifications(oldPost.repliers[i].user, newNotification);
