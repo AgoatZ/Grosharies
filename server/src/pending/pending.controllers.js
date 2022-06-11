@@ -213,14 +213,23 @@ const setCollectorStatement = async function (req, res, next) {
         const collector = await UserService.getUserById(oldPending.collectorId);
         const publisher = await UserService.getUserById(oldPending.publisherId);
 
-        const statement = {
+        const noteToPublisher = {
             text: oldPending.headline,
             title: "A collection was stated by " + collector.firstName + " " + collector.lastName,
             postId: oldPending.sourcePost
         };
-        emitEvent('New Notification', oldPending.publisherId, statement);
-        publisher.notifications.push(statement);
+        const noteToCollector = {
+            text: oldPending.headline,
+            title: "Your order is completed",
+            postId: oldPending.sourcePost
+        };
+        emitEvent('New Notification', publisher._id, noteToPublisher);
+        emitEvent('New Notification', collector._id, noteToCollector);
+        publisher.notifications.push(noteToPublisher);
+        collector.notifications.push(noteToCollector);
+
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
+        await UserService.updateUser(collector._id, { notifications: collector.notifications });
 
         return res.status(200).json({ oldPending: oldPending, message: "Succesfully Post Updated" });
     } catch (e) {
