@@ -49,7 +49,7 @@ const GroceryCard = ({ groceryDetails }) => {
             width: "180px",
             height: "180px",
           }}
-          image="/assets/logo.png"
+          image={"data:image/jpg;base64, " + groceryDetails.images}
           alt="Live from space album cover"
         />
       </Card>

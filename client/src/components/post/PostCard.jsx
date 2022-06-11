@@ -21,7 +21,7 @@ const PostCard = ({ post }) => {
     <Card sx={{ padding: 1 }}>
       <CardActionArea sx={cardStyle} onClick={toPostPage}>
         <CardMedia height="128" image="/assets/default-post-image.svg" />
-        <PostImage height="128" />
+        <PostImage height="128" src={"data:image/jpg;base64, " + post.images[0]} />
         <CardContent>
           <Typography gutterBottom variant="h5">{post.headline}</Typography>
           <Typography variant="body2" color="text.secondary">{post.description}</Typography>
