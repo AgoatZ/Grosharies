@@ -432,7 +432,7 @@ export default function AddPost() {
                             width: "50px",
                             height: "50px",
                           }}
-                          image="/assets/logo.svg"
+                          image={"data:image/jpg;base64, " + value.images}
                           alt="Live from space album cover"
                         />
                       </ListItem>
