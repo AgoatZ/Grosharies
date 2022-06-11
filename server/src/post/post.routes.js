@@ -33,7 +33,7 @@ router.post(
 
 router.post("/bygroceries", PostController.getPostsByGroceries);
 
-router.post("/", PostController.addPost);
+router.post("/", authJwt, PostController.addPost);
 
 router.post("/pend", authJwt, PostController.pendPost);
 

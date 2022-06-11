@@ -158,7 +158,7 @@ const addPost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const post = await PostService.addPost(req.body);
+        const post = await PostService.addPost(req.body, req.user);
         return res.status(200).json({ post: post, message: "Succesfully Posts Added" });
     } catch (e) {
         console.log('controller error: ' + e.message);
@@ -169,7 +169,22 @@ const addPost = async function (req, res, next) {
 
 const pendPost = async function (req, res, next) {
     try {
+        const { emitEvent } = require(".././../index");
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
+        const collector = await UserService.getUserById(pendingPost.collectorId);
+        const publisher = await UserService.getUserById(pendingPost.publisherId);
+        const newPendingPost = {
+            sourcePostId: pendingPost.sourcePost,
+            pendingPostId: pendingPost._id
+        };
+        const newNotification = {
+            text: pendingPost.headline,
+            title: "A new order by " + collector.firstName + " " + collector.lastName,
+            postId: pendingPost.sourcePost
+        };
+        emitEvent('New Notification', publisher._id, newNotification);
+        publisher.notifications.push([newPendingPost, newNotification]);
+
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {
         console.log('controller error from pendPost: ' + e.message);

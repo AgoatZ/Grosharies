@@ -80,8 +80,12 @@ const updateAmount = async function (groceryId, amount) {
 };
 
 const searchGrocery = async (searchValue, options) => {
+    const regex = new RegExp(searchValue, 'i');
     const filteredGroceries = await Grocery.paginate({
-        name: { $regex: searchValue, $options: i }
+        $or: [
+            { name: { "$regex": regex } },
+            { 'content.original.name': { "$regex": regex } }
+        ]
     }, options);
     return filteredGroceries.docs;
 };
