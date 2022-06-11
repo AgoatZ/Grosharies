@@ -15,6 +15,8 @@ const Home = () => {
   const [suggestedPosts, setSuggestedPosts] = useState([]);
   const [nearbyPosts, setNearbyPosts] = useState([]);
   const [recentPosts, setRecentPosts] = useState([]);
+  const [showAsMap, setShowAsMap] = useState(false)
+
   useEffect(() => loadPosts(), []);
 
   const loadPosts = () => {
@@ -22,8 +24,17 @@ const Home = () => {
       navigator.geolocation.getCurrentPosition(function (position) {
         console.log("Latitude is :", position.coords.latitude);
         console.log("Longitude is :", position.coords.longitude);
-        //TODO: add route to exept the user location to server 
-        axios.get('/posts/').then(res => setNearbyPosts(res.data.posts));
+        //TODO: add route to exept the user location to server
+        axios
+          .post("/posts/nearby", {
+            coordinates: {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            },
+          })
+          .then((res) => {
+            setNearbyPosts(res.data.posts);
+          });
       });
     }
     axios.get('posts/suggested/current')
@@ -69,17 +80,20 @@ const Home = () => {
         <Posts data={suggestedPosts} noBorder />
       </Box>
 
-      <Box sx={{ width: 'auto' }}>
-        <Tabs value={activeTabNumber} onChange={handleTabChange} >
+
+      <Box sx={{ width: "auto" }}>
+        <Switch sx={{ left: 0 }} title="Map Visualize" onChange={() => setShowAsMap(!showAsMap)} checked={showAsMap} />
+        <Tabs value={activeTabNumber} onChange={handleTabChange}>
           <Tab label={tabs[0]} />
           <Tab label={tabs[1]} />
           <Tab label={tabs[2]} />
         </Tabs>
         <TabPanel value={activeTabNumber} index={0}>
-          <Posts data={nearbyPosts} />
+          <Posts data={nearbyPosts} showMap={showAsMap} />
+
         </TabPanel>
         <TabPanel value={activeTabNumber} index={1}>
-          <Posts data={recentPosts} />
+          <Posts data={recentPosts} showMap={showAsMap} />
         </TabPanel>
         <TabPanel value={activeTabNumber} index={2}>
           <AddPost />
