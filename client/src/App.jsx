@@ -14,6 +14,7 @@ import Post from "./components/post/Post";
 import About from "./components/about/About";
 import Groceries from "./components/groceries/Groceries";
 import Events from "./components/events/Events";
+import Leaderboard from "./components/leaderboard/Leaderboard";
 import Profile from "./components/profile/Profile";
 import MyOrders from "./components/myOrders/MyOrders";
 import MyPosts from "./components/myPosts/MyPosts";
@@ -79,6 +80,7 @@ const App = () => {
             <Route path="post/:id" element={<Post />} />
             <Route path="groceries" element={<Groceries />} />
             <Route path="events" element={<Events />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="groceries/:name" element={<GroceryDetails />} />
             <Route path="profile" element={<Profile />} />
             <Route path="my-posts" element={<MyPosts />} />
