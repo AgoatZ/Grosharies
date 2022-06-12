@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../../App";
 import { useNavigate } from "react-router-dom";
-import {
-  Stack,
-  Box,
-  Tabs,
-  Tab,
-  Typography,
-  Divider,
-  Switch,
-} from "@mui/material";
+import { Stack, Box, Tabs, Tab, Typography, Divider, Switch, } from "@mui/material";
 import axios from "../../utils/axios";
 import Posts from "../posts/Posts";
 import AddPost from "../add-post/AddPost";
@@ -19,8 +11,7 @@ const tabs = ["Near By", "Recently Added", "Add post"];
 const Home = () => {
   const { loggedIn } = useContext(AppContext);
   const [activeTabNumber, setActiveTabNumber] = useState(0);
-  const handleTabChange = (event, newTabNumber) =>
-    setActiveTabNumber(newTabNumber);
+  const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
   const [suggestedPosts, setSuggestedPosts] = useState([]);
   const [nearbyPosts, setNearbyPosts] = useState([]);
   const [recentPosts, setRecentPosts] = useState([]);
@@ -31,8 +22,8 @@ const Home = () => {
   const loadPosts = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        console.log("Latitude is :", position.coords.latitude);
-        console.log("Longitude is :", position.coords.longitude);
+        //console.log("Latitude is :", position.coords.latitude);
+        //console.log("Longitude is :", position.coords.longitude);
         //TODO: add route to exept the user location to server
         axios
           .post("/posts/nearby", {
@@ -54,14 +45,8 @@ const Home = () => {
 
     axios.get("/posts/").then((res) => {
       res.data.posts.forEach((post) => {
-        console.log(
-          "address: ",
-          post.address,
-          " coordinates: ",
-          post.addressCoordinates
-        );
+        //console.log("address: ", post.address, " coordinates: ", post.addressCoordinates);
       });
-
       setRecentPosts(res.data.posts);
     });
   };
@@ -88,22 +73,11 @@ const Home = () => {
   };
 
   return (
-    <Stack
-      direction="column"
-      justifyContent="flex-start"
-      alignItems="center"
-      spacing={{ xs: 1, sm: 1, md: 5, lg: 5 }}
-    >
+    <Stack direction="column" justifyContent="flex-start" alignItems="center" spacing={{ xs: 1, sm: 1, md: 5, lg: 5 }}>
       <Logo />
-
-      <Box
-        sx={{ width: "auto" }}
-        hidden={!loggedIn || suggestedPosts.length == 0}
-      >
+      <Box sx={{ width: "auto" }} hidden={!loggedIn || suggestedPosts.length == 0}>
         <Divider variant="middle">
-          <Typography variant="h5" margin="10px">
-            Recommended For You
-          </Typography>
+          <Typography variant="h5" margin="10px">Recommended For You</Typography>
         </Divider>
         <Posts data={suggestedPosts} noBorder />
       </Box>
