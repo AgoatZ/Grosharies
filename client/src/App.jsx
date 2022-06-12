@@ -1,9 +1,9 @@
 import React, { useState, useEffect, createContext } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { Container } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import axios from "./utils/axios";
 import { UserDummy } from "./utils/dummies";
-import { createNotificationSocket, onNewNotification } from './utils/notifications-socket';
+import { createNotificationSocket, createSocket } from './utils/notifications-socket';
 //FontAwesome Icons Setup
 import { library as iconsLibrary } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -50,12 +50,13 @@ const App = () => {
 
   //Socket Setup
   const socketSetup = (userData) => {
-    createNotificationSocket(userData._id);
-    onNewNotification((notification) => {
-      userData.notifications.unshift(notification);
-      setUserNotifications([...userData.notifications]);    //Array wont render fix - the spread operator creates a copy on a new memory reference
-      setUserData(userData);
-    });
+    createSocket(userData._id).connect();
+    createNotificationSocket(userData._id).connect()
+      .on('New Notification', (notification) => {
+        console.log("New Notification", notification);
+        userData.notifications.unshift(notification);
+        setUserNotifications([...userData.notifications]);    //Array wont render fix - the spread operator creates a copy on a new memory reference
+      });
   }
 
   const loginUser = () => {
@@ -71,7 +72,7 @@ const App = () => {
 
   //All Routes Componentes are nested under Layout->Outlet
   return (
-    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser }}>
+    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser, }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -97,10 +98,8 @@ const App = () => {
 const NoMatch = () => {
   return (
     <Container>
-      <h2>Nothing to see here!</h2>
-      <p>
-        <Link to="/">Go to the home page</Link>
-      </p>
+      <Typography variant="h2">Nothing to see here!</Typography>
+      <Typography variant="p"><Link to="/">Go to the home page</Link></Typography>
     </Container>
   );
 };
