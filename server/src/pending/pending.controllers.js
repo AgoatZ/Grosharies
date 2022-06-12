@@ -198,7 +198,6 @@ const updatePending = async function (req, res, next) {
         };
         emitEvent('Pending Edited', publisher._id, publisherNote);
         emitEvent('New Notification', publisher._id, newNotification);
-
         await UserService.addToNotifications(publisher._id, [publisherNote, newNotification]);
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
