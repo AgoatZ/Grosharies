@@ -170,6 +170,7 @@ const pendPost = async function (req, res, next) {
     try {
         const { emitEvent, broadcastEvent } = require(".././../index");
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
+        const collector = await UserService.getUserById(pendingPost.collectorId);
         const newNotification = {
             text: pendingPost.headline,
             title: "A new order by " + collector.firstName + " " + collector.lastName,

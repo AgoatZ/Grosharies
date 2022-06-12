@@ -175,11 +175,12 @@ export default function AddPost() {
             MySwal.fire({
               title: <strong>Post created Successfully!</strong>,
               icon: "success",
+              timer: 1000,
               showConfirmButton: false,
               backdrop: false,
             });
             setTimeout(() => {
-              navigate("/", {});
+              navigate("/my-posts", {});
             }, 1000);
           });
       })
@@ -193,6 +194,7 @@ export default function AddPost() {
   };
 
   const onChangeImages = (event) => {
+    console.log('=============', event.target.files);
     setImages(event.target.files);
   };
 

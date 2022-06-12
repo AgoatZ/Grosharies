@@ -27,6 +27,7 @@ router.post("/nearby", authJwt, PostController.getNearbyPosts);
 
 router.post(
   "/updateImage/:id",
+  authJwt,
   imageUtil.uploadImage,
   PostController.updatePost
 );
