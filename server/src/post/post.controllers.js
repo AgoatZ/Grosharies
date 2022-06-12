@@ -130,7 +130,6 @@ const getSuggestedPosts = async function (req, res, next) {
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
-        //.emit("pend post notification", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         const posts = await PostService.getSuggestedPosts(req.params.userid, req.user, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Suggested Posts Retrieved" });
     } catch (e) {
@@ -169,8 +168,6 @@ const addPost = async function (req, res, next) {
 
 const pendPost = async function (req, res, next) {
     try {
-         //data: { pendingPostId:"", sourcePostId: "", collectorId: "", publisherId: "" }
-        //socket.on('Pending Created',
         const { emitEvent, broadcastEvent } = require(".././../index");
         const { updatedPost, pendingPost } = await PostService.pendPost(req.body.postId, req.user._id, req.body.groceries);
         const newNotification = {

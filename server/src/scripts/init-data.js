@@ -8,7 +8,8 @@ const Pending = require('../pending/pending.model');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
-const getCoordinates = require('../common/utils/google-maps-client');
+const {getCoordinates} = require('../common/utils/google-maps-client');
+const dotenv = require('dotenv').config();
 
 const packing = require('../enums/packing');
 const packs = Object.values(packing);
@@ -275,10 +276,12 @@ const init = async () => {
             };
             let userPost = JSON.parse(JSON.stringify(useressPost));
             userPost.userId = user._id;
+            let coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post1 = new Post(useressPost);
             useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
             useressPost.address = getRandomInt(60) + " Allenby, Tel Aviv";
-            let coordinates = await getCoordinates(useressPost.address);
+            coordinates = await getCoordinates(useressPost.address);
             useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post2 = new Post(useressPost);
             useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
@@ -308,6 +311,8 @@ const init = async () => {
                 let post1 = new Post(userPost);
                 userPost.headline = "Come and take some " + gross[getRandomInt(11)];
                 userPost.address = getRandomInt(60) + " Sderot Rothschild, Tel Aviv";
+                coordinates = await getCoordinates(userPost.address);
+                userPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
                 let post2 = new Post(userPost);
                 post1 = await post1.save();
                 post2 = await post2.save();
