@@ -78,6 +78,7 @@ addToHistory = async function (userId, history) {
         throw Error('Error while Updating User');
     }
 };
+//#TODO GET TOP 10 USERS BY RANK
 
 module.exports = {
     getUsers,

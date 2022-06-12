@@ -15,7 +15,8 @@ const post = new mongoose.Schema({
   publishingDate: { type: Date, default: Date.now },
   pickUpDates: [{
     from: Date,
-    until: Date
+    until: Date,
+    repeated: { type: Boolean, required: false, default: false }
   }],
   status: { type: String, enum: status, required: true },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }], //TAG IS ALSO A MODEL, FUNCTIONS SIMILAR TO A CATEGORY
