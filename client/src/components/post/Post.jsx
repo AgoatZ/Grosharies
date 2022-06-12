@@ -129,7 +129,7 @@ const Post = () => {
     return (
       post.content.map((grocery) => (
         <Box key={grocery._id} sx={{ display: "flex", margin: "3% 0", justifyContent: "space-evenly", width: "45%", }}>
-          <CardMedia image={"data:image/jpg;base64, " + grocery.images} component="img" sx={{ padding: 1, borderRadius: "10px", height: "160px", width: "auto", }} />
+          <CardMedia image={"data:image/jpg;base64, " + grocery.original.images} component="img" sx={{ padding: 1, borderRadius: "10px", height: "160px", width: "auto", }} />
           <Box sx={{ display: "flex", flexDirection: "column", margin: "auto 10% auto 0", }}>
             <Typography component="div" variant="h6" mb="2%" >
               {`Name: ${grocery.original.name}`}
