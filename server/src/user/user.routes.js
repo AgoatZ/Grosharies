@@ -271,4 +271,6 @@ router.get('/suggested/:userid', PostController.getSuggestedPosts);
 */
 router.get('/profile/:id', authJwt, UserController.getUserProfile);
 
+router.get('/topusers/byrank', authJwt, UserController.getTopUsers);
+
 module.exports = router;

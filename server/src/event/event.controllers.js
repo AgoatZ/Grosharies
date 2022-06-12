@@ -4,7 +4,7 @@ getEvents = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
     var page = req.params.page ? req.params.page : 1;
-    var limit = req.params.limit ? req.params.limit : 10;
+    var limit = req.params.limit ? req.params.limit : 30;
     try {
         var events = await EventService.getEvents({}, page, limit)
         return res.status(200).json({ events: events, message: "Succesfully Events Retrieved" });
