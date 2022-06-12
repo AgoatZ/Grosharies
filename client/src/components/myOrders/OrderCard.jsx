@@ -22,33 +22,34 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
     const viewdByCollector = (role === "collector");
     const viewdByPublisher = (role === "publisher");
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(pendingPost));
-    //TODO: When post mark as collected by the collector stil appears under pending posts in MyOrders page
     const [isFinished, setIsFinished] = useState(finished || (viewdByCollector && pendingPost.status.collectorStatement === "collected"));
     const [isCancelled, setIsCancelled] = useState(cancelled);
 
     useEffect(() => {
         const interval = setInterval(() => { setTimeLeft(calculateTimeLeft(pendingPost)); }, 60000);
-    })
+    }, []);
 
     const Status = () => {
         return (
             <>
                 {timeLeft && pendingPost.status.finalStatus === "pending" && pendingPost.status.collectorStatement === "pending" && pendingPost.status.publisherStatement === "pending" ?
-                    (<Typography variant="overline">Waiting for pickup</Typography>) : null}
+                    <Typography variant="overline">Waiting for pickup</Typography> : null}
 
                 {viewdByCollector ?
-                    pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
-                        pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by the publisher</Typography> :
-                            pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by you</Typography> :
-                                pendingPost.status.publisherStatement === "collected" ? <Typography variant="overline">Collected by publisher</Typography> :
+                    pendingPost.status.finalStatus === "pending" && pendingPost.status.collectorStatement === "collected" && pendingPost.status.publisherStatement === "pending" ?
+                        <Typography variant="overline">Waiting for publisher</Typography> :
+                        pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
+                            pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by the publisher</Typography> :
+                                pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by you</Typography> :
                                     pendingPost.status.finalStatus === "collected" ? <Typography variant="overline">Collected</Typography> :
                                         null : null}
 
                 {viewdByPublisher ?
-                    pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by collector</Typography> :
-                        pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
-                            pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by collector</Typography> :
-                                pendingPost.status.publisherStatement === "collected" ? <Typography variant="overline">Collected by you</Typography> :
+                    pendingPost.status.finalStatus === "pending" && pendingPost.status.collectorStatement === "collected" && pendingPost.status.publisherStatement === "pending" ?
+                        <Typography variant="overline">Waiting for your approval</Typography> :
+                        pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by collector</Typography> :
+                            pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
+                                pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by collector</Typography> :
                                     pendingPost.status.finalStatus === "collected" ? <Typography variant="overline">Collected</Typography> :
                                         null : null}
 
