@@ -133,13 +133,12 @@ export default function AddPost() {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     const headline = data.get("headline");
     const address = data.get("address");
     const description = data.get("description");
-
+    event.preventDefault();
     if (
       isHeadlineError !== "" ||
       isDescriptionError !== "" ||
@@ -156,21 +155,22 @@ export default function AddPost() {
 
     const groceries = checked.map((grocery) => {
       if (grocery.isChecked) {
-        return { id: grocery._id, amount: grocery.amount };
+        return { id: grocery.grocery._id, amount: grocery.amount };
       }
     });
-
+    const groceriesToSend = groceries.filter(grocery => grocery != null);
     axios
       .post(serverRoutes.AddPost, {
         headline,
         address,
         description,
-        pickUpDates: [{ from, until /*, repeated*/ }],
-        groceries,
+        pickUpDates: [{ from, until , repeated }],
+        groceriesToSend,
       })
       .then((res) => {
+        console.log(res);
         axios
-          .post("/posts/updateImage " + res.post._id, { images })
+          .post("/posts/updateImage/" + res.data.post._id, { images })
           .then((res) => {
             MySwal.fire({
               title: <strong>Post created Successfully!</strong>,
@@ -345,7 +345,7 @@ export default function AddPost() {
                     label="end date"
                     value={endDate}
                     onChange={(newValue) => {
-                      debugger;
+                      //debugger;
                       if (newValue <= fromDate) {
                         setIsEndDateError(
                           "end date must be greater from fromDate"
