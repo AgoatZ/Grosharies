@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Container } from "@mui/material";
 import axios from "./utils/axios";
 import { UserDummy } from "./utils/dummies";
-import { createNotificationSocket, onNewNotification } from './utils/notifications-socket';
+import { createNotificationSocket, createSocket } from './utils/socket';
 //FontAwesome Icons Setup
 import { library as iconsLibrary } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -45,17 +45,19 @@ const App = () => {
       setUserData(userData);
       setUserNotifications(userData.notifications);
       socketSetup(userData);
+      sessionStorage.setItem('userId', userData._id);
     }).catch(e => { console.log("Error getting user data"); });
   };
 
   //Socket Setup
   const socketSetup = (userData) => {
-    createNotificationSocket(userData._id);
-    onNewNotification((notification) => {
-      userData.notifications.unshift(notification);
-      setUserNotifications([...userData.notifications]);    //Array wont render fix - the spread operator creates a copy on a new memory reference
-      setUserData(userData);
-    });
+    createSocket().connect();
+    createNotificationSocket(userData._id).connect()
+      .on('New Notification', (notification) => {
+        console.log("New Notification", notification);
+        userData.notifications.unshift(notification);
+        setUserNotifications([...userData.notifications]);    //Array wont render fix - the spread operator creates a copy on a new memory reference
+      });
   }
 
   const loginUser = () => {
