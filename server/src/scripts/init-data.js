@@ -8,6 +8,8 @@ const Pending = require('../pending/pending.model');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
+const {getCoordinates} = require('../common/utils/google-maps-client');
+const dotenv = require('dotenv').config();
 
 const packing = require('../enums/packing');
 const packs = Object.values(packing);
@@ -23,6 +25,9 @@ console.log(folderPath);
 const imgsFolderPath = path.join(folderPath, 'common', 'imgs');
 const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;
+const getRandomInt = (max) => {
+    return Math.floor(Math.random() * max);
+}
 
 mongoose.connect('mongodb://127.0.0.1:27017/grosharies', { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.once('connected', () => console.log('Database connected successfully for db:init'))
@@ -271,14 +276,28 @@ const init = async () => {
             };
             let userPost = JSON.parse(JSON.stringify(useressPost));
             userPost.userId = user._id;
+            let coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post1 = new Post(useressPost);
-            useressPost.headline = "Come and take some " + gross[9];
+            useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
+            useressPost.address = getRandomInt(60) + " Allenby, Tel Aviv";
+            coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post2 = new Post(useressPost);
-            useressPost.headline = "Come and take some " + gross[2];
+            useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
+            useressPost.address = getRandomInt(60) + " Shlomo Ibn Gabirol, Tel Aviv";
+            coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post3 = new Post(useressPost);
-            useressPost.headline = "Come and take some " + gross[3];
+            useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
+            useressPost.address = getRandomInt(60) + " Mordechai Namir Rd, Tel Aviv";
+            coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post4 = new Post(useressPost);
-            useressPost.headline = "Come and take some " + gross[4];
+            useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
+            useressPost.address = getRandomInt(60) + " Arlozorov, Tel Aviv";
+            coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post5 = new Post(useressPost);
             if (i < 3) {
                 post1 = await post1.save();
@@ -290,7 +309,10 @@ const init = async () => {
             }
             else {
                 let post1 = new Post(userPost);
-                userPost.header = "Come and take some " + gross[6];
+                userPost.headline = "Come and take some " + gross[getRandomInt(11)];
+                userPost.address = getRandomInt(60) + " Sderot Rothschild, Tel Aviv";
+                coordinates = await getCoordinates(userPost.address);
+                userPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
                 let post2 = new Post(userPost);
                 post1 = await post1.save();
                 post2 = await post2.save();

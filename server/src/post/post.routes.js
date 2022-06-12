@@ -27,13 +27,14 @@ router.post("/nearby", authJwt, PostController.getNearbyPosts);
 
 router.post(
   "/updateImage/:id",
+  authJwt,
   imageUtil.uploadImage,
   PostController.updatePost
 );
 
 router.post("/bygroceries", PostController.getPostsByGroceries);
 
-router.post("/", PostController.addPost);
+router.post("/", authJwt, PostController.addPost);
 
 router.post("/pend", authJwt, PostController.pendPost);
 

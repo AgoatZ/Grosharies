@@ -10,16 +10,20 @@ import withReactContent from "sweetalert2-react-content";
 import axios from "../../utils/axios";
 import { PostDummy } from "../../utils/dummies";
 import Map from "../map/Map";
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import "react-calendar/dist/Calendar.css";
 import "./PostStyle.css";
 
 const MySwal = withReactContent(Swal);
 const convertImagesToItems = (post) => {
   return post.images.map((image) => {
-    return { original: "data:image/jpg;base64, " + image, originalHeight: "500px", originalWidth: "400px" }
-  })
-}
+    return {
+      original: "data:image/jpg;base64, " + image,
+      originalHeight: "500px",
+      originalWidth: "400px",
+    };
+  });
+};
 function isDateInRange(date, dateFrom, dateTo) {
   return date >= dateFrom && date <= dateTo;
 }
@@ -50,38 +54,61 @@ const Post = () => {
   useEffect(() => loadPost(), []);
 
   const loadPost = () => {
-    let post = {}
+    let post = {};
 
-    axios.get('posts/' + sourcePostId).then((res) => {
-      post = res.data.post;
+    axios
+      .get("posts/" + sourcePostId)
+      .then((res) => {
+        post = res.data.post;
 
-      //Add and Init user's order amount for each grocery item
-      post.content.forEach((grocery) => grocery.currentOrder = 0);
+        //Add and Init user's order amount for each grocery item
+        post.content.forEach((grocery) => (grocery.currentOrder = 0));
 
-      //TODO: Add to API getPendingByPostAndByCollector ?
-      //Get user's active order for this post and add it to main post object if exists
-      axios.get("pendings/collector/current").then((res) => {
-        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
-        const valid = userPendingPost && userPendingPost.status.finalStatus === "pending" && userPendingPost.status.collectorStatement === "pending" && userPendingPost.status.publisherStatement === "pending";
+        //TODO: Add to API getPendingByPostAndByCollector ?
+        //Get user's active order for this post and add it to main post object if exists
+        axios
+          .get("pendings/collector/current")
+          .then((res) => {
+            const userPendingPost = res.data.pendingPosts.find(
+              (order) => order.sourcePost == post._id
+            );
+            const valid =
+              userPendingPost &&
+              userPendingPost.status.finalStatus === "pending" &&
+              userPendingPost.status.collectorStatement === "pending" &&
+              userPendingPost.status.publisherStatement === "pending";
 
-        if (valid) {
-          post.userPendingPostId = userPendingPost._id;
-          console.log("User's open pending post (order) for this post", userPendingPost);
-          //Set the user's order amount for each grocery item
-          userPendingPost.content.forEach((orderGrocery) => (post.content.find((grocery) => grocery.original.name === orderGrocery.name).currentOrder = orderGrocery.amount));
+            if (valid) {
+              post.userPendingPostId = userPendingPost._id;
+              console.log(
+                "User's open pending post (order) for this post",
+                userPendingPost
+              );
+              //Set the user's order amount for each grocery item
+              userPendingPost.content.forEach(
+                (orderGrocery) =>
+                (post.content.find(
+                  (grocery) => grocery.original.name === orderGrocery.name
+                ).currentOrder = orderGrocery.amount)
+              );
 
-          setEdit(true);
-          setPost(post);
-        } else {
-          setPost(post);
-        }
-      }).catch(e => { console.log("Error getting user's pending posts"); setPost(post); });
-
-    }).then(() => {
-      console.log("Post", post);
-      console.log("Post Content", post.content)
-    }).catch(e => console.log("Error getting post"));
-  }
+              setEdit(true);
+              setPost(post);
+            } else {
+              setPost(post);
+            }
+          })
+          .catch((e) => {
+            console.log("Error getting user's pending posts");
+            setPost(post);
+          });
+      })
+      .then(() => {
+        console.log("Post", post);
+        console.log("Post Content", post.content);
+      })
+      .catch((e) => console.log("Error getting post"));
+  };
 
   const imagesAndVideos = [
     {
@@ -154,7 +181,9 @@ const Post = () => {
                       min={0}
                       max={Number(grocery.left + grocery.currentOrder)}
                       valueLabelDisplay="auto"
-                      onChange={(e) => { onChange(e.target.value); }}
+                      onChange={(e) => {
+                        onChange(e.target.value);
+                      }}
                       name={grocery.original.name}
                       value={value}
                     />
@@ -164,8 +193,7 @@ const Post = () => {
             </Box>
           </Box>
         </Box>
-      ))
-    )
+      )))
   };
 
   const onSubmit = (data) => {
@@ -174,72 +202,139 @@ const Post = () => {
       .map((grocery) => {
         grocery.original.amount = data[grocery.original.name];
         return grocery.original;
-      })
+      });
 
     console.log("Form Data", data);
     console.log("Order Groceries", orderGroceries);
 
     if (!isEdit) {
       //Create Pending Post
-      axios.post("posts/pend", { postId: sourcePostId, groceries: orderGroceries }).then((res) => {
-        console.log("Create Pending Post Result", res.data);
-        MySwal.fire({
-          title: "Successfully Applied Your Order!",
-          text: "You can now go and take your GroSharies",
-          icon: "success",
-          timer: 1000,
-          showConfirmButton: false,
-          backdrop: false
-        });
-        setTimeout(() => { navigate("/my-orders", {}); }, 1000);
-      }).catch(e => console.log("Create Pending Post Error", e));
+      axios
+        .post("posts/pend", { postId: sourcePostId, groceries: orderGroceries })
+        .then((res) => {
+          console.log("Create Pending Post Result", res.data);
+          MySwal.fire({
+            title: "Successfully Applied Your Order!",
+            text: "You can now go and take your GroSharies",
+            icon: "success",
+            timer: 1000,
+            showConfirmButton: false,
+            backdrop: false,
+          });
+          setTimeout(() => {
+            navigate("/my-orders", {});
+          }, 1000);
+        })
+        .catch((e) => console.log("Create Pending Post Error", e));
     } else {
       //Edit Pending Post
-      axios.put("pendings/" + post.userPendingPostId, { content: orderGroceries }).then((res) => {
-        console.log(res.data);
-        MySwal.fire({
-          title: "Successfully Edited Your Order!",
-          text: "You can now go and take your GroSharies",
-          icon: "success",
-          timer: 1000,
-          showConfirmButton: false,
-          backdrop: false
-        });
-        setTimeout(() => { navigate("/my-orders", {}); }, 1000);
-      }).catch(e => console.log("Edit Pending Post Error", e));
+      axios
+        .put("pendings/" + post.userPendingPostId, { content: orderGroceries })
+        .then((res) => {
+          console.log(res.data);
+          MySwal.fire({
+            title: "Successfully Edited Your Order!",
+            text: "You can now go and take your GroSharies",
+            icon: "success",
+            timer: 1000,
+            showConfirmButton: false,
+            backdrop: false,
+          });
+          setTimeout(() => {
+            navigate("/my-orders", {});
+          }, 1000);
+        })
+        .catch((e) => console.log("Edit Pending Post Error", e));
     }
-
   };
 
   return (
     <Box sx={{ margin: "0 10%" }}>
-      <Box sx={{ justifyContent: "space-between", display: "flex", margin: "3% 0", }}>
-        <Box sx={{ display: "flex", flexDirection: "column", margin: "auto 10% auto 0", }}>
-          <Typography component="div" variant="h3" mb="2%" >{post.headline}</Typography>
-          <Typography variant="h6" color="text.secondary" component="div">{post.description}</Typography>
+      <Box
+        sx={{
+          justifyContent: "space-between",
+          display: "flex",
+          margin: "3% 0",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            margin: "auto 10% auto 0",
+          }}
+        >
+          <Typography component="div" variant="h3" mb="2%">
+            {post.headline}
+          </Typography>
+          <Typography variant="h6" color="text.secondary" component="div">
+            {post.description}
+          </Typography>
         </Box>
-        <CardMedia image={"data:image/jpg;base64, " + post.images[0]} component="img" sx={{ padding: 1, borderRadius: "10px", height: "250px", width: "auto", }} />
+        <CardMedia
+          image={"data:image/jpg;base64, " + post.images[0]}
+          component="img"
+          sx={{
+            padding: 1,
+            borderRadius: "10px",
+            height: "250px",
+            width: "auto",
+          }}
+        />
       </Box>
       <Box sx={{ flexDirection: "row", display: "flex" }}>
         <LocationOnIcon color="primary" fontSize="large" />
-        <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">{post.address}</Typography>
+        <Typography
+          gutterBottom
+          fontSize="25px"
+          fontWeight="bold"
+          color="text.secondary"
+        >
+          {post.address}
+        </Typography>
       </Box>
 
       <Map
-        sx={{ height: "450px", width: "400px", marginBottom: "100px", }}
+        sx={{ height: "450px", width: "400px", marginBottom: "100px" }}
         locations={[{ ...post.addressCoordinates, address: post.address }]}
         center={post.addressCoordinates}
       />
 
       <Box sx={{ width: "600px", height: "600px", margin: "0 auto" }}>
-        <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Gallery</Typography>
+        <Typography
+          gutterBottom
+          fontSize="25px"
+          fontWeight="bold"
+          color="text.secondary"
+        >
+          Gallery
+        </Typography>
         <ImageGallery items={convertImagesToItems(post)} autoPlay />
       </Box>
 
-      <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">PickUp Dates</Typography>
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "center", }}>
+      <Typography
+        gutterBottom
+        fontSize="25px"
+        fontWeight="bold"
+        color="text.secondary"
+      >
+        PickUp Dates
+      </Typography>
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
         <Calander
-          style={{ flexShrink: 2, display: "flex", flexDirection: "row", flexWrap: "wrap", }}
+          style={{
+            flexShrink: 2,
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+          }}
           tileClassName={tileClassName}
           tileDisabled={tileDisabled}
           onClickDay={(value, event) => {
@@ -249,7 +344,15 @@ const Post = () => {
           }}
         ></Calander>
 
-        <Box sx={{ visibility: !calanderDate.current ? "hidden" : "visible", borderRadius: "10px", flexShrink: 2, padding: "1% 3%", border: "solid gray", }}>
+        <Box
+          sx={{
+            visibility: !calanderDate.current ? "hidden" : "visible",
+            borderRadius: "10px",
+            flexShrink: 2,
+            padding: "1% 3%",
+            border: "solid gray",
+          }}
+        >
           <h2>
             {new Date(calanderDate.current).toLocaleString().split(",")[0]}
           </h2>
@@ -259,6 +362,7 @@ const Post = () => {
           </Typography>
           <b>To:</b>
           <Typography>
+            {console.log("until", calanderDate.until)}
             {!calanderDate.isRepeated &&
               new Date(calanderDate.until).setHours(0, 0, 0, 0) ===
               new Date(calanderDate.current).setHours(0, 0, 0, 0)
@@ -270,12 +374,26 @@ const Post = () => {
         </Box>
       </Box>
 
-      <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Products</Typography>
+      <Typography
+        gutterBottom
+        fontSize="25px"
+        fontWeight="bold"
+        color="text.secondary"
+      >
+        Products
+      </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
           <Products post={post} />
         </Box>
-        <Button sx={{ ml: "10%" }} variant="contained" disableElevation type="submit">{isEdit ? "Edit Order" : "Create Order"}</Button>
+        <Button
+          sx={{ ml: "10%" }}
+          variant="contained"
+          disableElevation
+          type="submit"
+        >
+          {isEdit ? "Edit Order" : "Create Order"}
+        </Button>
       </form>
     </Box>
   );
