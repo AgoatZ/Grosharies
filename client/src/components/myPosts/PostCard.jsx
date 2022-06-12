@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import { Typography, Box, CardMedia, Divider, Button, ButtonGroup, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
 import Swal from "sweetalert2";
@@ -15,6 +15,25 @@ const PostCard = ({ post }) => {
     let navigate = useNavigate();
     const toPostPage = () => navigate("/post/" + post._id);
     const toEditPostPage = (post) => navigate("/post/" + post._id + '/edit');       //TODO: Edit Post Page
+
+    const deletePost = (post) => {
+        MySwal.fire({
+            title: <strong>Are you sure you want to delete this post?</strong>,
+            icon: "info",
+            showCancelButton: true,
+            cancelButtonText: "no",
+            showConfirmButton: true,
+            confirmButtonText: "yes",
+            backdrop: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                //Delete post in db
+                axios.delete('posts/' + post._id, { post })
+                    .then((res) => { console.log("Result deleting post id:" + post._id, res.data); window.location.reload(); })
+                    .catch(e => console.log("Error deleting post id:" + post._id));
+            }
+        });
+    };
 
     return (
         <>
@@ -55,26 +74,6 @@ const PostCard = ({ post }) => {
         </>
     )
 }
-
-const deletePost = (post) => {
-    MySwal.fire({
-        title: <strong>Are you sure you want to delete this post?</strong>,
-        icon: "info",
-        showCancelButton: true,
-        cancelButtonText: "no",
-        showConfirmButton: true,
-        confirmButtonText: "yes",
-        backdrop: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            //Delete post in db
-            axios.delete('posts/' + post._id, { post })
-                .then((res) => console.log("Result deleting post id:" + post._id, res.data));
-
-            window.location.reload();
-        }
-    });
-};
 
 
 export default PostCard;
