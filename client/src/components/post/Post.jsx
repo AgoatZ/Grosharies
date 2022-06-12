@@ -17,6 +17,7 @@ import "./PostStyle.css";
 const MySwal = withReactContent(Swal);
 const convertImagesToItems = (post) => {
   return post.images.map((image) => {
+    console.log('render image', image);
     return {
       original: "data:image/jpg;base64, " + image,
       originalHeight: "500px",
@@ -60,7 +61,7 @@ const Post = () => {
       .get("posts/" + sourcePostId)
       .then((res) => {
         post = res.data.post;
-
+        console.log('images post page', post.images);
         //Add and Init user's order amount for each grocery item
         post.content.forEach((grocery) => (grocery.currentOrder = 0));
 
@@ -272,7 +273,7 @@ const Post = () => {
           </Typography>
         </Box>
         <CardMedia
-          image={"data:image/jpg;base64, " + post.images[0]}
+          image={"data:image/jpg;base64, " + post.images}
           component="img"
           sx={{
             padding: 1,

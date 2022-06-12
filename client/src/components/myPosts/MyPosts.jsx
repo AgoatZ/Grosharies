@@ -17,6 +17,7 @@ const MyPosts = () => {
     //Get user's open posts
     axios.get("posts/openPosts/current").then((userOpenPosts) => {
       userPosts = userOpenPosts.data.posts;
+      console.log('images', userPosts[userPosts.length - 1].images);
     }).then(() => {
       //TODO: use post.repliers:[{user: userIdreply: pendingPostId}] instead 
       //Add pending orders to each post object
