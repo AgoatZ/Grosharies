@@ -221,11 +221,11 @@ const setCollectorStatement = async function (req, res, next) {
             title: "A collection was stated by " + collector.firstName + " " + collector.lastName,
             postId: oldPending.sourcePost
         };
-        emitEvent('New Notification', oldPending.publisherId, statement);
-        publisher.notifications.push(statement);
-        await UserService.addToNotifications(publisher._id, statement);
+        emitEvent('New Notification', oldPending.publisherId, noteToPublisher);
+        publisher.notifications.push(noteToPublisher);
+        await UserService.addToNotifications(publisher._id, noteToPublisher);
 
-        const statusChanged = { by: collector._id, pendingPostId: oldPending._id, sourcePostId: pendingPostId.sourcePost, collectorId: collector._id, publisherId: publisher._id };
+        const statusChanged = { by: collector._id, pendingPostId: oldPending._id, sourcePostId: oldPending.sourcePost, collectorId: collector._id, publisherId: publisher._id };
         emitEvent("Pending Status Changed", publisher._id, statusChanged);
         emitEvent("Pending Status Changed", collector._id, statusChanged);
         await UserService.addToNotifications(publisher._id, statusChanged);
