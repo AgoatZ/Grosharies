@@ -179,10 +179,11 @@ const addPost = async (postDetails, user) => {
             headline: postDetails.headline,
             userId: user._id,
             address: postDetails.address,
-            pickUpDates: {
+            pickUpDates: [{
                 from: postDetails.pickUpDates.from,
-                to: postDetails.pickUpDates.to
-            },
+                to: postDetails.pickUpDates.to,
+                repeated: repeated
+            }],
             status: PostStatus.STILL_THERE,
             content: [],
             description: postDetails.description,  
