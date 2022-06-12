@@ -6,6 +6,7 @@ const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
 const TagRepository = require('../tag/tag.repository');
 const SuggestionsUtil = require('../common/utils/suggestions-util');
+const GroceryRepository = require('../grocery/grocery.repository');
 const { getCoordinates } = require('../common/utils/google-maps-client');
 
 const getPosts = async (query, page, limit) => {
@@ -167,15 +168,32 @@ const getPostsByGroceries = async (groceries, page, limit) => {
     }
 };
 
-const addPost = async (postDetails) => {
+const addPost = async (postDetails, user) => {
     try {
-        for (i in postDetails.content) {
-            postDetails.content[i].left = postDetails.content[i].original.amount;
+        //#TODO GETTING ONLY GROCERY ID AND CREATING HERE THE FULL OBJECT
+        let newPost = {
+            headline: postDetails.headline,
+            userId: user._id,
+            address: postDetails.address,
+            pickUpDates: postDetails.pickUpDates,
+            status: PostStatus.STILL_THERE,
+            content: [],
+            description: postDetails.description,  
+        };
+        for (i in postDetails.groceries) {
+            let grocery = await GroceryRepository.getGroceryById(postDetails.groceries[i].id);
+            let amount = postDetails.groceries[i].amount;
+            delete grocery['_id'];
+            grocery.amount = amount;
+            newPost.content.push({
+                original: grocery,
+                left: amount
+            });
         }
+        
         let coordinates = await getCoordinates(postDetails.address);
-        postDetails.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
-        const post = await PostRepository.addPost(postDetails);
-
+        newPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
+        const post = await PostRepository.addPost(newPost);
         return post;
     } catch (e) {
         console.log('service error: ' + e.message);

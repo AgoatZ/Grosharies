@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Container, Typography } from "@mui/material";
 import axios from "./utils/axios";
 import { UserDummy } from "./utils/dummies";
-import { createNotificationSocket, createSocket } from './utils/notifications-socket';
+import { createNotificationSocket, createSocket } from './utils/socket';
 //FontAwesome Icons Setup
 import { library as iconsLibrary } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -45,6 +45,7 @@ const App = () => {
       setUserData(userData);
       setUserNotifications(userData.notifications);
       socketSetup(userData);
+      sessionStorage.setItem('userId', userData._id);
     }).catch(e => { console.log("Error getting user data"); });
   };
 
