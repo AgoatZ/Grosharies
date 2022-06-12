@@ -18,7 +18,7 @@ const post = new mongoose.Schema({
     until: Date,
     repeated: { type: Boolean, required: false, default: false }
   }],
-  status: { type: String, enum: status, required: true },
+  status: { type: String, enum: status,default: status.PENDING },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }], //TAG IS ALSO A MODEL, FUNCTIONS SIMILAR TO A CATEGORY
   content: [
     {
