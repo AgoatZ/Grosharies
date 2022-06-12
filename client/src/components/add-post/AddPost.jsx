@@ -140,7 +140,7 @@ export default function AddPost() {
     const description = data.get("description");
     event.preventDefault();
     if (
-      isHeadlineError !== "isOk" || 
+      isHeadlineError !== "isOk" ||
       isDescriptionError !== "isOk" ||
       isAddressError != "isOk" ||
       isFromDateError !== "isOk" ||
@@ -168,51 +168,39 @@ export default function AddPost() {
         headline,
         address,
         description,
-        pickUpDates: [{ from, until , repeated }],
+        pickUpDates: [{ from, until, repeated }],
         groceriesToSend,
       })
       .then((res) => {
         console.log(res);
-if (images) {
-  console.log('uploading image');
-  const reader = new FileReader();
-  reader.onload = function(evt) { 
-    const metadata = `name: ${images.name}, type: ${images.type}, size: ${images.size}, contents:`;
-    const contents = evt.target.result;
-    console.log(metadata, contents);
-    axios
-    .post("/posts/updateImage/" + res.data.post._id, contents, {headers: {
-      'Content-Type': 'image/*'
-    }} )
-    .then((res) => {
-      MySwal.fire({
-        title: <strong>Post created Successfully!</strong>,
-        icon: "success",
-        timer: 1000,
-        showConfirmButton: false,
-        backdrop: false,
-      });
-      setTimeout(() => {
-        navigate("/my-posts", {});
-      }, 1000);
-    });
-  };
-  reader.readAsBinaryString(images);
-}
-        // axios
-        //   .post("/posts/updateImage/" + res.data.post._id, { images })
-        //   .then((res) => {
-        //     MySwal.fire({
-        //       title: <strong>Post created Successfully!</strong>,
-        //       icon: "success",
-        //       timer: 1000,
-        //       showConfirmButton: false,
-        //       backdrop: false,
-        //     });
-        //     setTimeout(() => {
-        //       navigate("/my-posts", {});
-        //     }, 1000);
-        //   });
+        if (images) {
+          console.log('uploading image');
+          const reader = new FileReader();
+          reader.onload = function (evt) {
+            const metadata = `name: ${images.name}, type: ${images.type}, size: ${images.size}, contents:`;
+            const contents = evt.target.result;
+            console.log(metadata, contents);
+            axios
+              .post("/posts/updateImage/" + res.data.post._id, contents, {
+                headers: {
+                  'Content-Type': 'image/*'
+                }
+              })
+              .then((res) => {
+                MySwal.fire({
+                  title: <strong>Post created Successfully!</strong>,
+                  icon: "success",
+                  timer: 1000,
+                  showConfirmButton: false,
+                  backdrop: false,
+                });
+                setTimeout(() => {
+                  navigate("/my-posts", {});
+                }, 1000);
+              });
+          };
+          reader.readAsArrayBuffer(images);
+        }
       })
       .catch((e) => {
         MySwal.fire({
