@@ -172,17 +172,18 @@ const addPost = async (postDetails, user) => {
     try {
         //#TODO GETTING ONLY GROCERY ID AND CREATING HERE THE FULL OBJECT
         let repeated = false;
-        if (postDetails.pickUpDates.repeated == 'on') {
+        if (postDetails.pickUpDates[0].repeated == 'on') {
             repeated = true;
         }
         let newPost = {
             headline: postDetails.headline,
             userId: user._id,
             address: postDetails.address,
-            pickUpDates: {
-                from: postDetails.pickUpDates.from,
-                to: postDetails.pickUpDates.to
-            },
+            pickUpDates: [{
+                from: postDetails.pickUpDates[0].from,
+                until: postDetails.pickUpDates[0].until,
+                repeated: repeated
+            }],
             status: PostStatus.STILL_THERE,
             content: [],
             description: postDetails.description,  

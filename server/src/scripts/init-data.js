@@ -8,7 +8,7 @@ const Pending = require('../pending/pending.model');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
-const {getCoordinates} = require('../common/utils/google-maps-client');
+const { getCoordinates } = require('../common/utils/google-maps-client');
 const dotenv = require('dotenv').config();
 
 const packing = require('../enums/packing');
@@ -350,8 +350,18 @@ const init = async () => {
             pending = await pending.save()
             if (i < 3) {
                 await user.updateOne({ collectedHistory: pending._id });
-            } else {
+                const repliers = post1.repliers.concat({
+                    user: user._id,
+                    reply: pending._id
+                });
+                await post1.updateOne({ repliers: repliers });
+                } else {
                 await useress.updateOne({ collectedHistory: pending._id });
+                const repliers = post1.repliers.concat({
+                    user: useress._id,
+                    reply: pending._id
+                });
+                await post1.updateOne({ repliers: repliers });
             }
             let event = new Event({
                 "headline": "An Event " + i,

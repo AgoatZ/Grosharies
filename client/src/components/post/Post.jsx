@@ -17,6 +17,7 @@ import "./PostStyle.css";
 const MySwal = withReactContent(Swal);
 const convertImagesToItems = (post) => {
   return post.images.map((image) => {
+    console.log('render image', image);
     return {
       original: "data:image/jpg;base64, " + image,
       originalHeight: "500px",
@@ -60,7 +61,7 @@ const Post = () => {
       .get("posts/" + sourcePostId)
       .then((res) => {
         post = res.data.post;
-
+        console.log('images post page', post.images);
         //Add and Init user's order amount for each grocery item
         post.content.forEach((grocery) => (grocery.currentOrder = 0));
 
@@ -87,9 +88,9 @@ const Post = () => {
               //Set the user's order amount for each grocery item
               userPendingPost.content.forEach(
                 (orderGrocery) =>
-                  (post.content.find(
-                    (grocery) => grocery.original.name === orderGrocery.name
-                  ).currentOrder = orderGrocery.amount)
+                (post.content.find(
+                  (grocery) => grocery.original.name === orderGrocery.name
+                ).currentOrder = orderGrocery.amount)
               );
 
               setEdit(true);
@@ -153,71 +154,47 @@ const Post = () => {
   };
 
   const Products = ({ post }) => {
-    return post.content.map((grocery) => (
-      <Box
-        key={grocery._id}
-        sx={{
-          display: "flex",
-          margin: "3% 0",
-          justifyContent: "space-evenly",
-          width: "45%",
-        }}
-      >
-        <CardMedia
-          image={"data:image/jpg;base64, " + grocery.original.images}
-          component="img"
-          sx={{
-            padding: 1,
-            borderRadius: "10px",
-            height: "160px",
-            width: "auto",
-          }}
-        />
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            margin: "auto 10% auto 0",
-          }}
-        >
-          <Typography component="div" variant="h6" mb="2%">
-            {`Name: ${grocery.original.name}`}
-          </Typography>
-          <Typography component="div" variant="h6" mb="2%">
-            {`Original Amount: ${grocery.original.amount}  ${grocery.original.scale}`}
-          </Typography>
-          <Typography component="div" variant="h6" mb="2%">
-            {`Available Amount: ${grocery.left + grocery.currentOrder}  ${
-              grocery.original.scale
-            }`}
-          </Typography>
+    return (
+      post.content.map((grocery) => (
+        <Box key={grocery._id} sx={{ display: "flex", margin: "3% 0", justifyContent: "space-evenly", width: "45%", }}>
+          <CardMedia image={"data:image/jpg;base64, " + grocery.original.images} component="img" sx={{ padding: 1, borderRadius: "10px", height: "160px", width: "auto", }} />
+          <Box sx={{ display: "flex", flexDirection: "column", margin: "auto 10% auto 0", }}>
+            <Typography component="div" variant="h6" mb="2%" >
+              {`Name: ${grocery.original.name}`}
+            </Typography>
+            <Typography component="div" variant="h6" mb="2%" >
+              {`Original Amount: ${grocery.original.amount}  ${grocery.original.scale}`}
+            </Typography>
+            <Typography component="div" variant="h6" mb="2%" >
+              {`Available Amount: ${grocery.left + grocery.currentOrder}  ${grocery.original.scale}`}
+            </Typography>
 
-          <Box sx={{ width: "300px" }}>
-            <Controller
-              control={control}
-              name={grocery.original.name}
-              defaultValue={grocery.currentOrder}
-              render={({ field: { value, onChange } }) => (
-                <Typography variant="h6" color="red" component="div">
-                  {`Your Amount: ${value} ${grocery.original.scale}`}
-                  <Slider
-                    step={1}
-                    min={0}
-                    max={Number(grocery.left + grocery.currentOrder)}
-                    valueLabelDisplay="auto"
-                    onChange={(e) => {
-                      onChange(e.target.value);
-                    }}
-                    name={grocery.original.name}
-                    value={value}
-                  />
-                </Typography>
-              )}
-            />
+            <Box sx={{ width: "300px" }}>
+              <Controller
+                control={control}
+                name={grocery.original.name}
+                defaultValue={grocery.currentOrder}
+                render={({ field: { value, onChange } }) => (
+                  <Typography variant="h6" color="red" component="div">
+                    {`Your Amount: ${value} ${grocery.original.scale}`}
+                    <Slider
+                      step={1}
+                      min={0}
+                      max={Number(grocery.left + grocery.currentOrder)}
+                      valueLabelDisplay="auto"
+                      onChange={(e) => {
+                        onChange(e.target.value);
+                      }}
+                      name={grocery.original.name}
+                      value={value}
+                    />
+                  </Typography>
+                )}
+              />
+            </Box>
           </Box>
         </Box>
-      </Box>
-    ));
+      )))
   };
 
   const onSubmit = (data) => {
@@ -296,7 +273,7 @@ const Post = () => {
           </Typography>
         </Box>
         <CardMedia
-          image={"data:image/jpg;base64, " + post.images[0]}
+          image={"data:image/jpg;base64, " + post.images}
           component="img"
           sx={{
             padding: 1,
@@ -386,6 +363,7 @@ const Post = () => {
           </Typography>
           <b>To:</b>
           <Typography>
+            {console.log("until", calanderDate.until)}
             {!calanderDate.isRepeated &&
             new Date(calanderDate.until).setHours(0, 0, 0, 0) ===
               new Date(calanderDate.current).setHours(0, 0, 0, 0)

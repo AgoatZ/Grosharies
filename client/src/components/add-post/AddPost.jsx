@@ -45,11 +45,11 @@ const MySwal = withReactContent(Swal);
 
 export default function AddPost() {
   const navigate = useNavigate();
-  const [isHeadlineError, setIsHeadlineError] = React.useState(false);
-  const [isAddressError, setIsAddressError] = React.useState(false);
-  const [isDescriptionError, setIsDescriptionError] = React.useState(false);
-  const [isFromDateError, setIsFromDateError] = React.useState(false);
-  const [isEndDateError, setIsEndDateError] = React.useState(false);
+  const [isHeadlineError, setIsHeadlineError] = React.useState("");
+  const [isAddressError, setIsAddressError] = React.useState("");
+  const [isDescriptionError, setIsDescriptionError] = React.useState("");
+  const [isFromDateError, setIsFromDateError] = React.useState("");
+  const [isEndDateError, setIsEndDateError] = React.useState("");
 
   const [allGroceries, setAllGroceries] = React.useState([]);
   const [groceries, setGroceries] = React.useState([]);
@@ -140,12 +140,16 @@ export default function AddPost() {
     const description = data.get("description");
     event.preventDefault();
     if (
-      isHeadlineError !== "" ||
-      isDescriptionError !== "" ||
-      isAddressError != "" ||
-      isFromDateError !== "" ||
-      isEndDateError !== ""
+      isHeadlineError !== "isOk" ||
+      isDescriptionError !== "isOk" ||
+      isAddressError != "isOk" ||
+      isFromDateError !== "isOk" ||
+      isEndDateError !== "isOk"
     ) {
+      console.log('=========== error', isFromDateError, isEndDateError);
+      if (isFromDateError !== "") {
+
+      }
       return;
     }
 
@@ -164,25 +168,39 @@ export default function AddPost() {
         headline,
         address,
         description,
-        pickUpDates: [{ from, until , repeated }],
+        pickUpDates: [{ from, until, repeated }],
         groceriesToSend,
       })
       .then((res) => {
         console.log(res);
-        axios
-          .post("/posts/updateImage/" + res.data.post._id, { images })
-          .then((res) => {
-            MySwal.fire({
-              title: <strong>Post created Successfully!</strong>,
-              icon: "success",
-              timer: 1000,
-              showConfirmButton: false,
-              backdrop: false,
-            });
-            setTimeout(() => {
-              navigate("/my-posts", {});
-            }, 1000);
-          });
+        if (images) {
+          console.log('uploading image');
+          const reader = new FileReader();
+          reader.onload = function (evt) {
+            const metadata = `name: ${images.name}, type: ${images.type}, size: ${images.size}, contents:`;
+            const contents = evt.target.result;
+            console.log(metadata, contents);
+            axios
+              .post("/posts/updateImage/" + res.data.post._id, contents, {
+                headers: {
+                  'Content-Type': 'image/*'
+                }
+              })
+              .then((res) => {
+                MySwal.fire({
+                  title: <strong>Post created Successfully!</strong>,
+                  icon: "success",
+                  timer: 1000,
+                  showConfirmButton: false,
+                  backdrop: false,
+                });
+                setTimeout(() => {
+                  navigate("/my-posts", {});
+                }, 1000);
+              });
+          };
+          reader.readAsArrayBuffer(images);
+        }
       })
       .catch((e) => {
         MySwal.fire({
@@ -194,8 +212,8 @@ export default function AddPost() {
   };
 
   const onChangeImages = (event) => {
-    console.log('=============', event.target.files);
-    setImages(event.target.files);
+    console.log('=============', event.target.files[0]);
+    setImages(event.target.files[0]);
   };
 
   return (
@@ -235,7 +253,7 @@ export default function AddPost() {
                         "headline must be at least 2 characters"
                       );
                     } else {
-                      setIsHeadlineError("");
+                      setIsHeadlineError("isOk");
                     }
                     setHeadline(e.target.value);
                   }}
@@ -245,7 +263,7 @@ export default function AddPost() {
                   name="headline"
                   autoComplete="headline"
                 />
-                {isHeadlineError ? (
+                {isHeadlineError !== "isOk" ? (
                   <label style={alertStyle}>{isHeadlineError}</label>
                 ) : null}
               </Grid>
@@ -263,7 +281,7 @@ export default function AddPost() {
                         "address must be at least 2 characters"
                       );
                     } else {
-                      setIsAddressError("");
+                      setIsAddressError("isOk");
                     }
                     setAddress(e.target.value);
                   }}
@@ -273,7 +291,7 @@ export default function AddPost() {
                   name="address"
                   autoComplete="address"
                 />
-                {isAddressError ? (
+                {isAddressError !== "isOk" ? (
                   <label style={alertStyle}>{isAddressError}</label>
                 ) : null}
               </Grid>
@@ -291,7 +309,7 @@ export default function AddPost() {
                         "description must be at least 2 characters"
                       );
                     } else {
-                      setIsDescriptionError("");
+                      setIsDescriptionError("isOk");
                     }
                     setDescription(e.target.value);
                   }}
@@ -324,13 +342,13 @@ export default function AddPost() {
                           "From date is required and must be greater from now"
                         );
                       } else {
-                        setIsFromDateError("");
+                        setIsFromDateError("isOk");
                       }
                       setFromDate(newValue);
                     }}
                   />
                 </LocalizationProvider>
-                {isFromDateError ? (
+                {isFromDateError !== "isOk" ? (
                   <label style={alertStyle}>{isFromDateError}</label>
                 ) : null}
               </Grid>
@@ -353,12 +371,12 @@ export default function AddPost() {
                           "end date must be greater from fromDate"
                         );
                       } else {
-                        setIsEndDateError("");
+                        setIsEndDateError("isOk");
                       }
                       setEndDate(newValue);
                     }}
                   />
-                  {isEndDateError ? (
+                  {isEndDateError !== "isOk" ? (
                     <label style={alertStyle}>{isEndDateError}</label>
                   ) : null}
                 </LocalizationProvider>
