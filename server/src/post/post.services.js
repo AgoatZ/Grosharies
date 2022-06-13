@@ -13,7 +13,11 @@ const getPosts = async (query, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }

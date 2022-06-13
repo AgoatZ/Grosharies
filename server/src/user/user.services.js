@@ -25,7 +25,8 @@ const getTopUsers = async function (page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page,
+            options = {
+                page: page,
                 limit: limit,
                 sort: { rank: -1 }
             };

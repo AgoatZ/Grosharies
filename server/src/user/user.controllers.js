@@ -22,7 +22,7 @@ const getTopUsers = async function (req, res, next) {
     const page = req.params.page ? req.params.page : 1;
     const limit = req.params.limit ? req.params.limit : 10;
     try {
-        const users = await UserService.getTopTen(page, limit);
+        const users = await UserService.getTopUsers(page, limit);
         return res.status(200).json({ users: users, message: "Succesfully Users Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
