@@ -13,7 +13,11 @@ const getPosts = async (query, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -46,7 +50,11 @@ const getPostsByUser = async (publisherId, user, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -71,7 +79,11 @@ const getPublisherOpenPosts = async (publisherId, user, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -96,7 +108,11 @@ const getPostsByCategory = async (categoryId, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -113,7 +129,11 @@ const getPostsByTag = async (tagId, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -130,7 +150,11 @@ const getPostsByCollector = async (collectorId, user, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -155,7 +179,11 @@ const getPostsByGroceries = async (groceries, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -372,7 +400,7 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
         let nearbyPosts = [];
         for (i in posts) {
             let dist = coordinatesDistance(posts[i].addressCoordinates, coordinates);
-            if (dist < 666) {
+            if (dist < 100000) {
                 nearbyPosts.push(posts[i]);
                 console.log('distance of results:', dist);
             }
@@ -388,7 +416,11 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
 const searchPosts = async (searchValue, page, limit) => {
     let options;
     if (page && limit) {
-        options = { page: page, limit: limit };
+        options = {
+            page: page,
+            limit: limit,
+            sort: { publishingDate: -1 }
+        };
     } else {
         options = { pagination: false }
     }

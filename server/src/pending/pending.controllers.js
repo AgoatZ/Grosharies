@@ -198,7 +198,7 @@ const updatePending = async function (req, res, next) {
         };
         emitEvent('Pending Edited', publisher._id, publisherNote);
         emitEvent('New Notification', publisher._id, newNotification);
-        await UserService.addToNotifications(publisher._id, [publisherNote, newNotification]);
+        await UserService.addToNotifications(publisher._id, newNotification);
         return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
     } catch (e) {
         console.log('Pending controller error from updatePending: ' + e.message);
@@ -274,7 +274,7 @@ const finishPending = async function (req, res, next) {
         await UserService.updateUser(collector._id, { notifications: collector.notifications });
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
 
-        const statusChanged = { by: byWho, pendingPostId: oldPending._id, sourcePostId: oldPending.sourcePost, collectorId: collector._id, publisherId: publisher._id };
+        const statusChanged = { by: byWho, pendingPostId: finishedPending._id, sourcePostId: finishedPending.sourcePost, collectorId: collector._id, publisherId: publisher._id };
         emitEvent("Pending Status Changed", publisher._id, statusChanged);
         emitEvent("Pending Status Changed", collector._id, statusChanged);
         await UserService.addToNotifications(publisher._id, statusChanged);
@@ -327,7 +327,7 @@ const cancelPending = async function (req, res, next) {
         collector.notifications.push(orderComplete);
         await UserService.addToNotifications(collector._id, orderComplete);
 
-        const statusChanged = { by: byWho, pendingPostId: oldPending._id, sourcePostId: oldPending.sourcePost, collectorId: collector._id, publisherId: publisher._id };
+        const statusChanged = { by: byWho, pendingPostId: cancelledPost._id, sourcePostId: cancelledPost.sourcePost, collectorId: collector._id, publisherId: publisher._id };
         emitEvent("Pending Status Changed", publisher._id, statusChanged);
         emitEvent("Pending Status Changed", collector._id, statusChanged);
         await UserService.addToNotifications(publisher._id, statusChanged);
@@ -360,7 +360,7 @@ const decide = async (req, res, next) => {
         const { emitEvent } = require(".././../index");
         const pendingPost = await PendingService.getPendingById(req.query.Id);
         const before = pendingPost.status.finalStatus;
-        if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
+        if (pendingPost.status.publisherStatement == Status.PENDING && pendingPost.status.collectorStatement == Status.PENDING) {
             const newNotification = {
                 text: pendingPost.headline,
                 title: "Your order is expired",
@@ -408,4 +408,4 @@ module.exports = {
     deletePending,
     updatePending,
     setCollectorStatement
-}
+};
