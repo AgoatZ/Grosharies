@@ -34,6 +34,9 @@ import IconButton from "@mui/material/IconButton";
 import CommentIcon from "@mui/icons-material/Comment";
 import CardMedia from "@mui/material/CardMedia";
 import Input from "@mui/material/Input";
+import GoogleMapReact from "google-map-react";
+import Geocode from "react-geocode";
+
 
 const theme = createTheme();
 
@@ -50,6 +53,7 @@ export default function AddPost() {
   const [isDescriptionError, setIsDescriptionError] = React.useState("");
   const [isFromDateError, setIsFromDateError] = React.useState("");
   const [isEndDateError, setIsEndDateError] = React.useState("");
+  const [isQuantityError, setIsQuantityError] = React.useState("");
 
   const [allGroceries, setAllGroceries] = React.useState([]);
   const [groceries, setGroceries] = React.useState([]);
@@ -138,24 +142,50 @@ export default function AddPost() {
     const headline = data.get("headline");
     const address = data.get("address");
     const description = data.get("description");
+    const from = fromDate;
+    const until = endDate;
+    const repeated = data.get("repeat");
     event.preventDefault();
+    if (headline=="")
+    {
+      setIsHeadlineError(
+        "headline is empty"
+      );
+      return
+    }
+    if (until <= fromDate) {
+      setIsEndDateError(
+        "end date must be greater from fromDate"
+      );
+      return;
+    }
+    if (description=="")
+    {
+      setIsDescriptionError(
+        "description is empty"
+      );
+      return
+    }
+    if (address=="")
+    {
+      setIsAddressError(
+        "address is empty"
+      );
+      return
+    }
     if (
-      isHeadlineError !== "isOk" ||
-      isDescriptionError !== "isOk" ||
-      isAddressError != "isOk" ||
-      isFromDateError !== "isOk" ||
-      isEndDateError !== "isOk"
+      isHeadlineError !== "" ||
+      isDescriptionError !== "" ||
+      isAddressError != "" ||
+      isFromDateError !== "" ||
+      isEndDateError !== "" ||
+      isQuantityError !==""
     ) {
-      console.log('=========== error', isFromDateError, isEndDateError);
       if (isFromDateError !== "") {
 
       }
       return;
     }
-
-    const from = fromDate;
-    const until = endDate;
-    const repeated = data.get("repeat");
 
     const groceries = checked.map((grocery) => {
       if (grocery.isChecked) {
@@ -253,7 +283,7 @@ export default function AddPost() {
                         "headline must be at least 2 characters"
                       );
                     } else {
-                      setIsHeadlineError("isOk");
+                      setIsHeadlineError("");
                     }
                     setHeadline(e.target.value);
                   }}
@@ -263,7 +293,7 @@ export default function AddPost() {
                   name="headline"
                   autoComplete="headline"
                 />
-                {isHeadlineError !== "isOk" ? (
+                {isHeadlineError !== "" ? (
                   <label style={alertStyle}>{isHeadlineError}</label>
                 ) : null}
               </Grid>
@@ -273,25 +303,43 @@ export default function AddPost() {
               <Grid item xs={12}>
                 <TextField
                   required
-                  error={isAddressError !== ""}
                   fullWidth
-                  onChange={(e) => {
+                  error={isAddressError !== ""}
+                  onChange={async (e) => {
+
                     if (e.target.value.length < 2) {
                       setIsAddressError(
                         "address must be at least 2 characters"
+                      )
+                    }
+                 
+                    try {
+                    Geocode.setApiKey('AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc');
+                    const response = await Geocode.fromAddress(e.target.value);
+                    if (!response.results[0].geometry.location)
+                    {
+                      setIsAddressError(
+                        "The address is not valid"
                       );
                     } else {
-                      setIsAddressError("isOk");
+                      setIsAddressError("");
                     }
+                  }  catch (e) {
+                    setIsAddressError(
+                      "The address is not valid"
+                    );
+                  }
                     setAddress(e.target.value);
+                
                   }}
+                  placeholder="18 King George, Tel Aviv"
                   type="text"
                   id="address"
                   label="address"
                   name="address"
                   autoComplete="address"
                 />
-                {isAddressError !== "isOk" ? (
+                {isAddressError !== "" ? (
                   <label style={alertStyle}>{isAddressError}</label>
                 ) : null}
               </Grid>
@@ -309,7 +357,7 @@ export default function AddPost() {
                         "description must be at least 2 characters"
                       );
                     } else {
-                      setIsDescriptionError("isOk");
+                      setIsDescriptionError("");
                     }
                     setDescription(e.target.value);
                   }}
@@ -342,13 +390,13 @@ export default function AddPost() {
                           "From date is required and must be greater from now"
                         );
                       } else {
-                        setIsFromDateError("isOk");
+                        setIsFromDateError("");
                       }
                       setFromDate(newValue);
                     }}
                   />
                 </LocalizationProvider>
-                {isFromDateError !== "isOk" ? (
+                {isFromDateError !== "" ? (
                   <label style={alertStyle}>{isFromDateError}</label>
                 ) : null}
               </Grid>
@@ -365,18 +413,17 @@ export default function AddPost() {
                     label="end date"
                     value={endDate}
                     onChange={(newValue) => {
-                      //debugger;
-                      if (newValue <= fromDate) {
+                      if (newValue > fromDate) {
+                        setIsEndDateError("");
+                      } else {
                         setIsEndDateError(
                           "end date must be greater from fromDate"
                         );
-                      } else {
-                        setIsEndDateError("isOk");
                       }
                       setEndDate(newValue);
                     }}
                   />
-                  {isEndDateError !== "isOk" ? (
+                  {isEndDateError !== "" ? (
                     <label style={alertStyle}>{isEndDateError}</label>
                   ) : null}
                 </LocalizationProvider>
@@ -439,11 +486,31 @@ export default function AddPost() {
                         />
                         <TextField
                           fullWidth
+                          error={isQuantityError !== ""}
+                          InputProps={{
+                            inputProps: { min: 0 }
+                          }}
                           type="number"
                           id={`${value.name}`}
                           label={`${value.name}`}
                           name={`${value.name}`}
-                          onChange={(e) => handleToggleAmount(e, value)}
+                          onChange={ (e) =>{
+                            
+                            if (e.target.value < 0)
+                            {
+                              setIsQuantityError(
+                                "must be positive"
+                              );
+
+                            } else
+                             {
+                              setIsQuantityError(
+                                ""
+                              );
+                               handleToggleAmount(e, value) 
+                           } 
+                          }}
+                          
                         />
                         <CardMedia
                           component="img"
