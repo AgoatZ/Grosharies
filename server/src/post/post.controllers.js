@@ -153,6 +153,18 @@ const getNearbyPosts = async function (req, res, next) {
     }
 };
 
+const getPostImages = async function (req, res, next) {
+    // Validate request parameters, queries using express-validator
+    try {
+        const images = await PostService.getPostImages(req.params.id);
+        return res.status(200).json({ images: images, message: "Succesfully images Retrieved" });
+    } catch (e) {
+        console.log('controller error: ' + e.message);
+
+        return res.status(400).json({ message: e.message });
+    }
+};
+
 const addPost = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
@@ -257,5 +269,6 @@ module.exports = {
     pendPost,
     deletePost,
     updatePost,
-    searchPosts
+    searchPosts,
+    getPostImages
 }

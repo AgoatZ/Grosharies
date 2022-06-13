@@ -161,7 +161,7 @@ router.post('/', authJwt,GroceryController.addGrocery);
 /**
 * @swagger
 * /api/groceries/{id}:
-*   post:
+*   delete:
 *     summary: Deletes the single grocery corresponding to the given id
 *     tags: [Grocery Api]
 *     parameters:
@@ -216,6 +216,13 @@ router.put('/:id', authJwt, GroceryController.updateGrocery);
 *   post:
 *     summary: Update grocery image
 *     tags: [Grocery Api]
+*     parameters:
+*       - in: path
+*         name: id
+*         schema:
+*           type: string
+*         required: true
+*         description: The grocery's id
 *     requestBody:
 *       required: true
 *       content:
