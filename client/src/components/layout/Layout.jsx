@@ -48,7 +48,7 @@ const Layout = () => {
           <Footer />
         </Grid>
       </Grid>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 };
 
