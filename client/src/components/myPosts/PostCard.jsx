@@ -14,7 +14,7 @@ const MySwal = withReactContent(Swal);
 const PostCard = ({ post }) => {
     let navigate = useNavigate();
     const toPostPage = () => navigate("/post/" + post._id);
-    const toEditPostPage = (post) => navigate("/post/" + post._id + '/edit');       //TODO: Edit Post Page
+    // const toEditPostPage = (post) => navigate("/post/" + post._id + '/edit');       //TODO: Edit Post Page
 
     const deletePost = (post) => {
         MySwal.fire({
@@ -51,7 +51,7 @@ const PostCard = ({ post }) => {
                     <Button variant="text" onClick={toPostPage}>Go To Post</Button>
                 </Stack>
                 <Stack direction="column" spacing={1} sx={{ alignSelf: 'center', width: "33%" }}>
-                    <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Edit Post</Button>
+                    {/* <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Edit Post</Button> */}
                     <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => deletePost(post)}>Delete Post</Button>
                 </Stack>
             </Box>
@@ -67,7 +67,7 @@ const PostCard = ({ post }) => {
                 <Divider />
                 <Button variant="text" onClick={toPostPage}>Go To Post</Button>
                 <ButtonGroup fullWidth>
-                    <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Edit Post</Button>
+                    {/* <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Edit Post</Button> */}
                     <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => deletePost(post)}>Delete Post</Button>
                 </ButtonGroup>
             </Stack>

@@ -36,7 +36,7 @@ const Post = () => {
       //Get user's active order for this post and add it to main post object if exists
       axios.get("pendings/collector/current").then((res) => {
         const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
-        const valid = userPendingPost && userPendingPost.status.finalStatus === "pending" && userPendingPost.status.collectorStatement === "pending" && userPendingPost.status.publisherStatement === "pending";
+        const valid = userPendingPost && userPendingPost.status.finalStatus === "pending";
 
         if (valid) {
           post.userPendingPostId = userPendingPost._id;

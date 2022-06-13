@@ -3,7 +3,7 @@ import axios from "../../utils/axios";
 import PostCard from "../myPosts/PostCard";
 import ProductsList from "../myPosts/ProductsList";
 import OrderCard from "../myOrders/OrderCard";
-import { Typography, Box, Divider, Accordion, AccordionDetails, AccordionSummary, List, ListItemText, ListSubheader } from "@mui/material";
+import { Typography, Box, Divider, Accordion, AccordionDetails, AccordionSummary, List, ListItemText, ListSubheader, Paper } from "@mui/material";
 //Icons
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -13,28 +13,10 @@ const MyPosts = () => {
 
   //TODO: fix open orders wont render and collector's name undefined
   const loadMyPosts = () => {
-    let userPosts = [];
     //Get user's open posts
-    axios.get("posts/openPosts/current").then((userOpenPosts) => {
-      userPosts = userOpenPosts.data.posts;
-      console.log('images', userPosts[userPosts.length - 1].images);
-    }).then(() => {
-      //TODO: use post.repliers:[{user: userIdreply: pendingPostId}] instead 
-      //Add pending orders to each post object
-      userPosts.forEach(post => {
-        post.pendings = [];
-        axios.get("pendings/post/" + post._id).then((postOpenOrders) => {
-          //Filter to relevant pendings 
-          post.pendings = postOpenOrders.data.pendings.filter((pending) => pending.status.finalStatus === "pending");
-          //Add collector's name for each pending
-          post.pendings.forEach((pending) => {
-            axios.get("users/profile/" + pending.collectorId).then((res) => pending.collector = res.data.user.firstName + ' ' + res.data.user.lastName);
-          });
-        });
-      });
-    }).then(() => {
-      console.log("User Posts", userPosts);
-      setPosts(userPosts);
+    axios.get("posts/openPosts/current").then((res) => {
+      console.log("User Posts", res.data.posts);
+      setPosts(res.data.posts);
     });
   }
 
@@ -49,21 +31,36 @@ const MyPosts = () => {
             <Divider />
             <ProductsList content={post.content} />
             <Divider />
-            <OrdersList pendings={post.pendings} />
+            <OrdersList repliers={post.repliers} />
           </AccordionDetails>
         </Accordion >
       ))
     )
   };
 
-  const OrdersList = ({ pendings }) => {
+  const OrdersList = ({ repliers }) => {
+    //repliers:[{user: collectorUserId, reply: pendingPostId}]
+    const [pendingPosts, setPendings] = useState([]);
+    useEffect(() => {
+      let pendingPosts = [];
+      repliers.forEach(replier => {
+        //Get pending post object
+        axios.get("pendings/" + replier.reply)
+          .then((res) => { pendingPosts.push(res.data.post); setPendings(pendingPosts); })
+          .catch(e => console.log("Error getting a pending post"));
+      })
+    }, []);
+
     return (
       <List>
         <ListSubheader>Open Orders</ListSubheader>
-        {
-          pendings.length > 0 ?
-            (pendings.map(pending => <OrderCard pendingPost={pending} role="publisher" key={pending._id} />)) :
-            (<ListItemText inset>This post has no open orders at the moment</ListItemText>)
+        {pendingPosts.length > 0 ?
+          (pendingPosts.map(pendingPost =>
+            <Paper elevation={3} key={pendingPost._id} sx={{ padding: "1%", margin: "1%" }}>
+              <OrderCard pendingPost={pendingPost} role="publisher" />
+            </Paper>
+          )) :
+          (<ListItemText inset>This post has no open orders at the moment</ListItemText>)
         }
       </List >
     )
