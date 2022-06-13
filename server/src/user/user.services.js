@@ -21,6 +21,27 @@ const getUsers = async function (query, page, limit) {
     }
 };
 
+const getTopUsers = async function (page, limit) {
+    try {
+        let options;
+        if (page && limit) {
+            options = {
+                page: page,
+                limit: limit,
+                sort: { rank: -1 }
+            };
+        } else {
+            options = { pagination: false }
+        }
+        const users = await UserRepository.getUsers({},options);
+        return users;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error('Error while Paginating Users');
+    }
+};
+
 const getUserById = async function (id, currentUser) {
     try {
         let userId;
@@ -180,4 +201,5 @@ module.exports = {
     addToHistory,
     addToNotifications,
     getPickupHistory,
+    getTopUsers
 };

@@ -35,7 +35,7 @@ if (process.env.NODE_ENV == "development") {
       },
       servers: [{ url: "http://localhost:" + process.env.PORT, },],
     },
-    apis: ["./src/user/*.routes.js"],
+    apis: ["./src/user/*.routes.js", "./src/grocery/*.routes.js", "./src/post/*.routes.js"],
   };
   const specs = swaggerJsDoc(options);
   app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
