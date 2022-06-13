@@ -189,7 +189,7 @@ router.delete('/:id', authJwt, UserController.deleteUser);
 *             $ref: '#/components/schemas/User'
 *     responses:
 *       200:
-*         description: The new user
+*         description: The user before the update
 *         content:
 *           application/json:
 *             schema:
