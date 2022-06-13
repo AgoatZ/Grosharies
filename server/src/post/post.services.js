@@ -171,18 +171,26 @@ const getPostsByGroceries = async (groceries, page, limit) => {
 const addPost = async (postDetails, user) => {
     try {
         //#TODO GETTING ONLY GROCERY ID AND CREATING HERE THE FULL OBJECT
+        let repeated = false;
+        if (postDetails.pickUpDates[0].repeated == 'on') {
+            repeated = true;
+        }
         let newPost = {
             headline: postDetails.headline,
             userId: user._id,
             address: postDetails.address,
-            pickUpDates: postDetails.pickUpDates,
+            pickUpDates: [{
+                from: postDetails.pickUpDates[0].from,
+                until: postDetails.pickUpDates[0].until,
+                repeated: repeated
+            }],
             status: PostStatus.STILL_THERE,
             content: [],
             description: postDetails.description,  
         };
-        for (i in postDetails.groceries) {
-            let grocery = await GroceryRepository.getGroceryById(postDetails.groceries[i].id);
-            let amount = postDetails.groceries[i].amount;
+        for (i in postDetails.groceriesToSend) {
+            let grocery = await GroceryRepository.getGroceryById(postDetails.groceriesToSend[i].id);
+            let amount = postDetails.groceriesToSend[i].amount;
             delete grocery['_id'];
             grocery.amount = amount;
             newPost.content.push({
