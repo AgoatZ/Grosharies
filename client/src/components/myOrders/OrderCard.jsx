@@ -14,8 +14,6 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const MySwal = withReactContent(Swal);
 
-//TODO: Open Socket for order timeout and setTimeLeft(null) setIsCancelled
-
 const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelled = false }) => {
     let navigate = useNavigate();
     const toPostPage = () => navigate("/post/" + pendingPost.sourcePost);
@@ -87,12 +85,8 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
     return (
         <>
             {/* Large Screen Setup */}
-            <Box sx={{ display: { xs: "none", md: "flex" }, width: '100%' }}>
-                <Stack direction="column" spacing={1} sx={{ mr: 2, width: '33%' }} >
-                    <CardMedia component="img" image="/assets/default-post-image.svg"
-                        sx={{ padding: 1, borderRadius: "10px", height: "auto", width: "200px" }} />
-                </Stack>
-                <Stack direction="column" spacing={1} sx={{ flexShrink: 0, width: "50%", mr: 2 }}>
+            <Box sx={{ display: { xs: "none", md: "flex" }, width: '100%', padding: "1%" }}>
+                <Stack direction="column" spacing={1} sx={{ flexShrink: 0, width: "70%", mr: 2, ml: 2 }}>
                     <Status pendingPost={pendingPost} />
                     <Typography variant="h5" >{pendingPost.headline}</Typography>
                     <Typography variant="h6" ><LocationOnIcon /> {pendingPost.address}</Typography>
@@ -111,10 +105,8 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
 
             {/* Small Screen Setup */}
             <Stack direction="column" spacing={1}
-                sx={{ display: { xs: "flex", md: "none" }, width: "100%" }}>
+                sx={{ display: { xs: "flex", md: "none" }, width: "100%", padding: "1.5%" }}>
                 <Status pendingPost={pendingPost} />
-                <CardMedia component="img" image="/assets/default-post-image.svg"
-                    sx={{ padding: 1, borderRadius: "10px", height: "130px", width: "auto" }} />
                 <Typography variant="h5" >{pendingPost.headline}</Typography>
                 <Typography variant="h6" ><LocationOnIcon /> {pendingPost.address}</Typography>
                 <ButtonGroup fullWidth >
