@@ -1,4 +1,4 @@
-import PostCard from "../post/PostCard";
+import PostCard from "./PostCard";
 import { Grid, Container } from "@mui/material";
 import Map from "../map/Map";
 import { useEffect, useState } from "react";
@@ -11,9 +11,9 @@ const Posts = ({ data, noBorder, showMap }) => {
   const containerBorderStyle = noBorder
     ? {}
     : {
-        border: { md: "solid lightgray 1px", xl: "solid lightgray 1px" },
-        borderRadius: "10px",
-      };
+      border: { md: "solid lightgray 1px", xl: "solid lightgray 1px" },
+      borderRadius: "10px",
+    };
   useEffect(() => {
     if (!showMap) return;
     //use Effect only occured when map representation need to be showen

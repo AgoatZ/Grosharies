@@ -10,8 +10,8 @@ const tabs = ["Near By", "Recently Added", "Add post"];
 
 const Home = () => {
   const { loggedIn } = useContext(AppContext);
-  const [activeTabNumber, setActiveTabNumber] = useState(0);
   const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
+  const [activeTabNumber, setActiveTabNumber] = useState(0);
   const [suggestedPosts, setSuggestedPosts] = useState([]);
   const [nearbyPosts, setNearbyPosts] = useState([]);
   const [recentPosts, setRecentPosts] = useState([]);
@@ -26,27 +26,16 @@ const Home = () => {
         //console.log("Longitude is :", position.coords.longitude);
         //TODO: add route to exept the user location to server
         axios
-          .post("/posts/nearby", {
-            coordinates: {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            },
-          })
-          .then((res) => {
-            setNearbyPosts(res.data.posts);
-          });
+          .post("/posts/nearby", { coordinates: { lat: position.coords.latitude, lng: position.coords.longitude, }, })
+          .then((res) => { setNearbyPosts(res.data.posts); });
       });
     }
     axios
       .get("posts/suggested/current")
       .then((res) => setSuggestedPosts(res.data.posts))
       .catch((e) => console.log("Error getting suggested posts"));
-    //TODO: Posts nearby and Posts recently added
-
     axios.get("/posts/").then((res) => {
-      res.data.posts.forEach((post) => {
-        //console.log("address: ", post.address, " coordinates: ", post.addressCoordinates);
-      });
+      res.data.posts.forEach((post) => {/*console.log("address: ", post.address, " coordinates: ", post.addressCoordinates);*/ });
       setRecentPosts(res.data.posts);
     });
   };

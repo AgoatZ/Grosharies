@@ -1,43 +1,18 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography, Box, Button, Slider, CardMedia } from "@mui/material";
-import Calander from "react-calendar";
-import ImageGallery from "react-image-gallery";
-import "react-image-gallery/styles/css/image-gallery.css";
+import { Typography, Box, Button, Slider, CardMedia, Stack, Paper, useMediaQuery, Badge, Container, Divider } from "@mui/material";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "../../utils/axios";
+import ImageGallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 import { PostDummy } from "../../utils/dummies";
 import Map from "../map/Map";
+import PickupDatesCalendar from "./PickupDatesCalendar";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import "react-calendar/dist/Calendar.css";
-import "./PostStyle.css";
 
 const MySwal = withReactContent(Swal);
-const convertImagesToItems = (post) => {
-  return post.images.map((image) => {
-    return { original: "data:image/jpg;base64, " + image, originalHeight: "500px", originalWidth: "400px" }
-  })
-}
-function isDateInRange(date, dateFrom, dateTo) {
-  return date >= dateFrom && date <= dateTo;
-}
-
-const findDate = (calDate, dates) => {
-  return dates.find((date) => {
-    console.log(date.from);
-    const from = new Date(date.from).setHours(0, 0, 0, 0);
-    const until = new Date(date.until).setHours(0, 0, 0, 0);
-    const pickedDate = new Date(calDate).setHours(0, 0, 0, 0);
-    console.log("picked up", pickedDate);
-    console.log("from", from);
-    console.log("to", until);
-    console.log(date);
-
-    return from <= pickedDate && pickedDate <= until;
-  });
-};
 
 const Post = () => {
   let navigate = useNavigate();
@@ -45,8 +20,7 @@ const Post = () => {
   const [post, setPost] = useState(PostDummy);
   const [isEdit, setEdit] = useState(false);
   const { handleSubmit, control } = useForm();
-  const [calanderDate, setCalanderDate] = useState({});
-
+  const mobileScreen = useMediaQuery('(max-width:480px)');
   useEffect(() => loadPost(), []);
 
   const loadPost = () => {
@@ -83,73 +57,40 @@ const Post = () => {
     }).catch(e => console.log("Error getting post"));
   }
 
-  const imagesAndVideos = [
-    {
-      original: "https://picsum.photos/id/1018/1000/600/",
-      thumbnail: "https://picsum.photos/id/1018/250/150/",
-    },
-    {
-      original: "https://picsum.photos/id/1015/1000/600/",
-      thumbnail: "https://picsum.photos/id/1015/250/150/",
-    },
-    {
-      original: "https://picsum.photos/id/1019/1000/600/",
-      thumbnail: "https://picsum.photos/id/1019/250/150/",
-    },
-  ];
-
-  const tileClassName = ({ date, view }) => {
-    const dates = post.pickUpDates;
-    return view === "month" && // Block day tiles only
-      dates.some((pickUpDate) => {
-        return isDateInRange(
-          date,
-          new Date(pickUpDate.from).setHours(0, 0, 0, 0),
-          new Date(pickUpDate.until)
-        );
-      })
-      ? "active-date"
-      : null;
-  };
-  const tileDisabled = ({ date, view }) => {
-    const dates = post.pickUpDates;
-    return (
-      view === "month" && // Block day tiles only
-      dates.some((pickUpDate) => {
-        return !isDateInRange(
-          date,
-          new Date(pickUpDate.from).setHours(0, 0, 0, 0),
-          new Date(pickUpDate.until)
-        );
-      })
-    );
-  };
+  const convertImagesToItems = (post) => {
+    if (mobileScreen)
+      return post.images.map((image) => ({ original: "data:image/jpg;base64, " + image, originalWidth: "300px", originalHeight: "400px", }));
+    return post.images.map((image) => ({ original: "data:image/jpg;base64, " + image, originalWidth: "400px", originalHeight: "500px", }));
+  }
 
   const Products = ({ post }) => {
     return (
       post.content.map((grocery) => (
-        <Box key={grocery._id} sx={{ display: "flex", margin: "3% 0", justifyContent: "space-evenly", width: "45%", }}>
-          <CardMedia image={"data:image/jpg;base64, " + grocery.images} component="img" sx={{ padding: 1, borderRadius: "10px", height: "160px", width: "auto", }} />
-          <Box sx={{ display: "flex", flexDirection: "column", margin: "auto 10% auto 0", }}>
-            <Typography component="div" variant="h6" mb="2%" >
-              {`Name: ${grocery.original.name}`}
+        <Box key={grocery._id} sx={{ width: "fit-content", margin: "1%" }}>
+          <CardMedia image={"data:image/jpg;base64, " + grocery.original.images} component="img"
+            sx={{ padding: 1, height: "150px", width: "auto", }} />
+
+          <Stack direction="column" >
+            <Typography variant="h6" mb="2%" >
+              <b>{`${grocery.original.name}`}</b>
             </Typography>
-            <Typography component="div" variant="h6" mb="2%" >
+            <Typography variant="h6" mb="2%" >
               {`Original Amount: ${grocery.original.amount}  ${grocery.original.scale}`}
             </Typography>
-            <Typography component="div" variant="h6" mb="2%" >
+            <Typography variant="h6" mb="2%" >
               {`Available Amount: ${grocery.left + grocery.currentOrder}  ${grocery.original.scale}`}
             </Typography>
 
-            <Box sx={{ width: "300px" }}>
+            <Box >
               <Controller
                 control={control}
                 name={grocery.original.name}
                 defaultValue={grocery.currentOrder}
                 render={({ field: { value, onChange } }) => (
-                  <Typography variant="h6" color="red" component="div">
+                  <Typography variant="h6" color="secondary" >
                     {`Your Amount: ${value} ${grocery.original.scale}`}
                     <Slider
+                      marks
                       step={1}
                       min={0}
                       max={Number(grocery.left + grocery.currentOrder)}
@@ -162,7 +103,7 @@ const Post = () => {
                 )}
               />
             </Box>
-          </Box>
+          </Stack>
         </Box>
       ))
     )
@@ -212,72 +153,49 @@ const Post = () => {
   };
 
   return (
-    <Box sx={{ margin: "0 10%" }}>
-      <Box sx={{ justifyContent: "space-between", display: "flex", margin: "3% 0", }}>
-        <Box sx={{ display: "flex", flexDirection: "column", margin: "auto 10% auto 0", }}>
-          <Typography component="div" variant="h3" mb="2%" >{post.headline}</Typography>
-          <Typography variant="h6" color="text.secondary" component="div">{post.description}</Typography>
-        </Box>
-        <CardMedia image={"data:image/jpg;base64, " + post.images[0]} component="img" sx={{ padding: 1, borderRadius: "10px", height: "250px", width: "auto", }} />
-      </Box>
-      <Box sx={{ flexDirection: "row", display: "flex" }}>
-        <LocationOnIcon color="primary" fontSize="large" />
-        <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">{post.address}</Typography>
-      </Box>
+    <Stack direction="column" flexWrap="wrap" spacing={{ xs: 1, sm: 1, md: 2, lg: 4 }} >
 
-      <Map
-        sx={{ height: "450px", width: "400px", marginBottom: "100px", }}
-        locations={[{ ...post.addressCoordinates, address: post.address }]}
-        center={post.addressCoordinates}
-      />
+      <Stack direction="column" spacing={1}>
+        <Badge color="secondary" sx={{ marginRight: 3 }}
+          badgeContent={<Typography variant="overline">{post.status}</Typography>} >
+          <Typography variant="h3" mb="2%" >{post.headline}</Typography>
+        </Badge>
+        <Typography variant="h6" color="text.secondary">{post.description}</Typography>
+      </Stack>
 
-      <Box sx={{ width: "600px", height: "600px", margin: "0 auto" }}>
-        <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Gallery</Typography>
-        <ImageGallery items={convertImagesToItems(post)} autoPlay />
-      </Box>
+      <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center" flexWrap="wrap">
+        <Paper elevation={2} sx={{ margin: "1%", width: "fit-content", padding: "0.5%", borderRadius: "10px", border: "solid 1px white" }}>
+          <ImageGallery
+            items={convertImagesToItems(post)}
+            slideDuration={600} autoPlay={false} showPlayButton={false} showBullets showIndex useBrowserFullscreen={false} />
+        </Paper>
 
-      <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">PickUp Dates</Typography>
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "center", }}>
-        <Calander
-          style={{ flexShrink: 2, display: "flex", flexDirection: "row", flexWrap: "wrap", }}
-          tileClassName={tileClassName}
-          tileDisabled={tileDisabled}
-          onClickDay={(value, event) => {
-            const date = findDate(value, post.pickUpDates);
-            console.log(new Date(date.from).getHours());
-            setCalanderDate({ ...date, current: value, isRepeated: true });
-          }}
-        ></Calander>
+        <Paper elevation={2} sx={{ margin: "1%", width: "max-content", padding: "0.5%", border: "solid 1px white", borderRadius: "10px", }}>
+          <Typography gutterBottom variant="h6"><LocationOnIcon color="primary" fontSize="large" sx={{ verticalAlign: "middle" }} />{post.address}</Typography>
+          <Map
+            sx={mobileScreen ? { width: "300px", height: "350px" } : { width: "400px", height: "450px" }}
+            locations={[{ ...post.addressCoordinates, address: post.address }]}
+            center={post.addressCoordinates} />
+        </Paper>
 
-        <Box sx={{ visibility: !calanderDate.current ? "hidden" : "visible", borderRadius: "10px", flexShrink: 2, padding: "1% 3%", border: "solid gray", }}>
-          <h2>
-            {new Date(calanderDate.current).toLocaleString().split(",")[0]}
-          </h2>
-          <b>From:</b>
-          <Typography>
-            {new Date(calanderDate.from).toUTCString().split(" ")[4]}
-          </Typography>
-          <b>To:</b>
-          <Typography>
-            {!calanderDate.isRepeated &&
-              new Date(calanderDate.until).setHours(0, 0, 0, 0) ===
-              new Date(calanderDate.current).setHours(0, 0, 0, 0)
-              ? new Date(calanderDate.until).toUTCString().split(" ")[4]
-              : calanderDate.isRepeated
-                ? new Date(calanderDate.until).toUTCString().split(" ")[4]
-                : "End Of Day"}
-          </Typography>
-        </Box>
-      </Box>
+        <Paper elevation={2} sx={{ margin: "1%", width: "fit-content", padding: '0.5%', border: "solid 1px white", borderRadius: "10px", }}>
+          <Typography gutterBottom variant="h6" align="center">PickUp Dates</Typography>
+          <PickupDatesCalendar post={post} />
+        </Paper>
+      </Stack>
 
-      <Typography gutterBottom fontSize="25px" fontWeight="bold" color="text.secondary">Products</Typography>
+      <Divider variant="middle"><Typography variant="h4">Products</Typography></Divider>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+        <Stack sx={{ width: '100%' }} direction="row" flexWrap="wrap" justifyContent="center">
           <Products post={post} />
-        </Box>
-        <Button sx={{ ml: "10%" }} variant="contained" disableElevation type="submit">{isEdit ? "Edit Order" : "Create Order"}</Button>
+        </Stack>
+
+        <Stack direction="row" justifyContent="center" sx={{ marginTop: "7%", marginBottom: "7%" }}>
+          <Button variant="contained" type="submit">{isEdit ? "Edit Order" : "Create Order"}</Button>
+        </Stack>
+
       </form>
-    </Box>
+    </Stack >
   );
 };
 
