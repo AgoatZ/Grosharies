@@ -69,7 +69,7 @@ const MyPosts = () => {
   }
 
   return (
-    <Box sx={{ m: "5%", mb: "1%" }}>
+    <Box>
       <Typography variant="h3" sx={{ mb: "5%" }}>My Posts</Typography>
       {posts.length > 0 ? (<PostsAccordion posts={posts} />) : <Typography>No Posts</Typography>}
     </Box>
