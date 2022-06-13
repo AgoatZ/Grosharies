@@ -127,8 +127,8 @@ const getPostsByGroceries = async function (req, res, next) {
 
 const getSuggestedPosts = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
-    const page = req.params.page ? req.params.page : 1;
-    const limit = req.params.limit ? req.params.limit : 30;
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 30;
     try {
         const posts = await PostService.getSuggestedPosts(req.params.userid, req.user, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Suggested Posts Retrieved" });
@@ -196,7 +196,7 @@ const pendPost = async function (req, res, next) {
         };
         emitEvent('Pending Created', updatePost.userId, publisherNote);
         emitEvent("New Notification", updatedPost.userId, [publisherNote, newNotification]);
-        
+
         await UserService.addToNotifications(updatedPost.userId, newNotification);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {

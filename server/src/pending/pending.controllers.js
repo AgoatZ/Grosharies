@@ -191,10 +191,10 @@ const updatePending = async function (req, res, next) {
             postId: oldPost.sourcePost
         };
         const publisherNote = {
-            pendingPostId: pendingPost._id,
-            sourcePostId: updatePost._id,
-            collectorId: pendingPost.collectorId,
-            publisherId: updatedPost.userId
+            pendingPostId: oldPost._id,
+            sourcePostId: oldPost.sourcePost,
+            collectorId: oldPost.collectorId,
+            publisherId: oldPost.publisherId
         };
         emitEvent('Pending Edited', publisher._id, publisherNote);
         emitEvent('New Notification', publisher._id, newNotification);
