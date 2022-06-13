@@ -148,7 +148,7 @@ router.post('/updateImage/:id', authJwt, uploadImage, UserController.updateUser)
 /**
 * @swagger
 * /api/users/{id}:
-*   post:
+*   delete:
 *     summary: Deletes the single user corresponding to the given id
 *     tags: [User Api]
 *     parameters:
@@ -189,7 +189,7 @@ router.delete('/:id', authJwt, UserController.deleteUser);
 *             $ref: '#/components/schemas/User'
 *     responses:
 *       200:
-*         description: The new user
+*         description: The user before the update
 *         content:
 *           application/json:
 *             schema:
@@ -225,7 +225,7 @@ router.get('/pickuphistory/:id', authJwt, UserController.getPickupHistory);
 * @swagger
 * /api/users/suggested/{userid}:
 *   get:
-*     summary: Returns a list of suggested posts for the user corresponding to the given id
+*     summary: Learns the user's activity based on his collecting history and returns recommended posts accordingly
 *     tags: [User Api]
 *     parameters:
 *       - in: path
@@ -270,5 +270,23 @@ router.get('/suggested/:userid', PostController.getSuggestedPosts);
 *                 - $ref: '#/components/schemas/User'
 */
 router.get('/profile/:id', authJwt, UserController.getUserProfile);
+
+/**
+* @swagger
+* /api/users/topusers/byrank:
+*   get:
+*     summary: Returns the top users sorted by rank, in an descending order
+*     tags: [User Api]
+*     responses:
+*       200:
+*         description: The users list
+*         content:
+*           application/json:
+*             schema:
+*               type: array
+*               items:
+*                 $ref: '#/components/schemas/User'
+*/
+router.get('/topusers/byrank', authJwt, UserController.getTopUsers);
 
 module.exports = router;

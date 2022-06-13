@@ -110,7 +110,6 @@ const getPostsByGroceries = async (groceries, options) => {
             { 'content.original.name': { $in: groceries }}
             ]
         }, options);
-        //where('content.original.name').in(groceries);
         return posts.docs;
     } catch (e) {
         console.log('repository error: ' + e.message);

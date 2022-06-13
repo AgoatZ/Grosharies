@@ -396,6 +396,11 @@ const searchPosts = async (searchValue, page, limit) => {
     return filteredPosts;
 };
 
+const getPostImages = async (postId) => {
+    const post = await PostRepository.getPostById(postId);
+    return post.images;
+};
+
 const coordinatesDistance = (coor1, coor2) => {
     const lat1 = coor1.lat;
     const lng1 = coor1.lng;
@@ -431,5 +436,6 @@ module.exports = {
     pendPost,
     deletePost,
     updatePost,
-    searchPosts
+    searchPosts,
+    getPostImages
 };

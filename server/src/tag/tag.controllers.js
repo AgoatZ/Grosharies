@@ -4,7 +4,7 @@ getTags = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     
     const page = req.params.page ? req.params.page : 1;
-    const limit = req.params.limit ? req.params.limit : 10;
+    const limit = req.params.limit ? req.params.limit : 30;
     try {
         const tags = await TagService.getTags({}, page, limit)
         return res.status(200).json({ tags: tags, message: "Succesfully Tags Retrieved" });
