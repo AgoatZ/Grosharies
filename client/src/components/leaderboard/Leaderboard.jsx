@@ -28,18 +28,10 @@ const Leaderboard = () => {
   }));
 
   useEffect(() => {
-    //TODO: Add to leaderboard api/users [{ name: user.firstName + '' + user.lasName, rank: user.rank }..]
-    // axios.get("/users/leaderboard").then(res) => {
-    //   setLeaderboard(leaderboard);
-    // });
-
-    let leaderboard;
-    axios.get("/users/").then((res) => {
-      leaderboard = res.data.users
-        .map((user) => ({ name: user.firstName + ' ' + user.lastName, rank: user.rank, profileImage: user.profileImage }))
-        .sort((u1, u2) => (u2.rank - u1.rank));
-      setLeaderboard(leaderboard);
-    })
+    axios.get("/users/topusers/byrank/").then((res) => {
+      console.log(res.data.users);
+      setLeaderboard(res.data.users);
+    });
   }, []);
 
   return (
@@ -59,11 +51,11 @@ const Leaderboard = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {leaderboard.map((leader, index) => (
+            {leaderboard.map((user, index) => (
               <StyledTableRow key={index}>
                 <StyledTableCell >{index + 1}</StyledTableCell>
-                <StyledTableCell >{leader.name}</StyledTableCell>
-                <StyledTableCell >{leader.rank}</StyledTableCell>
+                <StyledTableCell >{user.firstName + ' ' + user.lastName}</StyledTableCell>
+                <StyledTableCell >{user.rank}</StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
