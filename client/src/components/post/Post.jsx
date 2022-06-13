@@ -157,7 +157,7 @@ const Post = () => {
 
       <Stack direction="column" spacing={1}>
         <Badge color="secondary" sx={{ marginRight: 3 }}
-          badgeContent={<Typography variant="overline">{post.status}</Typography>} >
+          badgeContent={<Typography variant="overline" sx={{ fontSize: "20px" }}>{post.status}</Typography>} >
           <Typography variant="h3" mb="2%" >{post.headline}</Typography>
         </Badge>
         <Typography variant="h6" color="text.secondary">{post.description}</Typography>
@@ -190,10 +190,9 @@ const Post = () => {
           <Products post={post} />
         </Stack>
 
-        <Stack direction="row" justifyContent="center" sx={{ marginTop: "7%", marginBottom: "7%" }}>
+        <Stack direction="row" justifyContent="center" flexWrap="wrap" sx={{ marginTop: "7%" }}>
           <Button variant="contained" type="submit">{isEdit ? "Edit Order" : "Create Order"}</Button>
         </Stack>
-
       </form>
     </Stack >
   );
