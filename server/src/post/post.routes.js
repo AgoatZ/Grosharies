@@ -421,7 +421,7 @@ router.get("/suggested/:userid", authJwt, PostController.getSuggestedPosts);
 * @swagger
 * /api/posts/nearby:
 *   post:
-*     summary: Returns posts that are within a radius of 1 Km of the user
+*     summary: Returns posts that are within a radius of 100 Km of the user
 *     tags: [Post Api]
 *     responses:
 *       200:
