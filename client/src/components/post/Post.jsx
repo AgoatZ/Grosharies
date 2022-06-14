@@ -159,7 +159,7 @@ const Post = () => {
     <Stack direction="column" flexWrap="wrap" spacing={{ xs: 1, sm: 1, md: 2, lg: 4 }} >
 
       <Stack direction="column" spacing={1}>
-        <Badge color={isDeleted ? "error" : "secondary"} sx={{ marginRight: 3 }}
+        <Badge color={isDeleted ? "error" : "secondary"} sx={{ marginRight: "100px" }}
           badgeContent={<Typography variant="overline" sx={{ fontSize: "20px" }}>{post.status}</Typography>} >
           <Typography variant="h3" mb="2%" >{post.headline}</Typography>
         </Badge>
