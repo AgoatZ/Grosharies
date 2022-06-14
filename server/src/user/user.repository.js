@@ -2,7 +2,7 @@ const express = require('express');
 const { status } = require('express/lib/response');
 const User = require('./user.model');
 
-getUsers = async function (query, options) {
+const getUsers = async function (query, options) {
     try {
         const users = await User.paginate(query, options);
         return users.docs;
@@ -13,7 +13,7 @@ getUsers = async function (query, options) {
     }
 };
 
-getUserById = async function (userId) {
+const getUserById = async function (userId) {
     try {
         const user = await User.findById(userId);
         return user;
@@ -24,7 +24,7 @@ getUserById = async function (userId) {
     }
 };
 
-getUserByEmail = async function (userEmail) {
+const getUserByEmail = async function (userEmail) {
     try {
         const user = await User.findOne({ 'emailAddress': userEmail});
         return user;
@@ -35,7 +35,7 @@ getUserByEmail = async function (userEmail) {
     }
 };
 
-addUser = async function (userDetails) {
+const addUser = async function (userDetails) {
     try {
         const user = new User(userDetails);
         return await user.save();
@@ -46,7 +46,7 @@ addUser = async function (userDetails) {
     }
 };
 
-deleteUser = async function (userId) {
+const deleteUser = async function (userId) {
     try {
         const deletedUser = await User.findByIdAndDelete(userId);
         return deletedUser;
@@ -57,7 +57,7 @@ deleteUser = async function (userId) {
     }
 };
 
-updateUser = async function (userId, userDetails) {
+const updateUser = async function (userId, userDetails) {
     try {
         const oldUser = await User.findByIdAndUpdate(userId, userDetails);
         return oldUser;
@@ -68,7 +68,7 @@ updateUser = async function (userId, userDetails) {
     }
 };
 
-addToHistory = async function (userId, history) {
+const addToHistory = async function (userId, history) {
     try {
         const oldUser = await User.findByIdAndUpdate(userId, {collectedHistory: history});
         return oldUser;
@@ -86,5 +86,5 @@ module.exports = {
     addUser,
     addToHistory,
     deleteUser,
-    updateUser
-}
+    updateUser,
+};

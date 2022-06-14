@@ -15,7 +15,11 @@ const getPendings = async function (query, page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -32,7 +36,11 @@ const getGroupedPendings = async function (page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -62,7 +70,11 @@ const getPendingsByPublisher = async function (publisherId, user, page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -87,7 +99,11 @@ const getPendingsByCollector = async function (collectorId, user, page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -112,7 +128,11 @@ const getPendingsByCategory = async function (categoryId, page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -129,7 +149,11 @@ const getPendingsByTag = async function (tagId, page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -146,7 +170,11 @@ const getPendingsByPost = async function (postId, page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -187,7 +215,11 @@ const getAllPendingPosts = async function (page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -204,7 +236,11 @@ const getAllFinishedPosts = async function (page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }
@@ -221,7 +257,11 @@ const getAllCancelledPosts = async function (page, limit) {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { 'pendingTime.from' : -1}
+            };
         } else {
             options = { pagination: false }
         }

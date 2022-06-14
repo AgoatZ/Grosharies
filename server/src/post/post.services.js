@@ -6,13 +6,18 @@ const PendingService = require('../pending/pending.services');
 const UserService = require('../user/user.services');
 const TagRepository = require('../tag/tag.repository');
 const SuggestionsUtil = require('../common/utils/suggestions-util');
+const GroceryRepository = require('../grocery/grocery.repository');
 const { getCoordinates } = require('../common/utils/google-maps-client');
 
 const getPosts = async (query, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -45,7 +50,11 @@ const getPostsByUser = async (publisherId, user, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -70,7 +79,11 @@ const getPublisherOpenPosts = async (publisherId, user, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -95,7 +108,11 @@ const getPostsByCategory = async (categoryId, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -112,7 +129,11 @@ const getPostsByTag = async (tagId, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -129,7 +150,11 @@ const getPostsByCollector = async (collectorId, user, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -154,7 +179,11 @@ const getPostsByGroceries = async (groceries, page, limit) => {
     try {
         let options;
         if (page && limit) {
-            options = { page: page, limit: limit };
+            options = {
+                page: page,
+                limit: limit,
+                sort: { publishingDate: -1 }
+            };
         } else {
             options = { pagination: false }
         }
@@ -167,15 +196,40 @@ const getPostsByGroceries = async (groceries, page, limit) => {
     }
 };
 
-const addPost = async (postDetails) => {
+const addPost = async (postDetails, user) => {
     try {
-        for (i in postDetails.content) {
-            postDetails.content[i].left = postDetails.content[i].original.amount;
+        //#TODO GETTING ONLY GROCERY ID AND CREATING HERE THE FULL OBJECT
+        let repeated = false;
+        if (postDetails.pickUpDates[0].repeated == 'on') {
+            repeated = true;
         }
+        let newPost = {
+            headline: postDetails.headline,
+            userId: user._id,
+            address: postDetails.address,
+            pickUpDates: [{
+                from: postDetails.pickUpDates[0].from,
+                until: postDetails.pickUpDates[0].until,
+                repeated: repeated
+            }],
+            status: PostStatus.STILL_THERE,
+            content: [],
+            description: postDetails.description,  
+        };
+        for (i in postDetails.groceriesToSend) {
+            let grocery = await GroceryRepository.getGroceryById(postDetails.groceriesToSend[i].id);
+            let amount = postDetails.groceriesToSend[i].amount;
+            delete grocery['_id'];
+            grocery.amount = amount;
+            newPost.content.push({
+                original: grocery,
+                left: amount
+            });
+        }
+        
         let coordinates = await getCoordinates(postDetails.address);
-        postDetails.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
-        const post = await PostRepository.addPost(postDetails);
-
+        newPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
+        const post = await PostRepository.addPost(newPost);
         return post;
     } catch (e) {
         console.log('service error: ' + e.message);
@@ -346,9 +400,8 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
         let nearbyPosts = [];
         for (i in posts) {
             let dist = coordinatesDistance(posts[i].addressCoordinates, coordinates);
-            if (dist < 666) {
+            if (dist < 100000) {
                 nearbyPosts.push(posts[i]);
-                console.log('distance of results:', dist);
             }
         }
         return nearbyPosts.sort((a, b) => coordinatesDistance(a.addressCoordinates, coordinates) - coordinatesDistance(b.addressCoordinates, coordinates));
@@ -362,12 +415,21 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
 const searchPosts = async (searchValue, page, limit) => {
     let options;
     if (page && limit) {
-        options = { page: page, limit: limit };
+        options = {
+            page: page,
+            limit: limit,
+            sort: { publishingDate: -1 }
+        };
     } else {
         options = { pagination: false }
     }
     const filteredPosts = await PostRepository.searchPosts(searchValue, options);
     return filteredPosts;
+};
+
+const getPostImages = async (postId) => {
+    const post = await PostRepository.getPostById(postId);
+    return post.images;
 };
 
 const coordinatesDistance = (coor1, coor2) => {
@@ -405,5 +467,6 @@ module.exports = {
     pendPost,
     deletePost,
     updatePost,
-    searchPosts
+    searchPosts,
+    getPostImages
 };

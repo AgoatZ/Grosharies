@@ -37,8 +37,7 @@ export default function Login({ loginUser }) {
         setTimeout(() => {
           cookies.set("jwt_token", res.data.accessToken, { httpOnly: false });
           const userAccessToken = jwt(res.data.accessToken); // decode your token here
-          console.log(userAccessToken);
-          console.log(res.data);
+          cookies.set("userId", userAccessToken.id, { httpOnly: false });
           loginUser();
         }, 1000);
       })
@@ -53,8 +52,8 @@ export default function Login({ loginUser }) {
   };
 
   return (
-    <Container component="main" maxWidth="md" sx={{ width: "400px" }}>
-      <CssBaseline />
+    <Container component="main" maxWidth="xs">
+
       <Box
         sx={{
           marginTop: 8,

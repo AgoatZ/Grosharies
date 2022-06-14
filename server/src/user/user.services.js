@@ -21,15 +21,34 @@ const getUsers = async function (query, page, limit) {
     }
 };
 
+const getTopUsers = async function (page, limit) {
+    try {
+        let options;
+        if (page && limit) {
+            options = {
+                page: page,
+                limit: limit,
+                sort: { rank: -1 }
+            };
+        } else {
+            options = { pagination: false }
+        }
+        const users = await UserRepository.getUsers({}, options);
+        return users;
+    } catch (e) {
+        console.log('service error: ' + e.message);
+
+        throw Error('Error while Paginating Users');
+    }
+};
+
 const getUserById = async function (id, currentUser) {
     try {
         let userId;
         if (id == 'current' && currentUser) {
             userId = currentUser._id;
-            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
             userId = id;
-            //console.log("Service bypublisher from params userId:", userId)
         }
         const user = await UserRepository.getUserById(userId)
         return user;
@@ -71,7 +90,6 @@ const addGoogleUser = async (user) => {
         const exists = await UserRepository.getUserByEmail(user.emailAddress);
         if (exists) return exists;
         else {
-            //const googleUser = await UserRepository.addUser(user)
             const googleUser = await AuthService.register(user);
             return googleUser;
         }
@@ -93,11 +111,21 @@ const deleteUser = async function (userId) {
     }
 };
 
-const updateUser = async function (userId, userDetails) {
+const updateUser = async function (id, userDetails, currentUser) {
     try {
-        const exists = await UserRepository.getUserByEmail(userDetails.emailAddress);
-        if (exists && exists._id !== userId) throw Error('This email address belongs to another user');
-        else {
+        let userId;
+        if (currentUser) {
+            userId = currentUser._id;
+        } else {
+            userId = id;
+        }
+        let exists = false;
+        if (userDetails.emailAddress) {
+            exists = await UserRepository.getUserByEmail(userDetails.emailAddress);
+        }
+        if (exists && exists._id !== userId) {
+            throw Error('This email address belongs to another user');
+        } else {
             if (userDetails.image) {
                 userDetails.profileImage = userDetails.image;
                 delete userDetails['image'];
@@ -116,8 +144,6 @@ const addToHistory = async function (userId, pendingPostId) {
     try {
         let oldUser = await UserRepository.getUserById(userId);
         let history = oldUser.collectedHistory;
-        //console.log(history);
-        //console.log(oldUser);
         history = history.concat(pendingPostId);
         oldUser = await UserRepository.updateUser(userId, { collectedHistory: history });
         return oldUser;
@@ -132,8 +158,6 @@ const addToNotifications = async function (userId, newNotifications) {
     try {
         let oldUser = await UserRepository.getUserById(userId);
         let notifications = oldUser.notifications;
-        //console.log(history);
-        //console.log(oldUser);
         notifications = notifications.concat(newNotifications);
         oldUser = await UserRepository.updateUser(userId, { notifications: notifications });
         return oldUser;
@@ -155,10 +179,8 @@ const getPickupHistory = async function (id, currentUser, page, limit) {
         let userId;
         if (id == 'current' && currentUser) {
             userId = currentUser._id;
-            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
             userId = id;
-            //console.log("Service bypublisher from params userId:", userId)
         }
         const pendingPosts = await PendingRepository.getPendingsByCollector(userId, options);
         return pendingPosts;
@@ -180,4 +202,5 @@ module.exports = {
     addToHistory,
     addToNotifications,
     getPickupHistory,
+    getTopUsers
 };

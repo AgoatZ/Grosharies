@@ -1,100 +1,108 @@
-const express = require('express');
-const { status } = require('express/lib/response');
-const GroceryRepository = require('./grocery.repository');
-const CategoryRepository = require('../category/category.repository');
-const fs = require('fs');
+const express = require("express");
+const { status } = require("express/lib/response");
+const GroceryRepository = require("./grocery.repository");
+const CategoryRepository = require("../category/category.repository");
+const fs = require("fs");
 
-const getGroceries = async function (query, page, limit) {
-    try {
-        let options;
-        if (page && limit) {
-            options = { page: page, limit: limit };
-        } else {
-            options = { pagination: false }
-        }
-        const groceries = await GroceryRepository.getGroceries(query, options);
-        return groceries;
-    } catch (e) {
-        console.log('Grocery service error from getGroceries: ', e.message);
-
-        throw Error('Error while Paginating Groceries');
+const getGroceries = async function(query, page, limit) {
+  try {
+    let options;
+    if (page && limit) {
+      options = { page: page, limit: limit };
+    } else {
+      options = { pagination: false };
     }
+    const groceries = await GroceryRepository.getGroceries(query, options);
+    return groceries;
+  } catch (e) {
+    console.log("Grocery service error from getGroceries: ", e.message);
+
+    throw Error("Error while Paginating Groceries");
+  }
 };
 
-const getGroceryById = async function (groceryId) {
-    try {
-        const grocery = await GroceryRepository.getGroceryById(groceryId);
-        return grocery;
-    } catch (e) {
-        console.log('Grocery service error from getGroceryById: ', e.message);
+const getGroceryById = async function(groceryId) {
+  try {
+    const grocery = await GroceryRepository.getGroceryById(groceryId);
+    return grocery;
+  } catch (e) {
+    console.log("Grocery service error from getGroceryById: ", e.message);
 
-        throw Error('Error while Retrieving Grocery');
-    }
+    throw Error("Error while Retrieving Grocery");
+  }
 };
 
-const getGroceryByName = async function (groceryName) {
-    try {
-        const grocery = await GroceryRepository.getGroceryByName(groceryName);
-        return grocery;
-    } catch (e) {
-        console.log('Grocery service error from getGroceryByName: ', e.message);
+const getGroceryByName = async function(groceryName) {
+  try {
+    const grocery = await GroceryRepository.getGroceryByName(groceryName);
+    return grocery;
+  } catch (e) {
+    console.log("Grocery service error from getGroceryByName: ", e.message);
 
-        throw Error('Error while Retrieving Grocery');
-    }
+    throw Error("Error while Retrieving Grocery");
+  }
 };
 
-const addGrocery = async function (groceryDetails) {
-    try {
-        const grocery = await GroceryRepository.addGrocery(groceryDetails);
-        let category = await CategoryRepository.getCategoryById(groceryDetails.category);
-        category.groceries.push(grocery);
-        await CategoryRepository.updateCategory({ groceries: category.groceries });
-        return grocery;
-    } catch (e) {
-        console.log('Grocery service error from addGrocery: ', e.message);
+const addGrocery = async function(groceryDetails) {
+  try {
+    const grocery = await GroceryRepository.addGrocery(groceryDetails);
+    let category = await CategoryRepository.getCategoryById(
+      groceryDetails.category
+    );
+    category.groceries.push(grocery);
+    await CategoryRepository.updateCategory({ groceries: category.groceries });
+    return grocery;
+  } catch (e) {
+    console.log("Grocery service error from addGrocery: ", e.message);
 
-        throw Error('Error while Adding Grocery');
-    }
+    throw Error("Error while Adding Grocery");
+  }
 };
 
-const deleteGrocery = async function (groceryId) {
-    try {
-        const deletedGrocery = await GroceryRepository.deleteGrocery(groceryId);
-        return deletedGrocery;
-    } catch (e) {
-        console.log('Grocery service error from deleteGrocery: ', e.message);
+const deleteGrocery = async function(groceryId) {
+  try {
+    const deletedGrocery = await GroceryRepository.deleteGrocery(groceryId);
+    return deletedGrocery;
+  } catch (e) {
+    console.log("Grocery service error from deleteGrocery: ", e.message);
 
-        throw Error('Error while Deleting Grocery');
-    }
+    throw Error("Error while Deleting Grocery");
+  }
 };
 
-const updateGrocery = async function (groceryId, groceryDetails) {
-    try {
-        const oldGrocery = await GroceryRepository.updateGrocery(groceryId, groceryDetails);
-        return oldGrocery;
-    } catch (e) {
-        console.log('Grocery service error from updateGrocery: ', e.message);
+const updateGrocery = async function(groceryId, groceryDetails) {
+  try {
+    const oldGrocery = await GroceryRepository.updateGrocery(
+      groceryId,
+      groceryDetails
+    );
+    return oldGrocery;
+  } catch (e) {
+    console.log("Grocery service error from updateGrocery: ", e.message);
 
-        throw Error('Error while Updating Grocery');
-    }
+    throw Error("Error while Updating Grocery");
+  }
 };
 
 const searchGrocery = async (searchValue, page, limit) => {
-    let options;
-    if (page && limit) {
-        options = { page: page, limit: limit };
-    } else {
-        options = { pagination: false }
-    }
-    const filteredGroceries = await GroceryRepository.searchGroceries(searchValue, options);
-    return filteredGroceries;
+  let options;
+  if (page && limit) {
+    options = { page: page, limit: limit };
+  } else {
+    options = { pagination: false };
+  }
+  const filteredGroceries = await GroceryRepository.searchGrocery(
+    searchValue,
+    options
+  );
+  return filteredGroceries;
 };
 module.exports = {
-    getGroceries,
-    getGroceryById,
-    getGroceryByName,
-    addGrocery,
-    deleteGrocery,
-    updateGrocery,
-    searchGrocery
-}
+  getGroceries,
+  getGroceryById,
+  getGroceryByName,
+  addGrocery,
+  deleteGrocery,
+  updateGrocery,
+  searchGrocery,
+};

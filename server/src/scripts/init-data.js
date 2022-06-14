@@ -8,6 +8,8 @@ const Pending = require('../pending/pending.model');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
+const { getCoordinates } = require('../common/utils/google-maps-client');
+const dotenv = require('dotenv').config();
 
 const packing = require('../enums/packing');
 const packs = Object.values(packing);
@@ -23,6 +25,9 @@ console.log(folderPath);
 const imgsFolderPath = path.join(folderPath, 'common', 'imgs');
 const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;
+const getRandomInt = (max) => {
+    return Math.floor(Math.random() * max);
+}
 
 //mongoose.connect('mongodb://127.0.0.1:27017/grosharies', { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connect('mongodb+srv://Grosharies:FyWfIJSz5Bt9hnmi@grosharies.glcd8.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -123,6 +128,8 @@ const init = async () => {
         });
         sweets = await sweets.save();
 
+        const firstNames = ['Dolores', 'Jacob', 'Dona', 'Pablito', 'Juan', 'Werner', 'Cosette', 'Fantine', 'Eponine', 'Alphonse', 'Donatien', 'Justine'];
+        const lastNames = ['Sade', 'Padre', 'Soledad', 'Robespierre', 'Nagual', 'Matus', 'Castaneda', 'Berlioz', 'Hafenklang', 'Raduan', 'Jodorowsky', 'Herzog'];
         const gross = ['Bananas', 'Melonas', 'Off Bagril', 'Pommes', 'Orange Juice', 'Beer', 'Toblerone', 'Lindt Lindor', 'Raw Cocoa', 'Schnitzel', 'Rice'];
         const grMod = [];
         const cats = [fruits, fruits, meat, junkFood, beverages, alcohol, sweets, sweets, rawFood, meat, dryFood];
@@ -177,21 +184,21 @@ const init = async () => {
 
         for (let i = 0; i < 5; i++) {
             let user = new User({
-                "firstName": "Jacob" + i,
-                "lastName": "Padre" + i,
-                "emailAddress": "jacob" + i + "@yahoo.com",
+                "firstName": firstNames[i%12],
+                "lastName": lastNames[(i%12 + i)%12],
+                "emailAddress": lastNames[(i%12 + i)%12] + firstNames[i%12] + "@yahoo.com",
                 "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
-                "phone": "052373555" + i,
+                "phone": "+97252373555" + i,
                 "source": "grosharies"
             });
             await user.save();
 
             let useress = new User({
-                "firstName": "Dolores" + i,
-                "lastName": "Soledad" + i,
-                "emailAddress": "dolores" + i + "@web.de",
+                "firstName": firstNames[(i%12 + i + 1)%12],
+                "lastName": lastNames[i%12],
+                "emailAddress": firstNames[(i%12 + i + 1)%12] + lastNames[i%12] + "@web.de",
                 "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
-                "phone": "052373666" + i,
+                "phone": "+97252373666" + i,
                 "source": "grosharies"
             });
             await useress.save();
@@ -272,14 +279,28 @@ const init = async () => {
             };
             let userPost = JSON.parse(JSON.stringify(useressPost));
             userPost.userId = user._id;
+            let coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post1 = new Post(useressPost);
-            useressPost.headline = "Come and take some " + gross[9];
+            useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
+            useressPost.address = getRandomInt(60) + " Allenby, Tel Aviv";
+            coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post2 = new Post(useressPost);
-            useressPost.headline = "Come and take some " + gross[2];
+            useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
+            useressPost.address = getRandomInt(60) + " Shlomo Ibn Gabirol, Tel Aviv";
+            coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post3 = new Post(useressPost);
-            useressPost.headline = "Come and take some " + gross[3];
+            useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
+            useressPost.address = getRandomInt(60) + " Mordechai Namir Rd, Tel Aviv";
+            coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post4 = new Post(useressPost);
-            useressPost.headline = "Come and take some " + gross[4];
+            useressPost.headline = "Come and take some " + gross[getRandomInt(11)];
+            useressPost.address = getRandomInt(60) + " Arlozorov, Tel Aviv";
+            coordinates = await getCoordinates(useressPost.address);
+            useressPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
             let post5 = new Post(useressPost);
             if (i < 3) {
                 post1 = await post1.save();
@@ -291,7 +312,10 @@ const init = async () => {
             }
             else {
                 let post1 = new Post(userPost);
-                userPost.header = "Come and take some " + gross[6];
+                userPost.headline = "Come and take some " + gross[getRandomInt(11)];
+                userPost.address = getRandomInt(60) + " Sderot Rothschild, Tel Aviv";
+                coordinates = await getCoordinates(userPost.address);
+                userPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
                 let post2 = new Post(userPost);
                 post1 = await post1.save();
                 post2 = await post2.save();
@@ -326,14 +350,24 @@ const init = async () => {
                     "until": Date.now() + oneHour
                 }
             });
-            pending = await pending.save()
+            pending = await pending.save();
             if (i < 3) {
                 await user.updateOne({ collectedHistory: pending._id });
-            } else {
+                const repliers = post1.repliers.concat({
+                    user: user._id,
+                    reply: pending._id
+                });
+                await post1.updateOne({ repliers: repliers });
+                } else {
                 await useress.updateOne({ collectedHistory: pending._id });
+                const repliers = post1.repliers.concat({
+                    user: useress._id,
+                    reply: pending._id
+                });
+                await post1.updateOne({ repliers: repliers });
             }
             let event = new Event({
-                "headline": "An Event " + i,
+                "headline": "An Event of " + firstNames[i%12],
                 "userId": user._id,
                 "address": '' + i + " Nowhere Boulevard",
                 "happeningDates": {

@@ -9,6 +9,9 @@ import GroceryCard from "./GroceryCard";
 const Groceries = () => {
   const [allGroceries, setAllGroceries] = useState([]);
   const [groceries, setGroceries] = useState([]);
+  const [clearLatestTimeout, setClearLatestTimeout] = useState(true);
+  const [timeoutState, setTimeoutState] = useState();
+
   useEffect(() => {
     loadGroceries();
   }, []);
@@ -19,12 +22,34 @@ const Groceries = () => {
     });
   };
 
+  const setTimeoutToSearchRequest = (searchValue, clearBefore) => {
+    if (clearBefore) {
+      clearTimeout(timeoutState);
+    }
+
+    setTimeoutState(
+      setTimeout(() => {
+        if (searchValue === "") {
+          setGroceries(allGroceries);
+        }
+
+        axios.get("/api/groceries/search/" + searchValue).then((res) => {
+          setGroceries(res.data.groceries);
+        });
+
+        setClearLatestTimeout(true);
+      }, 1000)
+    );
+    setClearLatestTimeout(false);
+  };
+
   const loadFilteredGroceries = (e) => {
     const searchValue = e.target.value;
-    const filteredGroceries = allGroceries.filter((grocery) => {
-      return grocery.name.toLowerCase().includes(searchValue.toLowerCase());
-    });
-    setGroceries(filteredGroceries);
+    if (clearLatestTimeout) {
+      setTimeoutToSearchRequest(searchValue, false);
+    } else {
+      setTimeoutToSearchRequest(searchValue, true);
+    }
   };
 
   const groceryList = groceries.map((grocery) => {

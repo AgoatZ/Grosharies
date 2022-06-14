@@ -14,48 +14,58 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const MySwal = withReactContent(Swal);
 
-//TODO: Open Socket for order timeout and setTimeLeft(null) setIsCancelled
-
 const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelled = false }) => {
     let navigate = useNavigate();
     const toPostPage = () => navigate("/post/" + pendingPost.sourcePost);
     const viewdByCollector = (role === "collector");
     const viewdByPublisher = (role === "publisher");
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(pendingPost));
-    //TODO: When post mark as collected by the collector stil appears under pending posts in MyOrders page
-    const [isFinished, setIsFinished] = useState(finished || (viewdByCollector && pendingPost.status.collectorStatement === "collected"));
+    const [isFinished, setIsFinished] = useState(finished);
     const [isCancelled, setIsCancelled] = useState(cancelled);
+    const isWaiting = timeLeft && pendingPost.status.finalStatus === "pending" && pendingPost.status.collectorStatement === "collected" && pendingPost.status.publisherStatement === "pending";
+
+    const [collectorName, setCollectorName] = useState("");
 
     useEffect(() => {
         const interval = setInterval(() => { setTimeLeft(calculateTimeLeft(pendingPost)); }, 60000);
-    })
+        //For publisher view
+        axios.get("users/profile/" + pendingPost.collectorId)
+            .then((res) => setCollectorName(res.data.user.firstName + ' ' + res.data.user.lastName))
+            .catch(e => console.log("Error getting collector profile"));
+    }, []);
 
     const Status = () => {
         return (
             <>
                 {timeLeft && pendingPost.status.finalStatus === "pending" && pendingPost.status.collectorStatement === "pending" && pendingPost.status.publisherStatement === "pending" ?
-                    (<Typography variant="overline">Waiting for pickup</Typography>) : null}
+                    <Typography variant="overline">Waiting for pickup</Typography> : null}
 
                 {viewdByCollector ?
-                    pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
-                        pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by the publisher</Typography> :
-                            pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by you</Typography> :
-                                pendingPost.status.publisherStatement === "collected" ? <Typography variant="overline">Collected by publisher</Typography> :
-                                    pendingPost.status.finalStatus === "collected" ? <Typography variant="overline">Collected</Typography> :
-                                        null : null}
+                    isWaiting ? <Typography variant="overline">Waiting for publisher</Typography> :
+
+                        pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
+                            pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by the publisher</Typography> :
+                                pendingPost.status.finalStatus === "cancelled" ? <Typography variant="overline">Canceled</Typography> :
+
+                                    pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by you</Typography> :
+                                        pendingPost.status.finalStatus === "collected" ? <Typography variant="overline">Collected</Typography> :
+                                            null : null}
 
                 {viewdByPublisher ?
-                    pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by collector</Typography> :
-                        pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
-                            pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by collector</Typography> :
-                                pendingPost.status.publisherStatement === "collected" ? <Typography variant="overline">Collected by you</Typography> :
+                    isWaiting ? <Typography variant="overline">Waiting for your approval</Typography> :
+
+                        pendingPost.status.collectorStatement === "cancelled" ? <Typography variant="overline">Canceled by collector</Typography> :
+                            pendingPost.status.publisherStatement === "cancelled" ? <Typography variant="overline">Canceled by you</Typography> :
+
+                                pendingPost.status.collectorStatement === "collected" ? <Typography variant="overline">Collected by collector</Typography> :
                                     pendingPost.status.finalStatus === "collected" ? <Typography variant="overline">Collected</Typography> :
                                         null : null}
 
                 {timeLeft ?
-                    <Typography variant="p" sx={{ color: "red" }}><AccessTimeIcon /> {timeLeft}</Typography> :
-                    <Typography variant="overline"><AccessTimeIcon /> Expired</Typography>}
-
+                    <Typography sx={{ color: "red" }}>
+                        <AccessTimeIcon fontSize="small" sx={{ verticalAlign: "text-top", mr: "0.5%" }} />{timeLeft}</Typography> :
+                    <Typography variant="overline">
+                        <AccessTimeIcon fontSize="small" sx={{ verticalAlign: "text-top", mr: "0.5%" }} /> Expired</Typography>}
             </>
         )
     }
@@ -64,15 +74,15 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
         return (
             <>
                 {/* when this order is viewed by the post publisher */}
-                <Stack direction="row" spacing={2} sx={{ ml: 3, justifyContent: 'stretch', justifyItems: 'stretch' }}>
-                    <Stack direction="column" spacing={1} sx={{ width: '33%' }}>
-                        <Typography>{"Order By " + pendingPost.collector}</Typography>
-                        <Status pendingPost={pendingPost} />
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ ml: 3, justifyContent: 'stretch', justifyItems: 'stretch' }}>
+                    <Stack direction="column" flexWrap="wrap" spacing={1}>
+                        <Typography variant="b">{"Order By " + collectorName}</Typography>
+                        <Status />
                     </Stack>
-                    <Stack direction="column" spacing={1} sx={{ width: '50%' }}>
+                    <Stack direction="column" flexWrap="wrap" spacing={1} sx={{ width: '50%' }}>
                         <ProductsList content={pendingPost.content} role="publisher" />
                     </Stack>
-                    <Stack direction="column" spacing={1} sx={{ width: '33%' }}>
+                    <Stack direction="column" flexWrap="wrap" justifyContent="center" spacing={1}>
                         <Button disabled={!timeLeft || isFinished || isCancelled} variant="text" startIcon={<CheckIcon />}
                             onClick={() => completeOrder(pendingPost._id, viewdByPublisher)}>Complete</Button>
                         <Button disabled={!timeLeft || isFinished || isCancelled} variant="text" startIcon={<CloseIcon />}
@@ -86,13 +96,9 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
     return (
         <>
             {/* Large Screen Setup */}
-            <Box sx={{ display: { xs: "none", md: "flex" }, width: '100%' }}>
-                <Stack direction="column" spacing={1} sx={{ mr: 2, width: '33%' }} >
-                    <CardMedia component="img" image="/assets/default-post-image.svg"
-                        sx={{ padding: 1, borderRadius: "10px", height: "auto", width: "200px" }} />
-                </Stack>
-                <Stack direction="column" spacing={1} sx={{ flexShrink: 0, width: "50%", mr: 2 }}>
-                    <Status pendingPost={pendingPost} />
+            <Box sx={{ display: { xs: "none", md: "flex" }, width: '100%', padding: "1%" }}>
+                <Stack direction="column" spacing={1} sx={{ flexShrink: 0, width: "70%", mr: 2, ml: 2 }}>
+                    <Status />
                     <Typography variant="h5" >{pendingPost.headline}</Typography>
                     <Typography variant="h6" ><LocationOnIcon /> {pendingPost.address}</Typography>
                     <Divider />
@@ -101,25 +107,23 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
                     </Button>
                 </Stack>
                 <Stack direction="column" spacing={1} sx={{ alignSelf: 'center', width: "33%" }} >
-                    <Button disabled={!timeLeft || isFinished || isCancelled} variant="outlined" startIcon={<CheckIcon />}
+                    <Button disabled={!timeLeft || isFinished || isCancelled || isWaiting} variant="outlined" startIcon={<CheckIcon />}
                         onClick={() => completeOrder(pendingPost._id)}>Complete Order</Button>
-                    <Button disabled={!timeLeft || isFinished || isCancelled} variant="outlined" startIcon={<CloseIcon />}
+                    <Button disabled={!timeLeft || isFinished || isCancelled || isWaiting} variant="outlined" startIcon={<CloseIcon />}
                         onClick={() => cancelOrder(pendingPost._id)}>Cancel Order</Button>
                 </Stack>
             </Box>
 
             {/* Small Screen Setup */}
             <Stack direction="column" spacing={1}
-                sx={{ display: { xs: "flex", md: "none" }, width: "100%" }}>
-                <Status pendingPost={pendingPost} />
-                <CardMedia component="img" image="/assets/default-post-image.svg"
-                    sx={{ padding: 1, borderRadius: "10px", height: "130px", width: "auto" }} />
+                sx={{ display: { xs: "flex", md: "none" }, width: "100%", padding: "1.5%" }}>
+                <Status />
                 <Typography variant="h5" >{pendingPost.headline}</Typography>
                 <Typography variant="h6" ><LocationOnIcon /> {pendingPost.address}</Typography>
                 <ButtonGroup fullWidth >
-                    <Button disabled={!timeLeft || isFinished || isCancelled} variant="outlined" startIcon={<CheckIcon />}
+                    <Button disabled={!timeLeft || isFinished || isCancelled || isWaiting} variant="outlined" startIcon={<CheckIcon />}
                         onClick={() => completeOrder(pendingPost._id)}>Complete</Button>
-                    <Button disabled={!timeLeft || isFinished || isCancelled} variant="outlined" startIcon={<CloseIcon />}
+                    <Button disabled={!timeLeft || isFinished || isCancelled || isWaiting} variant="outlined" startIcon={<CloseIcon />}
                         onClick={() => cancelOrder(pendingPost._id)}>Cancel</Button>
                 </ButtonGroup>
                 <Divider />

@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { AppContext } from "../../App";
 import axios from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, IconButton, Menu, MenuList, MenuItem, Container, Button, Tooltip, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider, Popper, Typography, Badge, ListItemSecondaryAction, ListItemButton } from "@mui/material";
+import { AppBar, Box, Toolbar, IconButton, Menu, MenuList, MenuItem, Container, Button, Tooltip, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider, Popper, Typography, Badge, ListItemSecondaryAction, ListItemButton, Icon } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { UserImageThumbnail } from "../common/Images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,6 +15,7 @@ const cookies = new Cookies();
 const pages = [
   { name: "Groceries", path: "groceries" },
   { name: "Events", path: "events" },
+  { name: "Leaderboard", path: "leaderboard" },
 ];
 const userOptions = [
   { name: "Profile", path: "profile", },
@@ -37,23 +38,23 @@ const Header = () => {
   const NavigationBar = () => {
     return (
       <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-        <MenuItem
-          key={pages[0].name}
-          onClick={navigateToPage.bind(this, pages[0].path)}
-        >
+        <MenuItem key={pages[0].name} onClick={navigateToPage.bind(this, pages[0].path)}>
           <ListItemIcon>
             <FontAwesomeIcon icon="fa-solid fa-apple-whole" size="lg" color="white" />
           </ListItemIcon>
           <ListItemText primary={pages[0].name} />
         </MenuItem>
-        <MenuItem
-          key={pages[1].name}
-          onClick={navigateToPage.bind(this, pages[1].path)}
-        >
+        <MenuItem key={pages[1].name} onClick={navigateToPage.bind(this, pages[1].path)}>
           <ListItemIcon>
             <FontAwesomeIcon icon="fa-solid fa-calendar" size="lg" color="white" />
           </ListItemIcon>
           <ListItemText primary={pages[1].name} />
+        </MenuItem>
+        <MenuItem key={pages[2].name} onClick={navigateToPage.bind(this, pages[2].path)}>
+          <ListItemIcon>
+            <FontAwesomeIcon icon="fa-solid fa-ranking-star" size="lg" color="white" />
+          </ListItemIcon>
+          <ListItemText primary={pages[2].name} />
         </MenuItem>
       </Box>
     );
@@ -72,34 +73,26 @@ const Header = () => {
         <IconButton onClick={toggleNavDrawer(true)}>
           <FontAwesomeIcon icon="fa-solid fa-bars" color="white" size="sm" />
         </IconButton>
-        <Drawer
-          anchor="left"
-          disableScrollLock
-          open={navDrawerState}
-          onClose={toggleNavDrawer(false)}
-        >
-          <Box
-            onClick={toggleNavDrawer(false)}
-            onKeyDown={toggleNavDrawer(false)}
-          >
+        <Drawer anchor="left" disableScrollLock open={navDrawerState} onClose={toggleNavDrawer(false)}>
+          <Box onClick={toggleNavDrawer(false)} onKeyDown={toggleNavDrawer(false)}>
             <List>
-              <MenuItem
-                key={pages[0].name}
-                onClick={navigateToPage.bind(this, pages[0].path)}
-              >
+              <MenuItem key={pages[0].name} onClick={navigateToPage.bind(this, pages[0].path)}>
                 <ListItemIcon>
                   <FontAwesomeIcon icon="fa-solid fa-apple-whole" size="lg" />
                 </ListItemIcon>
                 <ListItemText primary={pages[0].name} />
               </MenuItem>
-              <MenuItem
-                key={pages[1].name}
-                onClick={navigateToPage.bind(this, pages[1].path)}
-              >
+              <MenuItem key={pages[1].name} onClick={navigateToPage.bind(this, pages[1].path)}>
                 <ListItemIcon>
                   <FontAwesomeIcon icon="fa-solid fa-calendar" size="lg" />
                 </ListItemIcon>
                 <ListItemText primary={pages[1].name} />
+              </MenuItem>
+              <MenuItem key={pages[2].name} onClick={navigateToPage.bind(this, pages[1].path)}>
+                <ListItemIcon>
+                  <FontAwesomeIcon icon="fa-solid fa-ranking-star" size="lg" />
+                </ListItemIcon>
+                <ListItemText primary={pages[2].name} />
               </MenuItem>
             </List>
           </Box>
@@ -170,7 +163,7 @@ const Header = () => {
       return;
 
     return (
-      <Box sx={{ flexGrow: 0 }} hidden={!loggedIn}>
+      <Box sx={{ flexGrow: 0, mr: "1%" }} hidden={!loggedIn}>
         {/* User Options Menu */}
         <Tooltip title={userData.firstName + ' ' + userData.lastName}>
           <IconButton onClick={handleOpenUserMenu}>
@@ -216,7 +209,7 @@ const Header = () => {
 
   const Login = () => {
     return (
-      <Box sx={{ flexGrow: 0 }} hidden={loggedIn}>
+      <Box sx={{ flexGrow: 0, mr: "1%" }} hidden={loggedIn}>
         <Button
           onClick={navigateToPage.bind(this, "login")}
           size="small"

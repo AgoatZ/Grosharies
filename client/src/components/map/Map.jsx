@@ -1,62 +1,55 @@
-import { useEffect, useState } from "react";
 import GoogleMapReact from "google-map-react";
-import Geocode from "react-geocode";
 import Marker from "./Marker";
+import { Box } from "@mui/material";
 
-const Map = (props) => {
-  const [lat, setLat] = useState();
-  const [lng, setLng] = useState();
-  const [userLocation, setUserLocation] = useState({})
-
-  const defaultProps = {
-    center: {
-      lat: 32.077299,
-      lng: 34.849206,
-    },
-    zoom: 15,
-  };
-
-  useEffect(() => {
-    console.log("userLocation", userLocation)
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        console.log("Latitude is :", position.coords.latitude);
-        console.log("Longitude is :", position.coords.longitude);
-        setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude })
-      });
-    }
-    Geocode.setApiKey("AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc");
-    Geocode.fromAddress("givat shmuel, israel").then(
-      (response) => {
-        setLat(response.results[0].geometry.location.lat);
-        setLng(response.results[0].geometry.location.lng);
-
-        console.log(lat, lng);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }, []);
-
+const Map = ({
+  locations,
+  center,
+  addCenterPoint = false,
+  zoom = 15,
+  centerAddress = "Me",
+  sx,
+}) => {
   return (
-    <div
-      style={{
-        height: "25%",
-        width: "60%",
-        margin: "0 auto",
-        marginBottom: "50px",
-      }}
+    <Box
+      sx={
+        sx || {
+          height: "400px",
+          width: "60%",
+          //margin: "0 auto",
+          marginBottom: "100px",
+        }
+      }
     >
       <GoogleMapReact
+        //TODO: remove api key
         bootstrapURLKeys={{ key: "AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc" }}
-        defaultCenter={userLocation}
-        defaultZoom={defaultProps.zoom}
+        defaultZoom={zoom}
+        defaultCenter={{ lat: 35, lng: 35 }}
+        center={center}
       >
-        <Marker lat={lat} lng={lng} />
-        <Marker color={"black"} lat={userLocation.lat} lng={userLocation.lng} />
+        {locations &&
+          locations.map(({ lat, lng, address, onClick }, index) =>
+            lat || lng ? (
+              <Marker
+                key={index}
+                address={address}
+                lat={lat}
+                lng={lng}
+                pinOnClick={onClick}
+              ></Marker>
+            ) : null
+          )}
+        {center && addCenterPoint && (
+          <Marker
+            color={"black"}
+            address={centerAddress}
+            lat={center.lat}
+            lng={center.lng}
+          />
+        )}
       </GoogleMapReact>
-    </div>
+    </Box>
   );
 };
 
