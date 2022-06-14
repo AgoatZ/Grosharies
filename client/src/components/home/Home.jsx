@@ -1,136 +1,128 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../../App";
-import { useNavigate } from "react-router-dom";
-import {
-  Stack,
-  Box,
-  Tabs,
-  Tab,
-  Typography,
-  Divider,
-  Switch,
-} from "@mui/material";
+import { Stack, Grid, Box, Tabs, Tab, Typography, Divider, Switch, Fab, styled, Drawer, useMediaQuery, Pagination, Paper, Skeleton } from "@mui/material";
 import axios from "../../utils/axios";
 import Posts from "../posts/Posts";
+import SuggestedPosts from "./SuggestedPosts";
 import AddPost from "../add-post/AddPost";
+import AddIcon from '@mui/icons-material/Add';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CloseIcon from '@mui/icons-material/Close';
 
-const tabs = ["Near By", "Recently Added", "Add post"];
+const tabs = ["Near By", "Recently Added"];
 
 const Home = () => {
-  const { loggedIn } = useContext(AppContext);
+  const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
   const [activeTabNumber, setActiveTabNumber] = useState(0);
-  const handleTabChange = (event, newTabNumber) =>
-    setActiveTabNumber(newTabNumber);
-  const [suggestedPosts, setSuggestedPosts] = useState([]);
   const [nearbyPosts, setNearbyPosts] = useState([]);
   const [recentPosts, setRecentPosts] = useState([]);
-  const [showAsMap, setShowAsMap] = useState(false);
+  const [showAsMap, setShowAsMap] = useState(true);
+  const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
+  const mobileScreen = useMediaQuery('(max-width:480px)');
 
   useEffect(() => loadPosts(), []);
 
   const loadPosts = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        console.log("Latitude is :", position.coords.latitude);
-        console.log("Longitude is :", position.coords.longitude);
+        //console.log("Latitude is :", position.coords.latitude);
+        //console.log("Longitude is :", position.coords.longitude);
         //TODO: add route to exept the user location to server
         axios
-          .post("/posts/nearby", {
-            coordinates: {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            },
-          })
-          .then((res) => {
-            setNearbyPosts(res.data.posts);
-          });
+          .post("/posts/nearby/" + "?page=1&limit=10", { coordinates: { lat: position.coords.latitude, lng: position.coords.longitude, }, })
+          .then((res) => { setNearbyPosts(res.data.posts); });
       });
     }
-    axios
-      .get("posts/suggested/current")
-      .then((res) => setSuggestedPosts(res.data.posts))
-      .catch((e) => console.log("Error getting suggested posts"));
-    //TODO: Posts nearby and Posts recently added
-
-    axios.get("/posts/").then((res) => {
-      res.data.posts.forEach((post) => {
-        console.log(
-          "address: ",
-          post.address,
-          " coordinates: ",
-          post.addressCoordinates
-        );
-      });
-
+    axios.get("/posts/" + "?page=1&limit=10").then((res) => {
+      res.data.posts.forEach((post) => {/*console.log("address: ", post.address, " coordinates: ", post.addressCoordinates);*/ });
       setRecentPosts(res.data.posts);
     });
   };
 
   const Logo = () => {
     return (
-      <Box>
-        <Box sx={{ display: { xs: "none", md: "flex" } }}>
-          <img src={"assets/logo.svg"} height="300px" width="300px" />
-        </Box>
-        <Box sx={{ display: { xs: "flex", md: "none" } }}>
-          <img src={"assets/logo.svg"} height="150px" width="150px" />
-        </Box>
-      </Box>
+      mobileScreen ?
+        (<img src={"assets/logo.svg"} height="150px" width="150px" />) :
+        (<img src={"assets/logo.svg"} height="300px" width="300px" />)
     );
   };
 
   const TabPanel = ({ children, value, index }) => {
     return (
-      <div role="tabpanel" hidden={value !== index}>
-        {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-      </div>
+      <Stack role="tabpanel" direction="column" alignItems="center" flexWrap="wrap" hidden={value !== index} >
+        {/* <Box role="tabpanel" hidden={value !== index}> */}
+        {value === index && <Box>{children}</Box>}
+      </Stack>
     );
+
   };
 
+  const AddPostDrawer = () => {
+    const [open, setOpen] = useState(false);
+    const toggle = (open) => (event) => { setOpen(open); };
+
+    return (
+      <>
+        <Box sx={{ position: "fixed", bottom: "1%", right: "1%", width: "fit-content" }}>
+          <Fab variant="extended" color="secondary" onClick={toggle(true)}><AddIcon sx={{ mr: 1 }} />New Post</Fab>
+          <Offset />
+        </Box>
+
+        <Drawer
+          anchor="right"
+          open={open}
+          onClose={toggle(false)}
+          ModalProps={{ keepMounted: true, disableScrollLock: true }}
+          sx={{ maxWidth: "50%" }}>
+          <Box >
+            {mobileScreen ?
+              <CloseIcon fontSize="large" onClick={toggle(false)} sx={{ mt: "2%", ml: "2%" }} /> :
+              <ChevronRightIcon fontSize="large" onClick={toggle(false)} sx={{ mt: "2%", ml: "2%" }} />}
+            <AddPost />
+          </Box>
+        </Drawer >
+      </>
+    )
+  }
+
+
   return (
-    <Stack
-      direction="column"
-      justifyContent="flex-start"
-      alignItems="center"
-      spacing={{ xs: 1, sm: 1, md: 5, lg: 5 }}
-    >
-      <Logo />
+    <>
+      <Stack direction="column" alignItems="center" flexWrap="wrap" spacing={{ xs: 1, sm: 1, md: 3, lg: 5 }}>
+        <Logo />
 
-      <Box
-        sx={{ width: "auto" }}
-        hidden={!loggedIn || suggestedPosts.length == 0}
-      >
-        <Divider variant="middle">
-          <Typography variant="h5" margin="10px">
-            Recommended For You
-          </Typography>
-        </Divider>
-        <Posts data={suggestedPosts} noBorder />
-      </Box>
+        <SuggestedPosts />
 
-      <Box sx={{ width: { sm: "500px", md: "1000px" } }}>
-        <Switch
-          sx={{ left: 0 }}
-          title="Map Visualize"
-          onChange={() => setShowAsMap(!showAsMap)}
-          checked={showAsMap}
-        />
-        <Tabs value={activeTabNumber} onChange={handleTabChange}>
-          <Tab label={tabs[0]} />
-          <Tab label={tabs[1]} />
-          <Tab label={tabs[2]} />
-        </Tabs>
-        <TabPanel value={activeTabNumber} index={0}>
-          <Posts data={nearbyPosts} showMap={showAsMap} />
-        </TabPanel>
-        <TabPanel value={activeTabNumber} index={1}>
-          <Posts data={recentPosts} showMap={showAsMap} />
-        </TabPanel>
-        <TabPanel value={activeTabNumber} index={2}>
-          <AddPost />
-        </TabPanel>
-      </Box>
-    </Stack>
+        <Box sx={{ width: "100%" }}>
+
+
+          <Stack direction="column" alignItems="center" flexWrap="wrap" >
+            <Typography variant="button">View as map</Typography>
+            <Switch sx={{ left: 0 }} onChange={() => setShowAsMap(!showAsMap)} checked={showAsMap} />
+          </Stack>
+
+          <Tabs variant="fullWidth" value={activeTabNumber} onChange={handleTabChange} sx={{ mb: "3%" }}>
+            <Tab label={tabs[0]} />
+            <Tab label={tabs[1]} />
+          </Tabs>
+
+          <TabPanel value={activeTabNumber} index={0} >
+            {nearbyPosts.length > 0 ?
+              <Posts data={nearbyPosts} showMap={showAsMap} /> :
+              <Typography>No posts near by</Typography>}
+          </TabPanel>
+
+          <TabPanel value={activeTabNumber} index={1}>
+            <Posts data={recentPosts} showMap={showAsMap} />
+          </TabPanel>
+
+        </Box>
+
+        <AddPostDrawer />
+
+      </Stack>
+
+    </>
   );
 };
 

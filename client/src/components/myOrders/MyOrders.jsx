@@ -39,15 +39,15 @@ const MyOrders = () => {
   };
 
   return (
-    <Stack spacing={1} sx={{ m: "5%", mb: "1%" }}>
+    <Stack spacing={2}>
       <Typography variant="h3" sx={{ mb: "5%" }}>My Orders</Typography>
-      <Typography variant="h4" >Pending</Typography>
+      <Divider variant="middle"><Typography variant="h4" >Pending</Typography></Divider>
       {pendingsPosts.length > 0 ? <OrdersAccordion pendingPosts={pendingsPosts} /> : <Typography>No Pending Orders</Typography>}
-      <Typography variant="h4" >Completed</Typography>
+      <Divider variant="middle"><Typography variant="h4" >Completed</Typography></Divider >
       {finishedPendings.length > 0 ? <OrdersAccordion pendingPosts={finishedPendings} finished /> : <Typography>No Finished Orders</Typography>}
-      <Typography variant="h4" >Canceled</Typography>
+      < Divider variant="middle" ><Typography variant="h4" >Canceled</Typography></Divider >
       {cancelledPendings.length > 0 ? <OrdersAccordion pendingPosts={cancelledPendings} cancelled /> : <Typography>No Canceled Orders</Typography>}
-    </Stack>
+    </Stack >
   );
 };
 

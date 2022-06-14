@@ -196,7 +196,7 @@ const pendPost = async function (req, res, next) {
         };
         emitEvent('Pending Created', updatedPost.userId, publisherNote);
         emitEvent("New Notification", updatedPost.userId, [publisherNote, newNotification]);
-        
+
         await UserService.addToNotifications(updatedPost.userId, newNotification);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {

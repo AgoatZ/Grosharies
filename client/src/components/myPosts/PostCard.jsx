@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import { Typography, Box, CardMedia, Divider, Button, ButtonGroup, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
 import Swal from "sweetalert2";
@@ -14,7 +14,26 @@ const MySwal = withReactContent(Swal);
 const PostCard = ({ post }) => {
     let navigate = useNavigate();
     const toPostPage = () => navigate("/post/" + post._id);
-    const toEditPostPage = (post) => navigate("/post/" + post._id + '/edit');       //TODO: Edit Post Page
+    // const toEditPostPage = (post) => navigate("/post/" + post._id + '/edit');       //TODO: Edit Post Page
+
+    const deletePost = (post) => {
+        MySwal.fire({
+            title: <strong>Are you sure you want to delete this post?</strong>,
+            icon: "info",
+            showCancelButton: true,
+            cancelButtonText: "no",
+            showConfirmButton: true,
+            confirmButtonText: "yes",
+            backdrop: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                //Delete post in db
+                axios.delete('posts/' + post._id, { post })
+                    .then((res) => { console.log("Result deleting post id:" + post._id, res.data); window.location.reload(); })
+                    .catch(e => console.log("Error deleting post id:" + post._id));
+            }
+        });
+    };
 
     return (
         <>
@@ -32,7 +51,7 @@ const PostCard = ({ post }) => {
                     <Button variant="text" onClick={toPostPage}>Go To Post</Button>
                 </Stack>
                 <Stack direction="column" spacing={1} sx={{ alignSelf: 'center', width: "33%" }}>
-                    <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Edit Post</Button>
+                    {/* <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Edit Post</Button> */}
                     <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => deletePost(post)}>Delete Post</Button>
                 </Stack>
             </Box>
@@ -48,33 +67,13 @@ const PostCard = ({ post }) => {
                 <Divider />
                 <Button variant="text" onClick={toPostPage}>Go To Post</Button>
                 <ButtonGroup fullWidth>
-                    <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Edit Post</Button>
+                    {/* <Button variant="outlined" startIcon={<EditIcon />} onClick={() => toEditPostPage(post)}>Edit Post</Button> */}
                     <Button variant="outlined" startIcon={<DeleteIcon />} onClick={() => deletePost(post)}>Delete Post</Button>
                 </ButtonGroup>
             </Stack>
         </>
     )
 }
-
-const deletePost = (post) => {
-    MySwal.fire({
-        title: <strong>Are you sure you want to delete this post?</strong>,
-        icon: "info",
-        showCancelButton: true,
-        cancelButtonText: "no",
-        showConfirmButton: true,
-        confirmButtonText: "yes",
-        backdrop: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            //Delete post in db
-            axios.delete('posts/' + post._id, { post })
-                .then((res) => console.log("Result deleting post id:" + post._id, res.data));
-
-            window.location.reload();
-        }
-    });
-};
 
 
 export default PostCard;

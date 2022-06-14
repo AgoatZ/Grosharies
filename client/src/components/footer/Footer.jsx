@@ -15,22 +15,20 @@ const Footer = () => {
 
   const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
   return (
-    <Box >
+    < >
       <Offset />
-      <AppBar position="sticky" sx={{ top: 'auto', bottom: 0 }}>
-        <Toolbar>
-          <Container maxWidth="xl">
-            <Box >
-              {pages.map((page) => (
-                <Button key={page} onClick={handleClickItemNavMenu} sx={{ color: 'white' }}>
-                  {page}
-                </Button>
-              ))}
-            </Box>
-          </Container>
-        </Toolbar>
-      </AppBar>
-    </Box>
+      <Box className="sticky bottom-0" sx={{ bgcolor: "primary.main", height: "max-content", width: "100%" }} >
+
+        <Container maxWidth="xl">
+          {pages.map((page) => (
+            <Button key={page} onClick={handleClickItemNavMenu} sx={{ color: 'white', margin: "5px" }}>
+              {page}
+            </Button>
+          ))}
+
+        </Container>
+      </Box>
+    </>
   );
 };
 export default Footer;

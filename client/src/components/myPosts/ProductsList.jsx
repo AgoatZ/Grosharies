@@ -3,10 +3,11 @@ import { List, ListItemButton, ListItemText, ListSubheader } from "@mui/material
 
 const ProductsList = ({ content }) => {
     return (
-        <List disablePadding>
+        <List>
             <ListSubheader>Products</ListSubheader>
             {content.map((item) => (
                 <ListItemText inset key={item.original._id}>
+                    <b>•  </b>
                     {item.original.amount + item.original.scale + ' '}
                     <b>{item.original.name} </b>
                     {' packed in a ' + item.original.packing + ' '}

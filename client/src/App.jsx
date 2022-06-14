@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { Container } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import axios from "./utils/axios";
 import { UserDummy } from "./utils/dummies";
 import { createNotificationSocket, createSocket } from './utils/socket';
@@ -14,6 +14,7 @@ import Post from "./components/post/Post";
 import About from "./components/about/About";
 import Groceries from "./components/groceries/Groceries";
 import Events from "./components/events/Events";
+import Leaderboard from "./components/leaderboard/Leaderboard";
 import Profile from "./components/profile/Profile";
 import MyOrders from "./components/myOrders/MyOrders";
 import MyPosts from "./components/myPosts/MyPosts";
@@ -51,10 +52,9 @@ const App = () => {
 
   //Socket Setup
   const socketSetup = (userData) => {
-    createSocket().connect();
+    createSocket(userData._id).connect();
     createNotificationSocket(userData._id).connect()
       .on('New Notification', (notification) => {
-        console.log("New Notification", notification);
         userData.notifications.unshift(notification);
         setUserNotifications([...userData.notifications]);    //Array wont render fix - the spread operator creates a copy on a new memory reference
       });
@@ -73,7 +73,7 @@ const App = () => {
 
   //All Routes Componentes are nested under Layout->Outlet
   return (
-    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser }}>
+    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser, }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -81,6 +81,7 @@ const App = () => {
             <Route path="post/:id" element={<Post />} />
             <Route path="groceries" element={<Groceries />} />
             <Route path="events" element={<Events />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="groceries/:name" element={<GroceryDetails />} />
             <Route path="profile" element={<Profile />} />
             <Route path="my-posts" element={<MyPosts />} />
@@ -99,10 +100,8 @@ const App = () => {
 const NoMatch = () => {
   return (
     <Container>
-      <h2>Nothing to see here!</h2>
-      <p>
-        <Link to="/">Go to the home page</Link>
-      </p>
+      <Typography variant="h2">Nothing to see here!</Typography>
+      <Typography variant="p"><Link to="/">Go to the home page</Link></Typography>
     </Container>
   );
 };

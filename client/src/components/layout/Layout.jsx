@@ -23,7 +23,7 @@ const appTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: ["'Roboto'", "sans-serif"].join(","),
+    fontFamily: "'Segoe UI Light', sans-serif",
     button: {
       textTransform: "capitalize",
       fontSize: 16,
@@ -35,24 +35,20 @@ const appTheme = createTheme({
 const Layout = () => {
   return (
     <ThemeProvider theme={appTheme}>
-      <Grid
-        container
-        direction="column"
-        display="grid"
-        height="100%"
-        gridTemplateRows="auto 1fr auto"
-      >
-        <Grid item component="header">
+      <Grid container direction="column" display="grid" height="100%" gridTemplateRows="auto 1fr auto">
+        <Grid item component="header"
+          sx={{ paddingLeft: "2%", paddingRight: "2%" }}>
           <Header />
         </Grid>
-        <Grid item component="main">
+        <Grid item component="main"
+          sx={{ padding: "1% 3% 1%", margin: "2% 3% 2%" }}>
           <Outlet />
         </Grid>
         <Grid item component="footer">
           <Footer />
         </Grid>
       </Grid>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 };
 

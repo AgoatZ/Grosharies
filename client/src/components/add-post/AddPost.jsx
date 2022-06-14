@@ -37,9 +37,6 @@ import Input from "@mui/material/Input";
 import GoogleMapReact from "google-map-react";
 import Geocode from "react-geocode";
 
-
-const theme = createTheme();
-
 const alertStyle = {
   color: "red",
 };
@@ -54,11 +51,9 @@ export default function AddPost() {
   const [isFromDateError, setIsFromDateError] = React.useState("");
   const [isEndDateError, setIsEndDateError] = React.useState("");
   const [isQuantityError, setIsQuantityError] = React.useState("");
-
   const [allGroceries, setAllGroceries] = React.useState([]);
   const [groceries, setGroceries] = React.useState([]);
   const [checked, setChecked] = React.useState([]);
-
   const [headline, setHeadline] = React.useState("");
   const [address, setAddress] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -146,8 +141,7 @@ export default function AddPost() {
     const until = endDate;
     const repeated = data.get("repeat");
     event.preventDefault();
-    if (headline=="")
-    {
+    if (headline == "") {
       setIsHeadlineError(
         "headline is empty"
       );
@@ -159,15 +153,13 @@ export default function AddPost() {
       );
       return;
     }
-    if (description=="")
-    {
+    if (description == "") {
       setIsDescriptionError(
         "description is empty"
       );
       return
     }
-    if (address=="")
-    {
+    if (address == "") {
       setIsAddressError(
         "address is empty"
       );
@@ -179,7 +171,7 @@ export default function AddPost() {
       isAddressError != "" ||
       isFromDateError !== "" ||
       isEndDateError !== "" ||
-      isQuantityError !==""
+      isQuantityError !== ""
     ) {
       if (isFromDateError !== "") {
 
@@ -236,6 +228,7 @@ export default function AddPost() {
         MySwal.fire({
           title: <strong>Something Went Wrong</strong>,
           icon: "error",
+          backdrop: false,
         });
         console.log(e);
       });
@@ -247,303 +240,282 @@ export default function AddPost() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Add Post
-          </Typography>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
-          >
-            {/* headline */}
-            <Grid container spacing={4}>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  error={isHeadlineError !== ""}
-                  fullWidth
-                  onChange={(e) => {
-                    if (e.target.value.length < 2) {
-                      setIsHeadlineError(
-                        "headline must be at least 2 characters"
-                      );
-                    } else {
-                      setIsHeadlineError("");
-                    }
-                    setHeadline(e.target.value);
-                  }}
-                  type="text"
-                  id="headline"
-                  label="Headline"
-                  name="headline"
-                  autoComplete="headline"
-                />
-                {isHeadlineError !== "" ? (
-                  <label style={alertStyle}>{isHeadlineError}</label>
-                ) : null}
-              </Grid>
+    <Container maxWidth="xs">
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+        <Typography variant="h5">New Post</Typography>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
 
-              {/* address */}
+          {/* headline */}
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                error={isHeadlineError !== ""}
+                fullWidth
+                onChange={(e) => {
+                  if (e.target.value.length < 2) {
+                    setIsHeadlineError(
+                      "headline must be at least 2 characters"
+                    );
+                  } else {
+                    setIsHeadlineError("");
+                  }
+                  setHeadline(e.target.value);
+                }}
+                type="text"
+                id="headline"
+                label="Headline"
+                name="headline"
+                autoComplete="headline"
+              />
+              {isHeadlineError !== "" ? (
+                <label style={alertStyle}>{isHeadlineError}</label>
+              ) : null}
+            </Grid>
 
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  error={isAddressError !== ""}
-                  onChange={async (e) => {
+            {/* address */}
 
-                    if (e.target.value.length < 2) {
-                      setIsAddressError(
-                        "address must be at least 2 characters"
-                      )
-                    }
-                 
-                    try {
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                error={isAddressError !== ""}
+                onChange={async (e) => {
+
+                  if (e.target.value.length < 2) {
+                    setIsAddressError(
+                      "address must be at least 2 characters"
+                    )
+                  }
+
+                  try {
                     Geocode.setApiKey('AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc');
                     const response = await Geocode.fromAddress(e.target.value);
-                    if (!response.results[0].geometry.location)
-                    {
+                    if (!response.results[0].geometry.location) {
                       setIsAddressError(
                         "The address is not valid"
                       );
                     } else {
                       setIsAddressError("");
                     }
-                  }  catch (e) {
+                  } catch (e) {
                     setIsAddressError(
                       "The address is not valid"
                     );
                   }
-                    setAddress(e.target.value);
-                
-                  }}
-                  placeholder="18 King George, Tel Aviv"
-                  type="text"
-                  id="address"
-                  label="address"
-                  name="address"
-                  autoComplete="address"
-                />
-                {isAddressError !== "" ? (
-                  <label style={alertStyle}>{isAddressError}</label>
-                ) : null}
-              </Grid>
+                  setAddress(e.target.value);
 
-              {/* description */}
+                }}
+                placeholder="18 King George, Tel Aviv"
+                type="text"
+                id="address"
+                label="address"
+                name="address"
+                autoComplete="address"
+              />
+              {isAddressError !== "" ? (
+                <label style={alertStyle}>{isAddressError}</label>
+              ) : null}
+            </Grid>
 
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  error={isDescriptionError !== ""}
-                  fullWidth
-                  onChange={(e) => {
-                    if (e.target.value.length < 2) {
-                      setIsDescriptionError(
-                        "description must be at least 2 characters"
+            {/* description */}
+
+            <Grid item xs={12}>
+              <TextField
+                required
+                error={isDescriptionError !== ""}
+                fullWidth
+                onChange={(e) => {
+                  if (e.target.value.length < 2) {
+                    setIsDescriptionError(
+                      "description must be at least 2 characters"
+                    );
+                  } else {
+                    setIsDescriptionError("");
+                  }
+                  setDescription(e.target.value);
+                }}
+                type="text"
+                id="description"
+                label="description"
+                name="description"
+                autoComplete="description"
+              />
+              {isDescriptionError ? (
+                <label style={alertStyle}>{isDescriptionError}</label>
+              ) : null}
+            </Grid>
+
+            {/* fromDate */}
+
+            <Grid item xs={12}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  renderInput={(props) => (
+                    <TextField sx={{ width: "100%" }} {...props} />
+                  )}
+                  error={isFromDateError !== ""}
+                  label="From date"
+                  value={fromDate}
+                  onChange={(newValue) => {
+                    const today = new Date();
+                    if (newValue < today) {
+                      setIsFromDateError(
+                        "From date is required and must be greater from now"
                       );
                     } else {
-                      setIsDescriptionError("");
+                      setIsFromDateError("");
                     }
-                    setDescription(e.target.value);
+                    setFromDate(newValue);
                   }}
-                  type="text"
-                  id="description"
-                  label="description"
-                  name="description"
-                  autoComplete="description"
                 />
-                {isDescriptionError ? (
-                  <label style={alertStyle}>{isDescriptionError}</label>
-                ) : null}
-              </Grid>
-
-              {/* fromDate */}
-
-              <Grid item xs={12}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DateTimePicker
-                    renderInput={(props) => (
-                      <TextField sx={{ width: "100%" }} {...props} />
-                    )}
-                    error={isFromDateError !== ""}
-                    label="From date"
-                    value={fromDate}
-                    onChange={(newValue) => {
-                      const today = new Date();
-                      if (newValue < today) {
-                        setIsFromDateError(
-                          "From date is required and must be greater from now"
-                        );
-                      } else {
-                        setIsFromDateError("");
-                      }
-                      setFromDate(newValue);
-                    }}
-                  />
-                </LocalizationProvider>
-                {isFromDateError !== "" ? (
-                  <label style={alertStyle}>{isFromDateError}</label>
-                ) : null}
-              </Grid>
-
-              {/* endDate */}
-
-              <Grid item xs={12}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DateTimePicker
-                    renderInput={(props) => (
-                      <TextField sx={{ width: "100%" }} {...props} />
-                    )}
-                    error={isEndDateError !== ""}
-                    label="end date"
-                    value={endDate}
-                    onChange={(newValue) => {
-                      if (newValue > fromDate) {
-                        setIsEndDateError("");
-                      } else {
-                        setIsEndDateError(
-                          "end date must be greater from fromDate"
-                        );
-                      }
-                      setEndDate(newValue);
-                    }}
-                  />
-                  {isEndDateError !== "" ? (
-                    <label style={alertStyle}>{isEndDateError}</label>
-                  ) : null}
-                </LocalizationProvider>
-              </Grid>
-
-              {/* checkbox */}
-
-              <Grid item xs={12}>
-                <Checkbox name="repeat"></Checkbox>
-                <label>Repeat every day same hours</label>
-              </Grid>
-
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  id="search"
-                  variant="outlined"
-                  placeholder="Search for Grocery..."
-                  InputProps={{
-                    endAdornment: (
-                      <Button>
-                        <SearchOutlined />
-                      </Button>
-                    ),
-                  }}
-                  onChange={loadFilteredGroceries}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <List
-                  sx={{
-                    width: "100%",
-                    maxWidth: "500px",
-                    bgcolor: "background.paper",
-                  }}
-                >
-                  {groceries.map((value) => {
-                    const labelId = `checkbox-list-label-${value._id}`;
-
-                    return (
-                      <ListItem
-                        key={value._id}
-                        disablePadding
-                        sx={{ mb: "5px" }}
-                      >
-                        <Checkbox
-                          edge="start"
-                          onClick={handleToggle(value)}
-                          checked={
-                            checked.findIndex(
-                              (i) =>
-                                i.grocery._id == value._id &&
-                                i.isChecked === true
-                            ) !== -1
-                          }
-                          tabIndex={-1}
-                          disableRipple
-                          inputProps={{ "aria-labelledby": labelId }}
-                        />
-                        <TextField
-                          fullWidth
-                          error={isQuantityError !== ""}
-                          InputProps={{
-                            inputProps: { min: 0 }
-                          }}
-                          type="number"
-                          id={`${value.name}`}
-                          label={`${value.name}`}
-                          name={`${value.name}`}
-                          onChange={ (e) =>{
-                            
-                            if (e.target.value < 0)
-                            {
-                              setIsQuantityError(
-                                "must be positive"
-                              );
-
-                            } else
-                             {
-                              setIsQuantityError(
-                                ""
-                              );
-                               handleToggleAmount(e, value) 
-                           } 
-                          }}
-                          
-                        />
-                        <CardMedia
-                          component="img"
-                          sx={{
-                            padding: 1,
-                            width: "50px",
-                            height: "50px",
-                          }}
-                          image={"data:image/jpg;base64, " + value.images}
-                          alt="Live from space album cover"
-                        />
-                      </ListItem>
-                    );
-                  })}
-                </List>
-              </Grid>
-              <Grid item xs={12}>
-                <Input type="file" onChange={onChangeImages}></Input>
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Add Post
-                </Button>
-              </Grid>
+              </LocalizationProvider>
+              {isFromDateError !== "" ? (
+                <label style={alertStyle}>{isFromDateError}</label>
+              ) : null}
             </Grid>
-          </Box>
+
+            {/* endDate */}
+
+            <Grid item xs={12}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  renderInput={(props) => (
+                    <TextField sx={{ width: "100%" }} {...props} />
+                  )}
+                  error={isEndDateError !== ""}
+                  label="end date"
+                  value={endDate}
+                  onChange={(newValue) => {
+                    if (newValue > fromDate) {
+                      setIsEndDateError("");
+                    } else {
+                      setIsEndDateError(
+                        "end date must be greater from fromDate"
+                      );
+                    }
+                    setEndDate(newValue);
+                  }}
+                />
+                {isEndDateError !== "" ? (
+                  <label style={alertStyle}>{isEndDateError}</label>
+                ) : null}
+              </LocalizationProvider>
+            </Grid>
+
+            {/* checkbox */}
+
+            <Grid item xs={12}>
+              <Checkbox name="repeat"></Checkbox>
+              <label>Repeat every day same hours</label>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                id="search"
+                variant="outlined"
+                placeholder="Search for Grocery..."
+                InputProps={{
+                  endAdornment: (
+                    <Button>
+                      <SearchOutlined />
+                    </Button>
+                  ),
+                }}
+                onChange={loadFilteredGroceries}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <List
+                sx={{
+                  width: "100%",
+                  maxWidth: "500px",
+                  bgcolor: "background.paper",
+                }}
+              >
+                {groceries.map((value) => {
+                  const labelId = `checkbox-list-label-${value._id}`;
+
+                  return (
+                    <ListItem
+                      key={value._id}
+                      disablePadding
+                      sx={{ mb: "5px" }}
+                    >
+                      <Checkbox
+                        edge="start"
+                        onClick={handleToggle(value)}
+                        checked={
+                          checked.findIndex(
+                            (i) =>
+                              i.grocery._id == value._id &&
+                              i.isChecked === true
+                          ) !== -1
+                        }
+                        tabIndex={-1}
+                        disableRipple
+                        inputProps={{ "aria-labelledby": labelId }}
+                      />
+                      <TextField
+                        fullWidth
+                        error={isQuantityError !== ""}
+                        InputProps={{
+                          inputProps: { min: 0 }
+                        }}
+                        type="number"
+                        id={`${value.name}`}
+                        label={`${value.name}`}
+                        name={`${value.name}`}
+                        onChange={(e) => {
+
+                          if (e.target.value < 0) {
+                            setIsQuantityError(
+                              "must be positive"
+                            );
+
+                          } else {
+                            setIsQuantityError(
+                              ""
+                            );
+                            handleToggleAmount(e, value)
+                          }
+                        }}
+
+                      />
+                      <CardMedia
+                        component="img"
+                        sx={{
+                          padding: 1,
+                          width: "50px",
+                          height: "50px",
+                        }}
+                        image={"data:image/jpg;base64, " + value.images}
+                        alt="Live from space album cover"
+                      />
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Grid>
+            <Grid item xs={12}>
+              <Input type="file" onChange={onChangeImages}></Input>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Add Post
+              </Button>
+            </Grid>
+          </Grid>
+
         </Box>
-      </Container>
-    </ThemeProvider>
+      </Box>
+    </Container>
   );
 }

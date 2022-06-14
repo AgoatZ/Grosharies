@@ -11,6 +11,7 @@ const ProductsList = ({ content, role = "collector" }) => {
             <ListSubheader hidden={viewdByPublisher}>Items</ListSubheader>
             {content.map((item) => (
                 <ListItemText inset key={item._id}>
+                    <b>•  </b>
                     {item.amount + item.scale + ' '}
                     <b>{item.name} </b>
                     {viewdByCollector ? (' packed in a ' + item.packing) : null}
