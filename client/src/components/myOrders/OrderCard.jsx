@@ -66,7 +66,6 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
                         <AccessTimeIcon fontSize="small" sx={{ verticalAlign: "text-top", mr: "0.5%" }} />{timeLeft}</Typography> :
                     <Typography variant="overline">
                         <AccessTimeIcon fontSize="small" sx={{ verticalAlign: "text-top", mr: "0.5%" }} /> Expired</Typography>}
-
             </>
         )
     }
@@ -75,15 +74,15 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
         return (
             <>
                 {/* when this order is viewed by the post publisher */}
-                <Stack direction="row" spacing={2} sx={{ ml: 3, justifyContent: 'stretch', justifyItems: 'stretch' }}>
-                    <Stack direction="column" spacing={1} sx={{ width: '33%' }}>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ ml: 3, justifyContent: 'stretch', justifyItems: 'stretch' }}>
+                    <Stack direction="column" flexWrap="wrap" spacing={1}>
                         <Typography variant="b">{"Order By " + collectorName}</Typography>
                         <Status />
                     </Stack>
-                    <Stack direction="column" spacing={1} sx={{ width: '50%' }}>
+                    <Stack direction="column" flexWrap="wrap" spacing={1} sx={{ width: '50%' }}>
                         <ProductsList content={pendingPost.content} role="publisher" />
                     </Stack>
-                    <Stack direction="column" justifyContent="center" spacing={1} sx={{ width: '33%' }}>
+                    <Stack direction="column" flexWrap="wrap" justifyContent="center" spacing={1}>
                         <Button disabled={!timeLeft || isFinished || isCancelled} variant="text" startIcon={<CheckIcon />}
                             onClick={() => completeOrder(pendingPost._id, viewdByPublisher)}>Complete</Button>
                         <Button disabled={!timeLeft || isFinished || isCancelled} variant="text" startIcon={<CloseIcon />}

@@ -52,8 +52,8 @@ export default function Login({ loginUser }) {
   };
 
   return (
-    <Container component="main" maxWidth="md" sx={{ width: "400px" }}>
-      <CssBaseline />
+    <Container component="main" maxWidth="xs">
+
       <Box
         sx={{
           marginTop: 8,

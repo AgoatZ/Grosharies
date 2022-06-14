@@ -35,14 +35,15 @@ const Leaderboard = () => {
   }, []);
 
   return (
-    <Container>
-      <Stack direction="row" spacing={5} alignItems="center" sx={{ mb: 3 }}>
+    <Stack direction="column" alignItems="center" justifyItems="center" flexWrap="wrap" spacing={{ xs: 2, sm: 2, md: 3, lg: 3 }}>
+
+      <Stack direction="row" spacing={5} alignItems="center" justifyItems="center" flexWrap="wrap" sx={{ mb: 3 }}>
         <Typography variant="h3" >Our Top Savers</Typography>
         <img src="/assets/winner.png" width="150px" height="150px" />
       </Stack>
 
       <TableContainer component={Paper}>
-        <Table stickyHeader sx={{ minWidth: 650 }}>
+        <Table stickyHeader sx={{ minWidth: 300 }}>
           <TableHead>
             <TableRow sx={{ background: 'theme' }}>
               <StyledTableCell></StyledTableCell>
@@ -61,7 +62,8 @@ const Leaderboard = () => {
           </TableBody>
         </Table>
       </TableContainer>
-    </Container >
+
+    </Stack>
   );
 
 };

@@ -1,34 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Container, Box } from "@mui/material";
+import { Container, Box, Typography, Stack, Divider, CardMedia } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Posts from "../posts/Posts";
 import { Doughnut, Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-} from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, } from "chart.js";
 
 const GroceryDetails = () => {
   const [posts, setPosts] = useState([]);
-  useEffect(() => {
-    loadPostsByGroceries();
-  }, []);
+  useEffect(() => { loadPostsByGroceries(); }, []);
   const grocery = useLocation().state;
+
   const loadPostsByGroceries = () => {
-    axios
-      .post("/api/posts/bygroceries", {
-        groceries: [grocery.name],
-      })
-      .then((res) => {
-        setPosts(res.data.posts);
-      });
+    axios.post("/api/posts/bygroceries", { groceries: [grocery.name], }).then((res) => { setPosts(res.data.posts); });
   };
 
   ChartJS.register(
@@ -46,13 +30,8 @@ const GroceryDetails = () => {
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Amount of " + grocery.name,
-      },
+      legend: { position: "top", },
+      title: { display: true, text: "Amount of " + grocery.name, },
     },
   };
 
@@ -130,96 +109,45 @@ const GroceryDetails = () => {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Box
+      <Stack direction="column" alignItems="center" justifyItems="center" spacing={2}>
+        <Typography variant="h3">{grocery.name}</Typography>
+        <CardMedia
           component="img"
-          sx={{
-            height: "250px",
-            width: "250px",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          alt={grocery.name}
-          src="/assets/logo.png"
-        />
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          fontFamily: "Roboto",
-        }}
-      >
-        <h1>{grocery.name}</h1>
-      </div>
-      <Box
-        sx={{
-          display: "flex",
-          margin: "5% 3%",
-          justifyContent: "space-evenly",
-          alignItems: "center",
-          flexDirection: { xs: "column", md: "row" },
-        }}
-      >
+          sx={{ padding: 3, borderRadius: "10px", width: "200px", height: "200px", }}
+          image={"data:image/jpg;base64, " + grocery.images} />
+      </Stack>
+
+      {/* Charts */}
+      <Divider />
+      <Box sx={{
+        display: "flex", margin: "3%", justifyContent: "space-evenly", alignItems: "center",
+        flexDirection: { xs: "column", md: "row" },
+      }}>
         <Box
-          sx={{
-            width: "25%",
-            display: {
-              xs: "none",
-              md: "flex",
-              l: "flex",
-              xl: "flex",
-            },
-          }}
-        >
+          sx={{ width: "25%", display: { xs: "none", md: "flex", lg: "flex", xl: "flex", }, }}>
           <Doughnut
             options={doughnutOptionsShowLabels.options}
             data={doughnutData.data}
           />
         </Box>
-        <Box
-          sx={{
-            width: "25%",
-            display: { xs: "flex", md: "none", l: "none", xl: "none" },
-            mb: "6%",
-          }}
-        >
+        <Box sx={{ width: "25%", display: { xs: "flex", md: "none", lg: "none", xl: "none" }, mb: "6%", }}>
           <Doughnut
             options={doughnutOptionsHideLabels.options}
             data={doughnutData.data}
           />
         </Box>
-        <Box
-          sx={{
-            height: { xs: "300px" },
-            width: { xs: "90%", md: "40%", l: "40%", xl: "40%" },
-          }}
-        >
+        <Box sx={{ height: { xs: "300px" }, width: { xs: "90%", md: "40%", lg: "40%", xl: "40%" }, }}>
           <Bar options={options} data={barData} />
         </Box>
       </Box>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          fontFamily: "Roboto",
-        }}
-      >
-        <h2>Related Posts</h2>
-      </div>
-
+      <Divider variant="middle" sx={{ mb: "2%" }}>
+        <Typography variant="h4">Related Posts</Typography>
+      </Divider>
       <Container sx={{ marginBottom: "20px" }}>
         {posts.length === 0 ? (
-          <h1>There's no posts related to that grocery</h1>
-        ) : (
-          <Posts data={posts} noBorder />
-        )}
+          <Typography>There's no posts related to that grocery</Typography>
+        ) : (<Posts data={posts} />)}
       </Container>
     </>
   );

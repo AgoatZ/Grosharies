@@ -19,6 +19,7 @@ const Post = () => {
   const sourcePostId = useParams().id;
   const [post, setPost] = useState(PostDummy);
   const [isEdit, setEdit] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   const { handleSubmit, control } = useForm();
   const mobileScreen = useMediaQuery('(max-width:480px)');
   useEffect(() => loadPost(), []);
@@ -29,6 +30,8 @@ const Post = () => {
     axios.get('posts/' + sourcePostId).then((res) => {
       post = res.data.post;
 
+      if (post.status === "cancelled") setIsDeleted(true);
+
       //Add and Init user's order amount for each grocery item
       post.content.forEach((grocery) => grocery.currentOrder = 0);
 
@@ -36,11 +39,11 @@ const Post = () => {
       //Get user's active order for this post and add it to main post object if exists
       axios.get("pendings/collector/current").then((res) => {
         const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
-        const valid = userPendingPost && userPendingPost.status.finalStatus === "pending";
+        const validOrder = userPendingPost && userPendingPost.status.finalStatus === "pending";
 
-        if (valid) {
+        if (validOrder) {
           post.userPendingPostId = userPendingPost._id;
-          console.log("User's open pending post (order) for this post", userPendingPost);
+          console.log("User's open pending post for this post", userPendingPost);
           //Set the user's order amount for each grocery item
           userPendingPost.content.forEach((orderGrocery) => (post.content.find((grocery) => grocery.original.name === orderGrocery.name).currentOrder = orderGrocery.amount));
 
@@ -156,7 +159,7 @@ const Post = () => {
     <Stack direction="column" flexWrap="wrap" spacing={{ xs: 1, sm: 1, md: 2, lg: 4 }} >
 
       <Stack direction="column" spacing={1}>
-        <Badge color="secondary" sx={{ marginRight: 3 }}
+        <Badge color={isDeleted ? "error" : "secondary"} sx={{ marginRight: 3 }}
           badgeContent={<Typography variant="overline" sx={{ fontSize: "20px" }}>{post.status}</Typography>} >
           <Typography variant="h3" mb="2%" >{post.headline}</Typography>
         </Badge>
@@ -191,7 +194,7 @@ const Post = () => {
         </Stack>
 
         <Stack direction="row" justifyContent="center" flexWrap="wrap" sx={{ marginTop: "7%" }}>
-          <Button variant="contained" type="submit">{isEdit ? "Edit Order" : "Create Order"}</Button>
+          <Button variant="contained" type="submit" disabled={isDeleted}>{isEdit ? "Edit Order" : "Create Order"}</Button>
         </Stack>
       </form>
     </Stack >

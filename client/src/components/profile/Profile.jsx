@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../App";
-import { Button, Container, Typography, Box } from "@mui/material";
+import axios from "axios";
+import { Button, Container, Typography, Box, Tooltip, Stack } from "@mui/material";
+import { UserImage } from "../common/Images";
+import { Input } from "@material-ui/core";
 import StarIcon from "@mui/icons-material/Star";
 import EditIcon from "@mui/icons-material/Edit";
-import { UserImage } from "../common/Images";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import CheckIcon from "@mui/icons-material/Check";
-import { Input } from "@material-ui/core";
-import axios from "axios";
-import Tooltip from "@mui/material/Tooltip";
 
 const Profile = () => {
   const { userData } = useContext(AppContext);
@@ -43,175 +42,90 @@ const Profile = () => {
         }*/
         setEdit(false);
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
+  // <Container sx={{ alignItems: "center", display: "flex", flexDirection: "column", marginTop: "5%", }}    >
   return (
-    <Container
-      sx={{
-        alignItems: "center",
-        display: "flex",
-        flexDirection: "column",
-        marginTop: "5%",
-      }}
-    >
-      <Box
-        sx={{
-          border: "1px solid",
-          padding: "15px 150px",
-          borderRadius: "30px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          position: "relative",
+    <Stack direction="column" alignItems="center" flexWrap="wrap" spacing={{ xs: 2, sm: 2, md: 3, lg: 3 }}>
+
+      {/* Card */}
+      <Box sx={{ border: "1px solid", padding: "5%", borderRadius: "30px", display: "flex", flexDirection: "column", alignItems: "center", position: "relative", flexWrap: "wrap" }}>
+
+        <EditIcon sx={{
+          visibility: !edit ? "visible" : "hidden", position: "absolute", right: "5%", top: "5%",
+          ":hover": { cursor: "pointer", color: "gray" },
         }}
-      >
-        <EditIcon
-          sx={{
-            visibility: !edit ? "visible" : "hidden",
-            position: "absolute",
-            right: "5%",
-            top: "5%",
-            ":hover": { cursor: "pointer", color: "gray" },
-          }}
-          onClick={() => {
-            setEdit(true);
-          }}
+          onClick={() => { setEdit(true); }}
         ></EditIcon>
 
         <ClearIcon
           sx={{
-            color: "red",
-            visibility: edit ? "visible" : "hidden",
-            position: "absolute",
-            right: "5%",
-            top: "5%",
-            width: "30px",
-            height: "30px",
-            ":hover": { cursor: "pointer", color: "gray" },
+            color: "red", visibility: edit ? "visible" : "hidden", position: "absolute", right: "5%", top: "5%",
+            width: "30px", height: "30px", ":hover": { cursor: "pointer", color: "gray" },
           }}
-          onClick={() => {
-            setEdit(false);
-          }}
+          onClick={() => { setEdit(false); }}
         ></ClearIcon>
+
         <CheckIcon
           sx={{
-            color: "green",
-            visibility: edit ? "visible" : "hidden",
-            position: "absolute",
-            right: "5%",
-            top: "90%",
-            width: "30px",
-            height: "30px",
-            ":hover": { cursor: "pointer", color: "gray" },
+            color: "green", visibility: edit ? "visible" : "hidden", position: "absolute", right: "5%", top: "90%",
+            width: "30px", height: "30px", ":hover": { cursor: "pointer", color: "gray" },
           }}
           onClick={EditUser}
         ></CheckIcon>
+
         <label>
           <input
             type="file"
             style={{ display: "none" }}
-            onChange={(e) => {
-              setEditeduserImage(e.target.files[0]);
-            }}
+            onChange={(e) => { setEditeduserImage(e.target.files[0]); }}
           />
           <Tooltip title="Upload Files">
             <AddBoxIcon
               fill
               sx={{
-                visibility: edit ? "visible" : "hidden",
-                position: "absolute",
-                right: "37%",
-                top: "45%",
-                width: "30px",
-                color: "green",
-                height: "30px",
-                margin: "0",
-                ":hover": { cursor: "pointer", color: "gray" },
+                color: "green", visibility: edit ? "visible" : "hidden", position: "absolute", right: "37%", top: "45%",
+                width: "30px", height: "30px", margin: "0", ":hover": { cursor: "pointer", color: "gray" },
               }}
             ></AddBoxIcon>
           </Tooltip>
         </label>
+
         <UserImage src={userData.profileImage} width="200px" height="200px" />
 
-        <Typography
-          variant="h4"
-          sx={{
-            visibility: !edit ? "visible" : "hidden",
-            marginTop: "2%",
-            fontWeight: "bold",
-          }}
-        >
+        <Typography variant="h4" align="center" sx={{ visibility: !edit ? "visible" : "hidden", marginTop: "2%", fontWeight: "bold", }}>
           {userData.firstName} {userData.lastName}{" "}
-          <label style={{ fontWeight: "1", fontSize: "15px" }}>
-            ({userData.emailAddress})
-          </label>
+          <Typography style={{ fontWeight: "1", fontSize: "15px" }}>({userData.emailAddress})</Typography>
         </Typography>
 
         {edit ? (
           <>
-            <Input
-              defaultValue={userData.firstName}
-              onChange={(e) => {
-                setEditedUser({ ...editedUser, firstName: e.target.value });
-              }}
-            />
-            <Input
-              defaultValue={userData.lastName}
-              onChange={(e) => {
-                setEditedUser({ ...editedUser, lastName: e.target.value });
-              }}
-            />
-            <Input
-              placeholder="password"
-              onChange={(e) => {
-                setEditedUser({ ...editedUser, password: e.target.value });
-              }}
-            />
+            <Input defaultValue={userData.firstName} onChange={(e) => { setEditedUser({ ...editedUser, firstName: e.target.value }); }} />
+            <Input defaultValue={userData.lastName} onChange={(e) => { setEditedUser({ ...editedUser, lastName: e.target.value }); }} />
+            <Input placeholder="password" onChange={(e) => { setEditedUser({ ...editedUser, password: e.target.value }); }} />
           </>
         ) : null}
 
-        <Box sx={{ display: "flex", flexDirection: "row", marginTop: "1%" }}>
-          <StarIcon sx={{ color: "gold" }}> </StarIcon>
-          <Typography variant="h6">Rank: {userData.rank}</Typography>
-        </Box>
       </Box>
 
-      <Box
-        sx={{
-          marginTop: "20%",
-          display: "flex",
-          flexDirection: "row",
-        }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              navigate("/my-posts");
-            }}
-            sx={{
-              marginRight: "100px",
-            }}
-          >
-            My Posts
-          </Button>
+      {/* Rank */}
+      <Box sx={{ display: "flex", flexDirection: "row", width: "100%", alignItems: "center", justifyContent: "center" }}>
+        <StarIcon fontSize="large" sx={{ color: "gold", verticalAlign: "text-top", mr: "0.5%" }}> </StarIcon>
+        <Typography variant="h4">Rank: {userData.rank}</Typography>
+      </Box>
+
+
+      {/* Buttons */}
+      <Box sx={{ marginTop: "20%", display: "flex", flexDirection: "row", width: "100%" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", width: "50%" }}>
+          <Button variant="contained" onClick={() => { navigate("/my-posts"); }} sx={{ margin: "10%", }}>My Posts</Button>
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              navigate("/my-orders");
-            }}
-            sx={{
-              marginLeft: "100px",
-            }}
-          >
-            My Orders
-          </Button>
+        <Box sx={{ display: "flex", flexDirection: "column", width: "50%" }}>
+          <Button variant="contained" onClick={() => { navigate("/my-orders"); }} sx={{ margin: "10%", }}>My Orders</Button>
         </Box>
       </Box>
-    </Container>
+    </Stack>
   );
 };
 

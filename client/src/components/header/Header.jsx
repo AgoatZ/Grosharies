@@ -90,7 +90,7 @@ const Header = () => {
               </MenuItem>
               <MenuItem key={pages[2].name} onClick={navigateToPage.bind(this, pages[1].path)}>
                 <ListItemIcon>
-                  <FontAwesomeIcon icon="fa-solid fa-ranking-star" size="lg" color="white" />
+                  <FontAwesomeIcon icon="fa-solid fa-ranking-star" size="lg" />
                 </ListItemIcon>
                 <ListItemText primary={pages[2].name} />
               </MenuItem>
@@ -163,7 +163,7 @@ const Header = () => {
       return;
 
     return (
-      <Box sx={{ flexGrow: 0 }} hidden={!loggedIn}>
+      <Box sx={{ flexGrow: 0, mr: "1%" }} hidden={!loggedIn}>
         {/* User Options Menu */}
         <Tooltip title={userData.firstName + ' ' + userData.lastName}>
           <IconButton onClick={handleOpenUserMenu}>
@@ -209,7 +209,7 @@ const Header = () => {
 
   const Login = () => {
     return (
-      <Box sx={{ flexGrow: 0 }} hidden={loggedIn}>
+      <Box sx={{ flexGrow: 0, mr: "1%" }} hidden={loggedIn}>
         <Button
           onClick={navigateToPage.bind(this, "login")}
           size="small"
