@@ -4,7 +4,7 @@ let instanceConfig;
 if (process.env.NODE_ENV === "development"){
   instanceConfig = axios.create({
   baseURL: "http://localhost:5000/api/",
-  timeout: 20000,
+  timeout: 60000,
   withCredentials: true,
   headers: {
     "Access-Control-Allow-Origin": "http://localhost:3000",
@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "development"){
 else {
   instanceConfig = axios.create({
     baseURL: "/api/",
-    timeout: 20000,
+    timeout: 60000,
     withCredentials: true,
     headers: {
       "Access-Control-Allow-Origin": "*",

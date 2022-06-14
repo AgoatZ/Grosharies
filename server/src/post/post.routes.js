@@ -215,7 +215,7 @@ router.get("/", PostController.getPosts);
 *             schema:
 *               $ref: '#/components/schemas/Post'
 */
-router.get("/:id", authJwt, PostController.getPostById);
+router.get("/:id", PostController.getPostById);
 
 /**
 * @swagger
@@ -240,7 +240,7 @@ router.get("/:id", authJwt, PostController.getPostById);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.get("/user/:id", authJwt, PostController.getPostsByUser);
+router.get("/user/:id", PostController.getPostsByUser);
 
 /**
 * @swagger
@@ -315,7 +315,7 @@ router.get("/images/:id", authJwt, PostController.getPostImages);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.get("/category/:id", authJwt, PostController.getPostsByCategory);
+router.get("/category/:id", PostController.getPostsByCategory);
 
 /**
 * @swagger
@@ -340,7 +340,7 @@ router.get("/category/:id", authJwt, PostController.getPostsByCategory);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.get("/tag/:id", authJwt, PostController.getPostsByTag);
+router.get("/tag/:id", PostController.getPostsByTag);
 
 /**
 * @swagger
@@ -390,7 +390,7 @@ router.get("/collector/:id", authJwt, PostController.getPostsByCollector);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.get("/search/:search", authJwt, PostController.searchPosts);
+router.get("/search/:search", PostController.searchPosts);
 
 /**
 * @swagger
@@ -433,7 +433,7 @@ router.get("/suggested/:userid", authJwt, PostController.getSuggestedPosts);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.post("/nearby", authJwt, PostController.getNearbyPosts);
+router.post("/nearby", PostController.getNearbyPosts);
 
 /**
 * @swagger
@@ -561,7 +561,7 @@ router.post("/pend", authJwt, PostController.pendPost);
 *             schema:
 *               $ref: '#/components/schemas/Post'
 */
-router.delete("/:id", PostController.deletePost);
+router.delete("/:id", authJwt, PostController.deletePost);
 
 /**
 * @swagger
@@ -590,6 +590,6 @@ router.delete("/:id", PostController.deletePost);
 *             schema:
 *               $ref: '#/components/schemas/Post'
 */
-router.put("/:id", PostController.updatePost);
+router.put("/:id", authJwt, PostController.updatePost);
 
 module.exports = router;
