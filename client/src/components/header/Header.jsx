@@ -88,7 +88,7 @@ const Header = () => {
                 </ListItemIcon>
                 <ListItemText primary={pages[1].name} />
               </MenuItem>
-              <MenuItem key={pages[2].name} onClick={navigateToPage.bind(this, pages[1].path)}>
+              <MenuItem key={pages[2].name} onClick={navigateToPage.bind(this, pages[2].path)}>
                 <ListItemIcon>
                   <FontAwesomeIcon icon="fa-solid fa-ranking-star" size="lg" />
                 </ListItemIcon>
