@@ -486,20 +486,15 @@ const interrestedUserReminder = async (userId, pendingId) => {
 
         const remind = async (recieverNumber, publisherNumber) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
-            //const collectorSMS = sendSMSToNumber(`Hey from Grosharies! Have you picked up the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${publisher.firstName} ${publisher.lastName}? Tell us what you feel!`, recieverNumber);
-            //const publisherSMS = sendSMSToNumber(`Hey from Grosharies! Have you delivered the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${user.firstName} ${user.lastName}? Tell us what you feel!`, publisherNumber);
+            const collectorSMS = sendSMSToNumber(`Hey from Grosharies! Have you picked up the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${publisher.firstName} ${publisher.lastName}? Tell us what you feel!`, recieverNumber);
+            const publisherSMS = sendSMSToNumber(`Hey from Grosharies! Have you delivered the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${user.firstName} ${user.lastName}? Tell us what you feel!`, publisherNumber);
             const delayedUpdate = delayUpdate(pendingId);
             delayedUpdate.catch(err => console.log('AWS delayUpdate failed', err));
-            //await decide(pending);
-            //const reToId = setTimeout(async function () { await decide(pending) }, (oneHour / 240));
-            //reToId.hasRef();
             return;
         };
         if (user && publisher) {
             await remind(user.phone, publisher.phone);
         }
-        //const toId = setTimeout(async function () { await remind(user.phoneNumber, publisher.phoneNumber) }, (oneHour / 240));
-        //toId.hasRef();
     } catch (e) {
         console.log('Pending service error from interrestedUserReminder: ', e.message);
 
