@@ -98,7 +98,7 @@ router.get('/', UserController.getUsers);
 *             schema:
 *               $ref: '#/components/schemas/User'
 */
-router.get('/:id', UserController.getUserById);
+router.get('/:id', authJwt, UserController.getUserById);
 
 /**
 * @swagger
@@ -269,7 +269,7 @@ router.get('/suggested/:userid', authJwt, PostController.getSuggestedPosts);
 *                 - $ref: '#/components/schemas/PendingPost'
 *                 - $ref: '#/components/schemas/User'
 */
-router.get('/profile/:id', UserController.getUserProfile);
+router.get('/profile/:id', authJwt, UserController.getUserProfile);
 
 /**
 * @swagger
