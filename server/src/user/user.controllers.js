@@ -71,7 +71,7 @@ const updateUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
 
     try {
-        const oldUser = await UserService.updateUser(req.params.id, req.body);
+        const oldUser = await UserService.updateUser(req.params.id, req.body, req.user);
         return res.status(200).json({ oldUser: oldUser, message: "Succesfully User Updated" });
     } catch (e) {
         console.log('controller error from updateUser: ' + e.message);

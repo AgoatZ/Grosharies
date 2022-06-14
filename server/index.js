@@ -159,57 +159,6 @@ io.on("connection", socket => {
   socket.join(String(userID));
 
   //gSocket = socket;
-  //UNDEFINED - console.log("socket.request.user", socket.request.user)
-  //UNDEFINED -   console.log("socket.username", socket.username)
-  // socket.on('whoami', (cb) => {
-  //   cb(socket.request.user ? socket.request.user.username : '');
-  // });
-
-
-  // console.log("saving socket id", socketID, "in session", sessionID);
-  // session.socketId = socketID;
-  // session.save();
-
-  // const users = [];
-  // for (let [id, socket] of io.of("/").sockets) {
-  //   users.push({
-  //     sessionID: sessionID,
-  //     userID: userID,
-  //   });
-  // }
-
-  // socket.emit("session", {
-  //   sessionID: sessionID,
-  //   userID: userID,
-  // });
-
-  // socket.emit("users", users);
-
-  // socket.on("pendPost", async (postId, collectorId, publisherId) => {
-  //   io.emit("pend post notification", { postId: postId, collectorId: collectorId, publisherId: publisherId });
-  // });
-
-  // socket.on("pendPost", ({ postId, collectorId, publisherId }) => {
-  //   socket.to(publisherId).to(collectorId).emit("pend post notification", {
-  //     postId,
-  //     from: collectorId,
-  //     publisherId,
-  //   });
-  // });
-
-  // socket.on("disconnect", async () => {
-  //   const matchingSockets = await io.in(userID).allSockets();
-  //   const isDisconnected = matchingSockets.size === 0;
-  //   if (isDisconnected) {
-  //     // notify other users
-  //     socket.broadcast.emit("user disconnected", userID);
-  //     // update the connection status of the session
-  //     await sessionStore.insertOne({
-  //       userID: userID,
-  //       connected: false,
-  //     });
-  //   }
-  // });
 
   //setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
 
@@ -222,7 +171,6 @@ io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));
 
 io.use((socket, next) => {
-  //console.log(socket.request);
   next();
 });
 

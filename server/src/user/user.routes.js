@@ -124,7 +124,7 @@ router.post('/', UserController.addUser);
 
 /**
 * @swagger
-* /api/users/updateImage/{id}:
+* /api/users/updateImage:
 *   post:
 *     summary: Update profile image
 *     tags: [User Api]
@@ -143,7 +143,7 @@ router.post('/', UserController.addUser);
 *             schema:
 *               $ref: '#/components/schemas/User'
 */
-router.post('/updateImage/:id', authJwt, uploadImage, UserController.updateUser);
+router.post('/updateImage', authJwt, uploadImage, UserController.updateUser);
 
 /**
 * @swagger

@@ -127,6 +127,8 @@ const init = async () => {
         });
         sweets = await sweets.save();
 
+        const firstNames = ['Dolores', 'Jacob', 'Dona', 'Pablito', 'Juan', 'Werner', 'Cosette', 'Fantine', 'Eponine', 'Alphonse', 'Donatien', 'Justine'];
+        const lastNames = ['Sade', 'Padre', 'Soledad', 'Robespierre', 'Nagual', 'Matus', 'Castaneda', 'Berlioz', 'Hafenklang', 'Raduan', 'Jodorowsky', 'Herzog'];
         const gross = ['Bananas', 'Melonas', 'Off Bagril', 'Pommes', 'Orange Juice', 'Beer', 'Toblerone', 'Lindt Lindor', 'Raw Cocoa', 'Schnitzel', 'Rice'];
         const grMod = [];
         const cats = [fruits, fruits, meat, junkFood, beverages, alcohol, sweets, sweets, rawFood, meat, dryFood];
@@ -181,21 +183,21 @@ const init = async () => {
 
         for (let i = 0; i < 30; i++) {
             let user = new User({
-                "firstName": "Jacob" + i,
-                "lastName": "Padre" + i,
-                "emailAddress": "jacob" + i + "@yahoo.com",
+                "firstName": firstNames[i%12],
+                "lastName": lastNames[(i%12 + i)%12],
+                "emailAddress": lastNames[(i%12 + i)%12] + firstNames[i%12] + "@yahoo.com",
                 "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
-                "phone": "052373555" + i,
+                "phone": "+97252373555" + i,
                 "source": "grosharies"
             });
             await user.save();
 
             let useress = new User({
-                "firstName": "Dolores" + i,
-                "lastName": "Soledad" + i,
-                "emailAddress": "dolores" + i + "@web.de",
+                "firstName": firstNames[(i%12 + i + 1)%12],
+                "lastName": lastNames[i%12],
+                "emailAddress": firstNames[(i%12 + i + 1)%12] + lastNames[i%12] + "@web.de",
                 "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
-                "phone": "052373666" + i,
+                "phone": "+97252373666" + i,
                 "source": "grosharies"
             });
             await useress.save();
@@ -347,7 +349,7 @@ const init = async () => {
                     "until": Date.now() + oneHour
                 }
             });
-            pending = await pending.save()
+            pending = await pending.save();
             if (i < 3) {
                 await user.updateOne({ collectedHistory: pending._id });
                 const repliers = post1.repliers.concat({
@@ -364,7 +366,7 @@ const init = async () => {
                 await post1.updateOne({ repliers: repliers });
             }
             let event = new Event({
-                "headline": "An Event " + i,
+                "headline": "An Event of " + firstNames[i%12],
                 "userId": user._id,
                 "address": '' + i + " Nowhere Boulevard",
                 "happeningDates": {

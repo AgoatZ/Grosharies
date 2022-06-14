@@ -402,7 +402,6 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
             let dist = coordinatesDistance(posts[i].addressCoordinates, coordinates);
             if (dist < 100000) {
                 nearbyPosts.push(posts[i]);
-                console.log('distance of results:', dist);
             }
         }
         return nearbyPosts.sort((a, b) => coordinatesDistance(a.addressCoordinates, coordinates) - coordinatesDistance(b.addressCoordinates, coordinates));
