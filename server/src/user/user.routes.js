@@ -243,7 +243,7 @@ router.get('/pickuphistory/:id', authJwt, UserController.getPickupHistory);
 *             items:
 *               $ref: '#/components/schemas/Post'
 */
-router.get('/suggested/:userid', PostController.getSuggestedPosts);
+router.get('/suggested/:userid', authJwt, PostController.getSuggestedPosts);
 
 /**
 * @swagger
@@ -269,7 +269,7 @@ router.get('/suggested/:userid', PostController.getSuggestedPosts);
 *                 - $ref: '#/components/schemas/PendingPost'
 *                 - $ref: '#/components/schemas/User'
 */
-router.get('/profile/:id', authJwt, UserController.getUserProfile);
+router.get('/profile/:id', UserController.getUserProfile);
 
 /**
 * @swagger
@@ -287,6 +287,6 @@ router.get('/profile/:id', authJwt, UserController.getUserProfile);
 *               items:
 *                 $ref: '#/components/schemas/User'
 */
-router.get('/topusers/byrank', authJwt, UserController.getTopUsers);
+router.get('/topusers/byrank', UserController.getTopUsers);
 
 module.exports = router;

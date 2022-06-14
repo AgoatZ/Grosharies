@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/", PendingController.getPendings);
 
-router.get("/grouped", authJwt, PendingController.getGroupedPendings);
+router.get("/grouped", PendingController.getGroupedPendings);
 
 router.get("/:id", authJwt, PendingController.getPendingById);
 

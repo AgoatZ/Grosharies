@@ -63,7 +63,7 @@ const { authJwt } = require('../common/middlewares/passport');
 *               items:
 *                 $ref: '#/components/schemas/Grocery'
 */
-router.get('/', authJwt, GroceryController.getGroceries);
+router.get('/', GroceryController.getGroceries);
 
 /**
 * @swagger
@@ -134,7 +134,7 @@ router.get('/name/:name', authJwt, GroceryController.getGroceryByName);
 *               items:
 *                 $ref: '#/components/schemas/Grocery'
 */
-router.get('/search/:search', authJwt,GroceryController.searchGrocery);
+router.get('/search/:search', GroceryController.searchGrocery);
 
 /**
 * @swagger
@@ -156,7 +156,7 @@ router.get('/search/:search', authJwt,GroceryController.searchGrocery);
 *             schema:
 *               $ref: '#/components/schemas/Grocery'
 */
-router.post('/', authJwt,GroceryController.addGrocery);
+router.post('/', authJwt, GroceryController.addGrocery);
 
 /**
 * @swagger

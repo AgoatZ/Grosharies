@@ -4,9 +4,9 @@ const TagController = require('./tag.controllers');
 const router = express.Router();
 const { authJwt } = require('../common/middlewares/passport');
 
-router.get('/', authJwt, TagController.getTags);
+router.get('/', TagController.getTags);
 
-router.get('/:id', authJwt, TagController.getTagById);
+router.get('/:id', TagController.getTagById);
 
 router.post('/', authJwt, TagController.addTag);
 
