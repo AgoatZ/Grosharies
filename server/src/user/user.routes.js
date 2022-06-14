@@ -143,7 +143,7 @@ router.post('/', UserController.addUser);
 *             schema:
 *               $ref: '#/components/schemas/User'
 */
-router.post('/updateImage/:id', authJwt, uploadImage, UserController.updateUser);
+router.post('/updateImage/current', authJwt, uploadImage, UserController.updateUser);
 
 /**
 * @swagger
@@ -195,7 +195,7 @@ router.delete('/:id', authJwt, UserController.deleteUser);
 *             schema:
 *               $ref: '#/components/schemas/User'
 */
-router.put('/:id', authJwt, UserController.updateUser);
+router.put('/current', authJwt, UserController.updateUser);
 
 /**
 * @swagger

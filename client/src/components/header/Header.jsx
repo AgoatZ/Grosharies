@@ -167,7 +167,7 @@ const Header = () => {
         {/* User Options Menu */}
         <Tooltip title={userData.firstName + ' ' + userData.lastName}>
           <IconButton onClick={handleOpenUserMenu}>
-            <UserImageThumbnail src={userData.profileImage} />
+            <UserImageThumbnail src={"data:image/jpg;base64, " + userData.profileImage} />
           </IconButton>
         </Tooltip>
         <Menu

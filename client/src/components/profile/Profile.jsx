@@ -10,37 +10,61 @@ import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import CheckIcon from "@mui/icons-material/Check";
+import Icon from '@mui/material/Icon';
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
 
+
+const MySwal = withReactContent(Swal);
 const Profile = () => {
-  const { userData } = useContext(AppContext);
+  const { userData, setUserData } = useContext(AppContext);
   const [edit, setEdit] = useState(false);
   const [editedUser, setEditedUser] = useState({});
   const [EditedUserImage, setEditeduserImage] = useState();
+  const [passwordError, setPasswordError] = useState(false)
   let navigate = useNavigate();
 
   const EditUser = () => {
     console.log(JSON.stringify(editedUser));
+    const userEditedData = {}
+    if (passwordError)
+      return
+    for (const key of Object.keys(editedUser)) {
+      console.log(editedUser[key])
+      if (editedUser[key])
+        userEditedData[key] = editedUser[key]
+    }
+    console.log(userData)
+    if (!Object.keys(userEditedData).length) {
+      MySwal.fire({ title: "Nothing to update", icon: "info", timer: 1000 })
+      return
+    }
+    console.log("req sendx")
     axios
-      .put("/user/current", editedUser)
+      .put("api/users/current", userEditedData)
       .then((res) => {
-        /*if (EditedUserImage) {
+        if (EditedUserImage) {
           console.log('uploading image');
           const reader = new FileReader();
           reader.onload = function (evt) {
             const contents = evt.target.result;
             axios
-              .post("/posts/updateImage/" + res.data.post._id, contents, {
+              .post("api/users/updateImage/current", contents, {
                 headers: {
                   'Content-Type': 'image/*'
                 }
               })
               .then((res) => {
                 setEdit(false);
+                setUserData(res.data.newUser)
               });
           };
-          reader.readAsArrayBuffer(images);
-        }*/
+          reader.readAsArrayBuffer(EditedUserImage);
+
+          return
+        }
         setEdit(false);
+        setUserData(res.newUser)
       })
       .catch((err) => { });
   };
@@ -82,17 +106,18 @@ const Profile = () => {
             onChange={(e) => { setEditeduserImage(e.target.files[0]); }}
           />
           <Tooltip title="Upload Files">
-            <AddBoxIcon
-              fill
+            <Icon
+              color="success"
+
               sx={{
-                color: "green", visibility: edit ? "visible" : "hidden", position: "absolute", right: "37%", top: "45%",
+                color: "green", visibility: edit ? "visible" : "hidden", position: "absolute", right: "35%", top: "38%",
                 width: "30px", height: "30px", margin: "0", ":hover": { cursor: "pointer", color: "gray" },
               }}
-            ></AddBoxIcon>
+            >add_circle</Icon>
           </Tooltip>
         </label>
 
-        <UserImage src={userData.profileImage} width="200px" height="200px" />
+        <UserImage src={"data:image/jpg;base64, " + userData.profileImage} width="200px" height="200px" />
 
         <Typography variant="h4" align="center" sx={{ visibility: !edit ? "visible" : "hidden", marginTop: "2%", fontWeight: "bold", }}>
           {userData.firstName} {userData.lastName}{" "}
@@ -103,7 +128,23 @@ const Profile = () => {
           <>
             <Input defaultValue={userData.firstName} onChange={(e) => { setEditedUser({ ...editedUser, firstName: e.target.value }); }} />
             <Input defaultValue={userData.lastName} onChange={(e) => { setEditedUser({ ...editedUser, lastName: e.target.value }); }} />
-            <Input placeholder="password" onChange={(e) => { setEditedUser({ ...editedUser, password: e.target.value }); }} />
+            <Input type="password" placeholder="password" onBlur={(e) => {
+              let isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
+                e.target.value
+              );
+              console.log(e.target.value)
+              if (!e.target.value) {
+                setPasswordError(false)
+                return
+              }
+              if (!isPasswordValid) {
+                setPasswordError(true);
+              } else {
+                setPasswordError(false);
+                setEditedUser({ ...editedUser, password: e.target.value });
+              }
+            }} />
+            <label style={{ visibility: !passwordError ? "hidden" : "visible", color: "red", margin: "20px", width: "70%" }}>Password must be at least 8 characters and contain characters and numbers</label>
           </>
         ) : null}
 
@@ -119,13 +160,13 @@ const Profile = () => {
       {/* Buttons */}
       <Box sx={{ marginTop: "20%", display: "flex", flexDirection: "row", width: "100%" }}>
         <Box sx={{ display: "flex", flexDirection: "column", width: "50%" }}>
-          <Button variant="contained" onClick={() => { navigate("/my-posts"); }} sx={{ margin: "10%", }}>My Posts</Button>
+          <Button variant="contained" onClick={() => { navigate("/my-posts"); }} sx={{ margin: "10%" }}>My Posts</Button>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", width: "50%" }}>
-          <Button variant="contained" onClick={() => { navigate("/my-orders"); }} sx={{ margin: "10%", }}>My Orders</Button>
+          <Button variant="contained" onClick={() => { navigate("/my-orders"); }} sx={{ margin: "10%" }}>My Orders</Button>
         </Box>
       </Box>
-    </Stack>
+    </Stack >
   );
 };
 
