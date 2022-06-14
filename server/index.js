@@ -114,31 +114,6 @@ const io = socketIO(http, {
   }
 });
 
-let gSocket;
-/*
-io.use((socket, next) => {
-  const sessionID = socket.handshake.auth.sessionID;
-  if (sessionID) {
-      // find existing session
-      const session = sessionStore.findOne(sessionID);
-      if (session) {
-          socket.sessionID = sessionID;
-          socket.userID = session.userID;
-          socket.username = session.username;
-          return next();
-      }
-  }
-  const username = socket.handshake.auth.username;
-  if (!username) {
-      return next(new Error("invalid username"));
-  }
-  // create new session
-  socket.sessionID = randomUUID();
-  socket.userID = randomUUID();
-  socket.username = username;
-  next();
-});
-*/
 const emitEvent = function (event, room, data) {
   console.log("emitting event", event, "to room", room, "with data", data);
   io.to(String(room)).emit(event, data);
@@ -157,9 +132,6 @@ io.on("connection", socket => {
   const session = socket.request.session;
 
   socket.join(String(userID));
-
-  //gSocket = socket;
-
   //setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
 
   socket.on("disconnect", () => console.log("socket disconnected"));
