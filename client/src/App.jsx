@@ -73,7 +73,7 @@ const App = () => {
 
   //All Routes Componentes are nested under Layout->Outlet
   return (
-    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser, }}>
+    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser, setUserData, }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
