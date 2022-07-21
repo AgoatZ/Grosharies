@@ -61,11 +61,13 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
                                     pendingPost.status.finalStatus === "collected" ? <Typography variant="overline">Collected</Typography> :
                                         null : null}
 
-                {timeLeft ?
-                    <Typography sx={{ color: "red" }}>
-                        <AccessTimeIcon fontSize="small" sx={{ verticalAlign: "text-top", mr: "0.5%" }} />{timeLeft}</Typography> :
-                    <Typography variant="overline">
-                        <AccessTimeIcon fontSize="small" sx={{ verticalAlign: "text-top", mr: "0.5%" }} /> Expired</Typography>}
+                {!isFinished && !isCancelled ?
+                    timeLeft ?
+                        <Typography sx={{ color: "red" }}>
+                            <AccessTimeIcon fontSize="small" sx={{ verticalAlign: "text-top", mr: "0.5%" }} />{timeLeft}</Typography> :
+                        <Typography variant="overline">
+                            <AccessTimeIcon fontSize="small" sx={{ verticalAlign: "text-top", mr: "0.5%" }} /> Expired</Typography> :
+                    null}
             </>
         )
     }

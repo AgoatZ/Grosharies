@@ -11,7 +11,6 @@ const MyPosts = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => { loadMyPosts(); }, []);
 
-  //TODO: fix open orders wont render and collector's name undefined
   const loadMyPosts = () => {
     //Get user's open posts
     axios.get("posts/openPosts/current").then((res) => {
