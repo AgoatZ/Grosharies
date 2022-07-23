@@ -458,14 +458,14 @@ const decide = async (pendingId) => {
         console.log('decide for address:', pending.address);
         const publisherStatement = pending.status.publisherStatement;
         const collectorStatement = pending.status.collectorStatement;
-        if (publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
+        if (pending.pendingTime.until < Date.now() && publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
             console.log("WILL CALL NOW CANCEL PENDING POST");
             let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
         }
         else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
             let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
         }
-        else {
+        else if (pending.pendingTime.until < Date.now()) {
             let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
         }
     }
