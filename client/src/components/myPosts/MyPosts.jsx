@@ -46,7 +46,11 @@ const MyPosts = () => {
       repliers.forEach(replier => {
         //Get pending post object
         axios.get("pendings/" + replier.reply)
-          .then((res) => { pendingPosts.push(res.data.post); setPendings(pendingPosts); })
+          .then((res) => { 
+            if (res.data.post.status.finalStatus === "pending")
+              pendingPosts.push(res.data.post); 
+            setPendings(pendingPosts); 
+          })
           .catch(e => console.log("Error getting a pending post"));
       })
     }, []);

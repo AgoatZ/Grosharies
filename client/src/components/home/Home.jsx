@@ -13,7 +13,7 @@ const tabs = ["Near By", "Recently Added"];
 
 const Home = () => {
   const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
-  const [activeTabNumber, setActiveTabNumber] = useState(0);
+  const [activeTabNumber, setActiveTabNumber] = useState(1);
   const [nearbyPosts, setNearbyPosts] = useState([]);
   const [recentPosts, setRecentPosts] = useState([]);
   const [showAsMap, setShowAsMap] = useState(true);
