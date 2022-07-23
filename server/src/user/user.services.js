@@ -113,25 +113,15 @@ const deleteUser = async function (userId) {
 
 const updateUser = async function (id, userDetails, currentUser) {
     try {
-        let userId;
-        if (currentUser) {
-            userId = currentUser._id;
-        } else {
-            userId = id;
-        }
-        let exists = false;
-        if (userDetails.emailAddress) {
-            exists = await UserRepository.getUserByEmail(userDetails.emailAddress);
-        }
-        if (exists && exists._id !== userId) {
-            throw Error('This email address belongs to another user');
-        } else {
+        const exists = await UserRepository.getUserById(userDetails.emailAddress);
+        if (exists && exists._id !== userId) throw Error('This email address belongs to another user');
+        else {
             if (userDetails.image) {
                 userDetails.profileImage = userDetails.image;
                 delete userDetails['image'];
             }
-            const oldUser = await UserRepository.updateUser(userId, userDetails);
-            return oldUser;
+            const newUser = await UserRepository.updateUser(userId, userDetails);
+            return newUser;
         }
     } catch (e) {
         console.log('service error: ' + e.message);
