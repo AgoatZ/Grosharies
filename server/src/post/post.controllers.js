@@ -188,6 +188,11 @@ const pendPost = async function (req, res, next) {
             title: "A new order by " + collector.firstName + " " + collector.lastName,
             postId: pendingPost.sourcePost
         };
+        const collectorNotification = {
+            text: pendingPost.headline,
+            title: "Your order was created",
+            postId: pendingPost.sourcePost
+        };
         const publisherNote = {
             pendingPostId: pendingPost._id,
             sourcePostId: updatedPost._id,
@@ -195,9 +200,11 @@ const pendPost = async function (req, res, next) {
             publisherId: updatedPost.userId
         };
         emitEvent('Pending Created', updatedPost.userId, publisherNote);
-        emitEvent("New Notification", updatedPost.userId, [publisherNote, newNotification]);
+        emitEvent("New Notification", updatedPost.userId, newNotification);
+        emitEvent("New Notification", collector._id, collectorNotification);
 
         await UserService.addToNotifications(updatedPost.userId, newNotification);
+        await UserService.addToNotifications(collector._id, collectorNotification);
         return res.status(200).json({ post: updatedPost, pending: pendingPost, message: "Succesfully Post updated and a new PendingPost added" });
     } catch (e) {
         console.log('controller error from pendPost: ' + e.message);
@@ -240,7 +247,7 @@ const updatePost = async function (req, res, next) {
             postId: oldPost._id
         };
         const publisherNote = { postId: oldPost._id };
-        emitEvent('Post Edited', oldPost.userId, publisherNote);
+        broadcastEvent('Post Edited', publisherNote);
         for (i in oldPost.repliers) {
             emitEvent('New Notification', oldPost.repliers[i].user, newNotification);
             await UserService.addToNotifications(oldPost.repliers[i].user, newNotification);
