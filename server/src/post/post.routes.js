@@ -240,7 +240,7 @@ router.get("/:id", PostController.getPostById);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.get("/user/:id", PostController.getPostsByUser);
+router.get("/user/:id", authJwt, PostController.getPostsByUser);
 
 /**
 * @swagger
@@ -290,7 +290,7 @@ router.get("/openPosts/:id", authJwt, PostController.getPublisherOpenPosts);
 *               items:
 *                 type: string
 */
-router.get("/images/:id", authJwt, PostController.getPostImages);
+router.get("/images/:id", PostController.getPostImages);
 
 /**
 * @swagger
@@ -433,7 +433,7 @@ router.get("/suggested/:userid", authJwt, PostController.getSuggestedPosts);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.post("/nearby", PostController.getNearbyPosts);
+router.post("/nearby", authJwt, PostController.getNearbyPosts);
 
 /**
 * @swagger
