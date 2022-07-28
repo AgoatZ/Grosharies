@@ -1,40 +1,25 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import { SearchOutlined } from "@material-ui/icons";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Link from "@mui/material/Link";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "../../utils/axios";
 import serverRoutes from "../../utils/server-routes";
-import validator from "validator";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import CommentIcon from "@mui/icons-material/Comment";
 import CardMedia from "@mui/material/CardMedia";
 import Input from "@mui/material/Input";
-import GoogleMapReact from "google-map-react";
 import Geocode from "react-geocode";
 
 const alertStyle = {
@@ -289,7 +274,7 @@ export default function AddPost() {
                   }
 
                   try {
-                    Geocode.setApiKey('AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc');
+                    Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
                     const response = await Geocode.fromAddress(e.target.value);
                     if (!response.results[0].geometry.location) {
                       setIsAddressError(

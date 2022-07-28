@@ -22,7 +22,7 @@ a.forEach(element => {
 });
 
 console.log(folderPath);
-const imgsFolderPath = path.join(folderPath, 'common', 'imgs');
+const imgsFolderPath = path.join(folderPath, 'src/common', 'imgs');
 const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;
 const getRandomInt = (max) => {
@@ -183,9 +183,9 @@ const init = async () => {
 
         for (let i = 0; i < 30; i++) {
             let user = new User({
-                "firstName": firstNames[i%12],
-                "lastName": lastNames[(i%12 + i)%12],
-                "emailAddress": lastNames[(i%12 + i)%12] + firstNames[i%12] + "@yahoo.com",
+                "firstName": firstNames[i % 12],
+                "lastName": lastNames[(i % 12 + i) % 12],
+                "emailAddress": lastNames[(i % 12 + i) % 12] + firstNames[i % 12] + "@yahoo.com",
                 "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
                 "phone": "+97252373555" + i,
                 "source": "grosharies"
@@ -193,9 +193,9 @@ const init = async () => {
             await user.save();
 
             let useress = new User({
-                "firstName": firstNames[(i%12 + i + 1)%12],
-                "lastName": lastNames[i%12],
-                "emailAddress": firstNames[(i%12 + i + 1)%12] + lastNames[i%12] + "@web.de",
+                "firstName": firstNames[(i % 12 + i + 1) % 12],
+                "lastName": lastNames[i % 12],
+                "emailAddress": firstNames[(i % 12 + i + 1) % 12] + lastNames[i % 12] + "@web.de",
                 "password": "$2b$10$Pw7tfDk.69gJxZwCdu2/POZ6fG8eDjVEikJxA5evaLUk9zOgtoNky",
                 "phone": "+97252373666" + i,
                 "source": "grosharies"
@@ -357,7 +357,7 @@ const init = async () => {
                     reply: pending._id
                 });
                 await post1.updateOne({ repliers: repliers });
-                } else {
+            } else {
                 await useress.updateOne({ collectedHistory: pending._id });
                 const repliers = post1.repliers.concat({
                     user: useress._id,
@@ -366,7 +366,7 @@ const init = async () => {
                 await post1.updateOne({ repliers: repliers });
             }
             let event = new Event({
-                "headline": "An Event of " + firstNames[i%12],
+                "headline": "An Event of " + firstNames[i % 12],
                 "userId": user._id,
                 "address": '' + i + " Nowhere Boulevard",
                 "happeningDates": {
