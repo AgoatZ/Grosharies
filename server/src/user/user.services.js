@@ -3,6 +3,7 @@ const { status } = require('express/lib/response');
 const UserRepository = require('./user.repository');
 const PendingRepository = require('../pending/pending.repository');
 const AuthService = require('../auth/auth.services');
+const bcrypt = require('bcrypt');
 
 const getUsers = async function (query, page, limit) {
     try {
@@ -111,18 +112,23 @@ const deleteUser = async function (userId) {
     }
 };
 
-const updateUser = async function (id, userDetails, currentUser) {
+const updateUser = async function (id, userDetails) {
     try {
-        const exists = await UserRepository.getUserById(userDetails.emailAddress);
-        if (exists && exists._id !== userId) throw Error('This email address belongs to another user');
-        else {
-            if (userDetails.image) {
-                userDetails.profileImage = userDetails.image;
-                delete userDetails['image'];
-            }
-            const newUser = await UserRepository.updateUser(userId, userDetails);
-            return newUser;
+        //const exists = await UserRepository.getUserById(id);
+        //if (exists && exists._id !== id) throw Error('This id belongs to another user');
+        //else {
+        if (userDetails.image) {
+            userDetails.profileImage = userDetails.image;
+            delete userDetails['image'];
         }
+        if (userDetails.password) {
+            const salt = await bcrypt.genSalt(10);
+            const hashPwd = await bcrypt.hash(userDetails.password, salt);
+            userDetails.password = hashPwd;
+        }
+        const newUser = await UserRepository.updateUser(id, userDetails);
+        return newUser;
+        //}
     } catch (e) {
         console.log('service error: ' + e.message);
 
