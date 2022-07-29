@@ -211,14 +211,16 @@ const addPost = async (postDetails, user) => {
             description: postDetails.description,  
         };
         for (i in postDetails.groceriesToSend) {
-            let grocery = await GroceryRepository.getGroceryById(postDetails.groceriesToSend[i].id);
-            let amount = postDetails.groceriesToSend[i].amount;
-            delete grocery['_id'];
-            grocery.amount = amount;
-            newPost.content.push({
-                original: grocery,
-                left: amount
-            });
+            if (postDetails.groceriesToSend[i]){
+                let grocery = await GroceryRepository.getGroceryById(postDetails.groceriesToSend[i].id);
+                let amount = postDetails.groceriesToSend[i].amount;
+                delete grocery['_id'];
+                grocery.amount = amount;
+                newPost.content.push({
+                    original: grocery,
+                    left: amount
+                });
+            }
         }
         
         let coordinates = await getCoordinates(postDetails.address);
