@@ -161,7 +161,7 @@ export default function AddPost() {
       }
       return;
     }
-
+    // eslint-disable-next-line
     const groceries = checked.map((grocery) => {
       if (grocery.isChecked) {
         return { id: grocery.grocery._id, amount: grocery.amount };

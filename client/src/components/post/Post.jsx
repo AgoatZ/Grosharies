@@ -22,6 +22,7 @@ const Post = () => {
   const [isDeleted, setIsDeleted] = useState(false);
   const { handleSubmit, control } = useForm();
   const mobileScreen = useMediaQuery('(max-width:480px)');
+  // eslint-disable-next-line
   useEffect(() => loadPost(), []);
 
   const loadPost = () => {

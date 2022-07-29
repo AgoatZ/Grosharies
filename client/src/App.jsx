@@ -35,6 +35,7 @@ const App = () => {
   useEffect(() => {
     axios.get("auth/isLoggedIn").then(() => { userSetup(); })
       .catch(e => { console.log("Error getting isLoggedIn"); setLoggedIn(false); });
+    // eslint-disable-next-line
   }, []);
 
   //User's info from API        

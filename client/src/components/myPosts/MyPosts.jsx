@@ -50,6 +50,7 @@ const MyPosts = () => {
           })
           .catch(e => console.log("Error getting a pending post"));
       })
+      // eslint-disable-next-line
     }, []);
 
     return (

@@ -26,6 +26,7 @@ const Posts = ({ data, showMap }) => {
         );
       });
     }
+    // eslint-disable-next-line
   }, []);
 
 
