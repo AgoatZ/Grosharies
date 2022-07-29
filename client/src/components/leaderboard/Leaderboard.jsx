@@ -1,4 +1,4 @@
-import { styled, Container, Typography, Stack, Table, TableBody, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { styled, Typography, Stack, Table, TableBody, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import { useEffect, useState } from "react";
 import axios from "../../utils/axios";
@@ -39,7 +39,7 @@ const Leaderboard = () => {
 
       <Stack direction="row" spacing={5} alignItems="center" justifyItems="center" flexWrap="wrap" sx={{ mb: 3 }}>
         <Typography variant="h3" >Our Top Savers</Typography>
-        <img src="/assets/winner.png" width="150px" height="150px" />
+        <img src="/assets/winner.png" alt="winner" width="150px" height="150px" />
       </Stack>
 
       <TableContainer component={Paper}>

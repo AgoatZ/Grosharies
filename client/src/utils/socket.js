@@ -9,10 +9,10 @@ export function createNotificationSocket(userId = sessionStorage.getItem('userId
     const dataToServer = { userId: userId }
 
     let socket;
-    if (process.env.NODE_ENV == "development") {
+    if (process.env.NODE_ENV === "development") {
       //Different Ports in Development
       socket = io('ws://localhost:5000', { autoConnect: false, auth: dataToServer });
-    } else if (process.env.NODE_ENV == "production") {
+    } else if (process.env.NODE_ENV === "production") {
       //Same Origin in Production
       socket = io({ autoConnect: false, auth: dataToServer });
     }
@@ -39,10 +39,10 @@ export function createSocket(userId = sessionStorage.getItem('userId')) {
     const dataToServer = { userId: userId }
 
     let socket;
-    if (process.env.NODE_ENV == "development") {
+    if (process.env.NODE_ENV === "development") {
       //Different Ports in Development
       socket = io('ws://localhost:5000', { autoConnect: false, auth: dataToServer });
-    } else if (process.env.NODE_ENV == "production") {
+    } else if (process.env.NODE_ENV === "production") {
       //Same Origin in Production
       socket = io({ autoConnect: false, auth: dataToServer });
     }
@@ -56,7 +56,7 @@ export function createSocket(userId = sessionStorage.getItem('userId')) {
     //data: { postId: "" }
     socket.on('Post Edited', (data) => {
       console.log("Socket: Post Edited", data);
-      if (window.location.pathname == "/my-orders" || window.location.pathname == "/post/" + data.postId)
+      if (window.location.pathname === "/my-orders" || window.location.pathname === "/post/" + data.postId)
         window.location.reload();
     });
 
@@ -65,7 +65,7 @@ export function createSocket(userId = sessionStorage.getItem('userId')) {
     //data: { postId: "" }
     socket.on('Post Deleted', (data) => {
       console.log("Socket: Post Deleted", data);
-      if (window.location.pathname == "/my-orders" || window.location.pathname == "/post/" + data.postId)
+      if (window.location.pathname === "/my-orders" || window.location.pathname === "/post/" + data.postId)
         window.location.reload();
     });
 
@@ -73,7 +73,7 @@ export function createSocket(userId = sessionStorage.getItem('userId')) {
     //data: { pendingPostId:"", sourcePostId: "", collectorId: "", publisherId: "" }
     socket.on('Pending Created', (data) => {
       console.log("Socket: Pending Created", data);
-      if (window.location.pathname == "/my-posts")
+      if (window.location.pathname === "/my-posts")
         window.location.reload();
     });
 
@@ -81,7 +81,7 @@ export function createSocket(userId = sessionStorage.getItem('userId')) {
     //data: { pendingPostId:"", sourcePostId: "", collectorId: "", publisherId: "" }
     socket.on('Pending Edited', (data) => {
       console.log("Socket: Pending Edited", data);
-      if (window.location.pathname == "/my-posts")
+      if (window.location.pathname === "/my-posts")
         window.location.reload();
     });
 
@@ -91,12 +91,12 @@ export function createSocket(userId = sessionStorage.getItem('userId')) {
     socket.on('Pending Status Changed', (data) => {
       console.log("Socket: Pending Status Changed", data);
 
-      if (userId != data.by && userId == data.collectorId &&
-        (window.location.pathname == "/my-orders" || window.location.pathname == "/post/" + data.postId))
+      if (userId !== data.by && userId === data.collectorId &&
+        (window.location.pathname === "/my-orders" || window.location.pathname === "/post/" + data.postId))
         window.location.reload();
 
-      if (userId != data.by && userId == data.publisherId &&
-        (window.location.pathname == "/my-posts"))
+      if (userId !== data.by && userId === data.publisherId &&
+        (window.location.pathname === "/my-posts"))
         window.location.reload();
     });
 
@@ -106,12 +106,12 @@ export function createSocket(userId = sessionStorage.getItem('userId')) {
     socket.on('Pending Expired', (data) => {
       console.log("Socket: Pending Expired", data);
 
-      if (userId != data.by && userId == data.collectorId &&
-        (window.location.pathname == "/my-orders" || window.location.pathname == "/post/" + data.postId))
+      if (userId !== data.by && userId === data.collectorId &&
+        (window.location.pathname === "/my-orders" || window.location.pathname === "/post/" + data.postId))
         window.location.reload();
 
-      if (userId != data.by && userId == data.publisherId &&
-        (window.location.pathname == "/my-posts"))
+      if (userId !== data.by && userId === data.publisherId &&
+        (window.location.pathname === "/my-posts"))
         window.location.reload();
     });
 

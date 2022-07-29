@@ -31,8 +31,8 @@ const Profile = () => {
   let navigate = useNavigate();
 
   useEffect(() => {
-    console.log(userData)
-    setTempImage(userData.profileImage);
+    if (userData.profileImage)
+      setTempImage(userData.profileImage);
   }, [userData]);
 
   const EditUser = () => {

@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import ProductsList from "../myOrders/ProductsList";
 import { useNavigate } from "react-router-dom";
-import { Typography, Box, CardMedia, Divider, Button, ButtonGroup, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
+import { Typography, Box, Divider, Button, ButtonGroup, Stack } from "@mui/material";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 //Icons
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -20,18 +19,21 @@ const OrderCard = ({ pendingPost, role = "collector", finished = false, cancelle
     const viewdByCollector = (role === "collector");
     const viewdByPublisher = (role === "publisher");
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(pendingPost));
+    // eslint-disable-next-line
     const [isFinished, setIsFinished] = useState(finished);
+    // eslint-disable-next-line
     const [isCancelled, setIsCancelled] = useState(cancelled);
     const isWaiting = timeLeft && pendingPost.status.finalStatus === "pending" && pendingPost.status.collectorStatement === "collected" && pendingPost.status.publisherStatement === "pending";
 
     const [collectorName, setCollectorName] = useState("");
 
     useEffect(() => {
-        const interval = setInterval(() => { setTimeLeft(calculateTimeLeft(pendingPost)); }, 60000);
+        setInterval(() => { setTimeLeft(calculateTimeLeft(pendingPost)); }, 60000);
         //For publisher view
         axios.get("users/profile/" + pendingPost.collectorId)
             .then((res) => setCollectorName(res.data.user.firstName + ' ' + res.data.user.lastName))
             .catch(e => console.log("Error getting collector profile"));
+        // eslint-disable-next-line
     }, []);
 
     const Status = () => {
@@ -143,7 +145,6 @@ const calculateTimeLeft = (pendingPost) => {
     const days = parseInt((untilDate - today) / (1000 * 60 * 60 * 24));
     const hours = parseInt((Math.abs(untilDate - today) / (1000 * 60 * 60)) % 24);
     const minutes = parseInt((Math.abs(untilDate.getTime() - today.getTime()) / (1000 * 60)) % 60);
-    const seconds = parseInt((Math.abs(untilDate.getTime() - today.getTime()) / 1000) % 60);
 
     if (today.getTime() < untilDate.getTime()) {
         if (days > 0)

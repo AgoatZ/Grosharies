@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { AppContext } from "../../App";
-import { Stack, Grid, Box, Tabs, Tab, Typography, Divider, Switch, Fab, styled, Drawer, useMediaQuery, Pagination, Paper, Skeleton } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Stack, Box, Tabs, Tab, Typography, Switch, Fab, styled, Drawer, useMediaQuery } from "@mui/material";
 import axios from "../../utils/axios";
 import Posts from "../posts/Posts";
 import SuggestedPosts from "./SuggestedPosts";
@@ -25,15 +24,12 @@ const Home = () => {
   const loadPosts = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        //console.log("Latitude is :", position.coords.latitude);
-        //console.log("Longitude is :", position.coords.longitude);
-        //TODO: add route to exept the user location to server
         axios
-          .post("/posts/nearby/" + "?page=1&limit=10", { coordinates: { lat: position.coords.latitude, lng: position.coords.longitude, }, })
+          .post("/posts/nearby/?page=1&limit=10", { coordinates: { lat: position.coords.latitude, lng: position.coords.longitude, }, })
           .then((res) => { setNearbyPosts(res.data.posts); });
       });
     }
-    axios.get("/posts/" + "?page=1&limit=10").then((res) => {
+    axios.get("/posts/?page=1&limit=10").then((res) => {
       res.data.posts.forEach((post) => {/*console.log("address: ", post.address, " coordinates: ", post.addressCoordinates);*/ });
       setRecentPosts(res.data.posts);
     });
@@ -42,8 +38,8 @@ const Home = () => {
   const Logo = () => {
     return (
       mobileScreen ?
-        (<img src={"assets/logo.svg"} height="150px" width="150px" />) :
-        (<img src={"assets/logo.svg"} height="300px" width="300px" />)
+        (<img src={"assets/logo.svg"} alt="" height="150px" width="150px" />) :
+        (<img src={"assets/logo.svg"} alt="" height="300px" width="300px" />)
     );
   };
 

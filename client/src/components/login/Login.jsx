@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container } from "@mui/material";
+import { Avatar, Button, TextField, Link, Grid, Box, Typography, Container } from "@mui/material";
 import VerifiedUserOutlined from "@mui/icons-material/VerifiedUserRounded";
 import validator from "validator";
 import axios from "../../utils/axios";

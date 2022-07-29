@@ -39,9 +39,9 @@ export default function AddPost() {
   const [allGroceries, setAllGroceries] = React.useState([]);
   const [groceries, setGroceries] = React.useState([]);
   const [checked, setChecked] = React.useState([]);
-  const [headline, setHeadline] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [description, setDescription] = React.useState("");
+  const [setHeadline] = React.useState("");
+  const [setAddress] = React.useState("");
+  const [setDescription] = React.useState("");
   const [fromDate, setFromDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
   const [images, setImages] = React.useState();
@@ -67,7 +67,7 @@ export default function AddPost() {
       return i.grocery === value;
     });
     checked[currentIndex].amount =
-      e.target.value == "" ? 0 : parseInt(e.target.value);
+      e.target.value === "" ? 0 : parseInt(e.target.value);
     console.log(checked);
   };
 
@@ -105,7 +105,7 @@ export default function AddPost() {
       });
     });
 
-    if (checkedGroceries.length == 0 && searchValue === "") {
+    if (checkedGroceries.length === 0 && searchValue === "") {
       setGroceries([]);
       return;
     } else if (checkedGroceries.length > 0 && searchValue === "") {
@@ -126,7 +126,7 @@ export default function AddPost() {
     const until = endDate;
     const repeated = data.get("repeat");
     event.preventDefault();
-    if (headline == "") {
+    if (headline === "") {
       setIsHeadlineError(
         "headline is empty"
       );
@@ -138,13 +138,13 @@ export default function AddPost() {
       );
       return;
     }
-    if (description == "") {
+    if (description === "") {
       setIsDescriptionError(
         "description is empty"
       );
       return
     }
-    if (address == "") {
+    if (address === "") {
       setIsAddressError(
         "address is empty"
       );
@@ -153,7 +153,7 @@ export default function AddPost() {
     if (
       isHeadlineError !== "" ||
       isDescriptionError !== "" ||
-      isAddressError != "" ||
+      isAddressError !== "" ||
       isFromDateError !== "" ||
       isEndDateError !== "" ||
       isQuantityError !== ""
@@ -169,7 +169,7 @@ export default function AddPost() {
         return { id: grocery.grocery._id, amount: grocery.amount };
       }
     });
-    const groceriesToSend = groceries.filter(grocery => grocery != null);
+    const groceriesToSend = groceries.filter(grocery => grocery !== null);
     axios
       .post(serverRoutes.AddPost, {
         headline,
@@ -435,7 +435,7 @@ export default function AddPost() {
                         checked={
                           checked.findIndex(
                             (i) =>
-                              i.grocery._id == value._id &&
+                              i.grocery._id === value._id &&
                               i.isChecked === true
                           ) !== -1
                         }

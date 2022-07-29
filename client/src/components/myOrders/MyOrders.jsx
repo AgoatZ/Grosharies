@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import OrderCard from "../myOrders/OrderCard";
 import ProductsList from "../myOrders/ProductsList";
-import { Typography, Box, CardMedia, Divider, Button, ButtonGroup, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
+import { Typography, Divider, Stack, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 //Icons
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography, Box, Button, Slider, CardMedia, Stack, Paper, useMediaQuery, Badge, Container, Divider } from "@mui/material";
+import { Typography, Box, Button, Slider, CardMedia, Stack, Paper, useMediaQuery, Badge, Divider } from "@mui/material";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "../../utils/axios";
@@ -38,7 +38,7 @@ const Post = () => {
       //TODO: Add to API getPendingByPostAndByCollector ?
       //Get user's active order for this post and add it to main post object if exists
       axios.get("pendings/collector/current").then((res) => {
-        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
+        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost === post._id);
         const validOrder = userPendingPost && userPendingPost.status.finalStatus === "pending";
 
         if (validOrder) {
@@ -71,7 +71,7 @@ const Post = () => {
       post.content.map((grocery) => (
         <Box key={grocery._id} sx={{ width: "fit-content", margin: "1%" }}>
           <CardMedia image={"data:image/jpg;base64, " + grocery.original.images} component="img"
-            sx={{ padding: 1, height: "150px", width: "auto", }} />
+            sx={{ padding: 1, height: "150px", width: "auto" }} />
 
           <Stack direction="column" >
             <Typography variant="h6" mb="2%" >
