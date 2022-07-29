@@ -29,7 +29,6 @@ const Leaderboard = () => {
 
   useEffect(() => {
     axios.get("/users/topusers/byrank/").then((res) => {
-      console.log(res.data.users);
       setLeaderboard(res.data.users);
     });
   }, []);

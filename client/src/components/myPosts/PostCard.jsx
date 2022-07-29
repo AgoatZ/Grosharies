@@ -28,7 +28,7 @@ const PostCard = ({ post }) => {
             if (result.isConfirmed) {
                 //Delete post in db
                 axios.delete('posts/' + post._id, { post })
-                    .then((res) => { console.log("Result deleting post id:" + post._id, res.data); window.location.reload(); })
+                    .then((res) => { window.location.reload(); })
                     .catch(e => console.log("Error deleting post id:" + post._id));
             }
         });

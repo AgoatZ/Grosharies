@@ -31,7 +31,6 @@ const register = async (user) => {
 }
 
 const login = async (email, password) => {
-    console.log('Email:', email, 'Password:', password);
     if (email == null || password == null) {
         throw Error('missing email or password');
     }
@@ -42,8 +41,6 @@ const login = async (email, password) => {
         }
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
-            console.log(password);
-            console.log(user.password);
             throw Error('wrong email or password');
         }
         const accessToken = await jwtSign(user._id, user.userType);

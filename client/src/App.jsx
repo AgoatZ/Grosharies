@@ -41,7 +41,6 @@ const App = () => {
   const userSetup = () => {
     axios.get('/users/profile/current').then(res => {
       let userData = res.data.user;
-      console.log("user data ", JSON.stringify(userData))
       setLoggedIn(true);
       setUserData(userData);
       setUserNotifications(userData.notifications);

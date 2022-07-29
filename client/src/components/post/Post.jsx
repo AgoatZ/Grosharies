@@ -43,7 +43,6 @@ const Post = () => {
 
         if (validOrder) {
           post.userPendingPostId = userPendingPost._id;
-          console.log("User's open pending post for this post", userPendingPost);
           //Set the user's order amount for each grocery item
           userPendingPost.content.forEach((orderGrocery) => (post.content.find((grocery) => grocery.original.name === orderGrocery.name).currentOrder = orderGrocery.amount));
 
@@ -54,9 +53,6 @@ const Post = () => {
         }
       }).catch(e => { console.log("Error getting user's pending posts"); setPost(post); });
 
-    }).then(() => {
-      console.log("Post", post);
-      console.log("Post Content", post.content)
     }).catch(e => console.log("Error getting post"));
   }
 
@@ -119,14 +115,9 @@ const Post = () => {
         grocery.original.amount = data[grocery.original.name];
         return grocery.original;
       })
-
-    console.log("Form Data", data);
-    console.log("Order Groceries", orderGroceries);
-
     if (!isEdit) {
       //Create Pending Post
       axios.post("posts/pend", { postId: sourcePostId, groceries: orderGroceries }).then((res) => {
-        console.log("Create Pending Post Result", res.data);
         MySwal.fire({
           title: "Successfully Applied Your Order!",
           text: "You can now go and take your GroSharies",
@@ -140,7 +131,6 @@ const Post = () => {
     } else {
       //Edit Pending Post
       axios.put("pendings/" + post.userPendingPostId, { content: orderGroceries }).then((res) => {
-        console.log(res.data);
         MySwal.fire({
           title: "Successfully Edited Your Order!",
           text: "You can now go and take your GroSharies",

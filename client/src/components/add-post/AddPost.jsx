@@ -59,7 +59,6 @@ export default function AddPost() {
     }
 
     setChecked(newChecked);
-    console.log(checked);
   };
 
   const handleToggleAmount = (e, value) => {
@@ -68,7 +67,6 @@ export default function AddPost() {
     });
     checked[currentIndex].amount =
       e.target.value === "" ? 0 : parseInt(e.target.value);
-    console.log(checked);
   };
 
   React.useEffect(() => {
@@ -179,14 +177,10 @@ export default function AddPost() {
         groceriesToSend,
       })
       .then((res) => {
-        console.log(res);
         if (images) {
-          console.log('uploading image');
           const reader = new FileReader();
           reader.onload = function (evt) {
-            const metadata = `name: ${images.name}, type: ${images.type}, size: ${images.size}, contents:`;
             const contents = evt.target.result;
-            console.log(metadata, contents);
             axios
               .post("/posts/updateImage/" + res.data.post._id, contents, {
                 headers: {
@@ -220,7 +214,6 @@ export default function AddPost() {
   };
 
   const onChangeImages = (event) => {
-    console.log('=============', event.target.files[0]);
     setImages(event.target.files[0]);
   };
 

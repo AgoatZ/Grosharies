@@ -171,12 +171,10 @@ const completeOrder = (pendingPostId, viewdByPublisher) => {
         if (result.isConfirmed) {
             if (viewdByPublisher) {
                 axios.post("pendings/finish/" + pendingPostId).then((res) => {
-                    console.log("Pending response", res.data);
                     window.location.reload();
                 });
             } else {
                 axios.post("pendings/collector/finish/" + pendingPostId).then((res) => {
-                    console.log("Pending response", res.data);
                     window.location.reload();
                 });
             }
@@ -196,7 +194,6 @@ const cancelOrder = (pendingPostId) => {
     }).then((result) => {
         if (result.isConfirmed) {
             axios.post("pendings/cancel/" + pendingPostId).then((res) => {
-                console.log(res.data);
                 window.location.reload();
             });
         }

@@ -15,7 +15,6 @@ getFederatedCredentials = async function (query, page, limit) {
 
 getFederatedCredentialById = async function (federatedCredentialId) {
     try {
-        //console.log("FederatedCredential Service federatedCredentialId:", federatedCredentialId);
         const federatedCredential = await Repository.getFederatedCredentialById(federatedCredentialId)
         return federatedCredential;
     } catch (e) {

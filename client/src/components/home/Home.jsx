@@ -30,7 +30,6 @@ const Home = () => {
       });
     }
     axios.get("/posts/?page=1&limit=10").then((res) => {
-      res.data.posts.forEach((post) => {/*console.log("address: ", post.address, " coordinates: ", post.addressCoordinates);*/ });
       setRecentPosts(res.data.posts);
     });
   };

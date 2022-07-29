@@ -27,7 +27,6 @@ export const createPostStatusSocket = (postId) => {
 
 export const onPostStatusChanged = (callback) => {
   socket.on('post canceled', (postId, userId) => {
-    console.log('Post Canceled');
     callback(postId, userId);
   })
 }
