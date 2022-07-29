@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../App";
 import axios from "axios";
@@ -14,6 +14,12 @@ import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 
 const MySwal = withReactContent(Swal);
+const toBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = error => reject(error);
+});
 
 const Profile = () => {
   const { userData, setUserData } = useContext(AppContext);
@@ -23,6 +29,11 @@ const Profile = () => {
   const [EditedUserImage, setEditeduserImage] = useState();
   const [passwordError, setPasswordError] = useState(false)
   let navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(userData)
+    setTempImage(userData.profileImage);
+  }, [userData]);
 
   const EditUser = () => {
     const userEditedData = {}
@@ -53,7 +64,6 @@ const Profile = () => {
               })
               .then((res) => {
                 setEdit(false);
-                setTempImage(res.data.newUser.profileImage);
                 setUserData(res.data.newUser);
                 MySwal.fire({ title: "Updated successfully!", icon: "success", timer: 1000, showConfirmButton: false });
               });
@@ -104,10 +114,10 @@ const Profile = () => {
           <input
             type="file"
             style={{ display: "none" }}
-            onChange={(e) => { 
+            onChange={async (e) => {
               setEditeduserImage(e.target.files[0]);
-              // TODO: convert into base64 in order to see the preview after change file
-              setTempImage(e.target.files[0]);
+              const base64Img = await toBase64(e.target.files[0])
+              setTempImage(base64Img.split(",")[1]);
             }}
           />
           <Tooltip title="Upload Files">

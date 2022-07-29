@@ -22,7 +22,7 @@ a.forEach(element => {
 });
 
 console.log(folderPath);
-const imgsFolderPath = path.join(folderPath, 'src/common', 'imgs');
+const imgsFolderPath = path.join(folderPath, 'common', 'imgs');
 const oneDay = 24 * 60 * 60 * 1000;
 const oneHour = oneDay / 24;
 const getRandomInt = (max) => {

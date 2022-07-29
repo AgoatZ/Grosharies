@@ -41,7 +41,7 @@ const App = () => {
   const userSetup = () => {
     axios.get('/users/profile/current').then(res => {
       let userData = res.data.user;
-      console.log("UserData", userData);
+      console.log("user data ", JSON.stringify(userData))
       setLoggedIn(true);
       setUserData(userData);
       setUserNotifications(userData.notifications);
@@ -62,7 +62,9 @@ const App = () => {
 
   const loginUser = () => {
     setLoggedIn(true);
-    axios.get('/users/profile/current').then(res => setUserData(res.data.user));
+    axios.get('/users/profile/current').then(res => {
+      setUserData(res.data.user)
+    });
     window.location.replace("/");
   };
 
