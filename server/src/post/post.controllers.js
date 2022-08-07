@@ -219,7 +219,7 @@ const deletePost = async function (req, res, next) {
         const oldPost = await PostService.deletePost(req.params.id);
         const newNotification = {
             text: oldPost.headline,
-            title: "A post of your order was deleted",
+            title: "A post of your order was deleted",                  //TOFIX: emitted and added too many times for one replier
             postId: oldPost._id
         };
         broadcastEvent('Post Deleted', { postId: oldPost._id });

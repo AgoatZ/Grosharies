@@ -229,12 +229,13 @@ const setCollectorStatement = async function (req, res, next) {
         };
         const noteToCollector = {
             text: oldPending.headline,
-            title: "Your order is completed, and waiting for the publisher's approval",
+            title: "Your order is completed, and waiting for the publisher's approval",     //TOFIX: Not emitted for some reason and not added to notifications array
             postId: oldPending.sourcePost
         };
         emitEvent('New Notification', publisher._id, noteToPublisher);
         emitEvent('New Notification', collector._id, noteToCollector);
         publisher.notifications.push(noteToPublisher);
+        collector.notifications.push(noteToCollector);
         await UserService.addToNotifications(publisher._id, noteToPublisher);
         await UserService.addToNotifications(collector._id, noteToCollector);
 
@@ -330,7 +331,7 @@ const cancelPending = async function (req, res, next) {
         }
         const orderComplete = {
             text: cancelledPost.headline,
-            title: "Your order is Cancelled",
+            title: "Your order is cancelled",
             postId: cancelledPost.sourcePost
         };
         emitEvent('New Notification', cancelledPost.collectorId, orderComplete);
