@@ -195,6 +195,7 @@ const pendPost = async function (req, res, next) {
             publisherId: updatedPost.userId
         };
         emitEvent('Pending Created', updatedPost.userId, publisherNote);
+        //TODO: add to collector also
         emitEvent("New Notification", updatedPost.userId, [publisherNote, newNotification]);
 
         await UserService.addToNotifications(updatedPost.userId, newNotification);

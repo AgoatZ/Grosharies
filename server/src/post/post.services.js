@@ -392,6 +392,7 @@ const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
         } else {
             options = { pagination: false }
         }
+        //TODO: remove user from here and up
         let userId;
         if (currentUser) {
             userId = currentUser._id;
