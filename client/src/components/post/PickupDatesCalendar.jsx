@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Typography, Box, Stack } from "@mui/material";
+import { useState } from "react";
+import { Typography, Box } from "@mui/material";
 import Calendar from "react-calendar";
 import "./Calendar.css";
 //import "react-calendar/dist/Calendar.css";
@@ -9,14 +9,9 @@ const PickupDatesCalendar = ({ post }) => {
 
     const findDate = (calDate, dates) => {
         return dates.find((date) => {
-            //console.log(date.from);
             const from = new Date(date.from).setHours(0, 0, 0, 0);
             const until = new Date(date.until).setHours(0, 0, 0, 0);
             const pickedDate = new Date(calDate).setHours(0, 0, 0, 0);
-            // console.log("picked up", pickedDate);
-            // console.log("from", from);
-            // console.log("to", until);
-            // console.log(date);
 
             return from <= pickedDate && pickedDate <= until;
         });
@@ -71,7 +66,6 @@ const PickupDatesCalendar = ({ post }) => {
                 tileDisabled={tileDisabled}
                 onClickDay={(value, event) => {
                     const date = findDate(value, post.pickUpDates);
-                    //console.log(new Date(date.from).getHours());
                     setCalendarDate({ ...date, current: value, isRepeated: true });
                 }}
             />

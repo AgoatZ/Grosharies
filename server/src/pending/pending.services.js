@@ -81,10 +81,8 @@ const getPendingsByPublisher = async function (publisherId, user, page, limit) {
         let userId;
         if (userId == 'current' && user) {
             userId = user._id;
-            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
             userId = publisherId;
-            //console.log("Service bypublisher from params userId:", userId)
         }
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByPublisher(userId, options);
         return { pendingPosts, finishedPendings, cancelledPendings };
@@ -110,10 +108,8 @@ const getPendingsByCollector = async function (collectorId, user, page, limit) {
         let userId;
         if (collectorId == 'current' && user) {
             userId = user._id;
-            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
             userId = collectorId;
-            //console.log("Service bypublisher from params userId:", userId)
         }
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingRepository.getPendingsByCollector(userId, options);
         return { pendingPosts, finishedPendings, cancelledPendings };
@@ -318,7 +314,6 @@ const updatePending = async function (pendingId, pendingDetails) {
                     updatedContent.push(grocery);
                 }
             }
-            //console.log('updatedContent: ', updatedContent);
             await PostRepository.updatePost(post._id, { content: updatedContent });
 
             const updatedPost = await PostRepository.getPostById(post._id);
@@ -376,14 +371,12 @@ const finishPending = async function (pendingPostId, user) {
             trafficGroceries.push(trafficGrocery);
         }
         await PendingRepository.updatePending(pendingPostId, { 'status.finalStatus': Status.COLLECTED });
-        console.log(rank);
         const publisher = await UserRepository.getUserById(pendingPost.publisherId);
         await UserRepository.updateUser(publisher._id, { rank: publisher.rank + rank });
         const collector = await UserRepository.getUserById(pendingPost.collectorId);
         await UserRepository.updateUser(collector._id, { rank: collector.rank + rank });
 
         const postCurrentStatus = await evaluatePostStatus(pendingPost.sourcePost);
-        console.log(postCurrentStatus);
         await PostRepository.updatePost(pendingPost.sourcePost, { status: postCurrentStatus });
         const finishedPending = await PendingRepository.getPendingById(pendingPostId);
 
@@ -409,7 +402,6 @@ const cancelPending = async function (pendingPostId, user) {
                 await PendingRepository.updatePending(pendingPostId, { 'status.publisherStatement': "cancelled" });
             }
         }
-        console.log("ENTERRED CANCEL PENDING");
         const originalPost = await PostRepository.getPostById(pendingPost.sourcePost);
         const content = originalPost.content;
         const updatedContent = [];
@@ -451,11 +443,8 @@ const cancelPending = async function (pendingPostId, user) {
 };
 
 const decide = async (pendingId) => {
-    console.log(pendingId);
-    console.log('decide for pendingId:', pendingId);
     const pending = await PendingRepository.getPendingById(pendingId);
     if (pending) {
-        console.log('decide for address:', pending.address);
         const publisherStatement = pending.status.publisherStatement;
         const collectorStatement = pending.status.collectorStatement;
         if (pending.pendingTime.until < Date.now() && publisherStatement == Status.PENDING && collectorStatement == Status.PENDING) {
@@ -463,7 +452,7 @@ const decide = async (pendingId) => {
             let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
         }
         else if (publisherStatement == Status.CANCELLED || collectorStatement == Status.CANCELLED) {
-            let { cancelledPost, updatedPost } = await cancelPending(pending._id, false);
+            await cancelPending(pending._id, false);
         }
         else if (pending.pendingTime.until < Date.now()) {
             let { finishedPending, trafficGroceries } = await finishPending(pending._id, false);
@@ -544,8 +533,6 @@ const delayUpdate = async (id) => {
             console.log("Success sending SMS.", response);
             return response; // For unit tests.
         } catch (err) {
-            console.log(response);
-            console.log(command);
             console.log("Error sending SMS", err.stack);
         }
     };

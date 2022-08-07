@@ -9,7 +9,6 @@ import validator from "validator";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Cookies from "universal-cookie";
-import jwt from 'jwt-decode' // import depende
 
 const alertStyle = {
   color: "red",
@@ -79,7 +78,6 @@ export default function Register({ loginUser }) {
         password,
       })
       .then((res) => {
-        console.log(res.data);
         MySwal.fire({
           title: "Registered Successfully!",
           icon: "success",
@@ -96,9 +94,6 @@ export default function Register({ loginUser }) {
           .then((res) => {
             setTimeout(() => {
               cookies.set("jwt_token", res.data.accessToken, { httpOnly: false });
-              const userAccessToken = jwt(res.data.accessToken); // decode your token here
-              console.log(userAccessToken);
-              console.log(res.data);
               loginUser();
             }, 1000);
           });

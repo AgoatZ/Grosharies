@@ -11,7 +11,6 @@ const getGroceries = async function (req, res, next) {
         for (i in groceries) {
             count++;
         }
-        console.log('amount retrieved:', count);
         return res.status(200).json({ groceries: groceries, message: "Succesfully Groceries Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);

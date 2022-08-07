@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography, Box, Button, Slider, CardMedia, Stack, Paper, useMediaQuery, Badge, Container, Divider } from "@mui/material";
+import { Typography, Box, Button, Slider, CardMedia, Stack, Paper, useMediaQuery, Badge, Divider } from "@mui/material";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "../../utils/axios";
@@ -22,6 +22,7 @@ const Post = () => {
   const [isDeleted, setIsDeleted] = useState(false);
   const { handleSubmit, control } = useForm();
   const mobileScreen = useMediaQuery('(max-width:480px)');
+  // eslint-disable-next-line
   useEffect(() => loadPost(), []);
 
   const loadPost = () => {
@@ -38,12 +39,11 @@ const Post = () => {
       //TODO: Add to API getPendingByPostAndByCollector ?
       //Get user's active order for this post and add it to main post object if exists
       axios.get("pendings/collector/current").then((res) => {
-        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost == post._id);
+        const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost === post._id);
         const validOrder = userPendingPost && userPendingPost.status.finalStatus === "pending";
 
         if (validOrder) {
           post.userPendingPostId = userPendingPost._id;
-          console.log("User's open pending post for this post", userPendingPost);
           //Set the user's order amount for each grocery item
           userPendingPost.content.forEach((orderGrocery) => (post.content.find((grocery) => grocery.original.name === orderGrocery.name).currentOrder = orderGrocery.amount));
 
@@ -54,9 +54,6 @@ const Post = () => {
         }
       }).catch(e => { console.log("Error getting user's pending posts"); setPost(post); });
 
-    }).then(() => {
-      console.log("Post", post);
-      console.log("Post Content", post.content)
     }).catch(e => console.log("Error getting post"));
   }
 
@@ -71,7 +68,7 @@ const Post = () => {
       post.content.map((grocery) => (
         <Box key={grocery._id} sx={{ width: "fit-content", margin: "1%" }}>
           <CardMedia image={"data:image/jpg;base64, " + grocery.original.images} component="img"
-            sx={{ padding: 1, height: "150px", width: "auto", }} />
+            sx={{ padding: 1, height: "150px", width: "auto" }} />
 
           <Stack direction="column" >
             <Typography variant="h6" mb="2%" >
@@ -119,14 +116,9 @@ const Post = () => {
         grocery.original.amount = data[grocery.original.name];
         return grocery.original;
       })
-
-    console.log("Form Data", data);
-    console.log("Order Groceries", orderGroceries);
-
     if (!isEdit) {
       //Create Pending Post
       axios.post("posts/pend", { postId: sourcePostId, groceries: orderGroceries }).then((res) => {
-        console.log("Create Pending Post Result", res.data);
         MySwal.fire({
           title: "Successfully Applied Your Order!",
           text: "You can now go and take your GroSharies",
@@ -140,7 +132,6 @@ const Post = () => {
     } else {
       //Edit Pending Post
       axios.put("pendings/" + post.userPendingPostId, { content: orderGroceries }).then((res) => {
-        console.log(res.data);
         MySwal.fire({
           title: "Successfully Edited Your Order!",
           text: "You can now go and take your GroSharies",

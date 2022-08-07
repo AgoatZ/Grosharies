@@ -1,5 +1,5 @@
 import PostCard from "./PostCard";
-import { Grid, Container, Skeleton } from "@mui/material";
+import { Grid, Skeleton } from "@mui/material";
 import Map from "../map/Map";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,12 +26,13 @@ const Posts = ({ data, showMap }) => {
         );
       });
     }
+    // eslint-disable-next-line
   }, []);
 
 
   if (showMap) {
     return (
-      !nearbyPostsLocations.length == 0 && !userLocation ?
+      !nearbyPostsLocations.length === 0 && !userLocation ?
         (<Skeleton variant="rectangular" sx={mapSize} />) :
         (<Map
           sx={mapSize}

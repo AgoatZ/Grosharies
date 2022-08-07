@@ -255,7 +255,6 @@ const setCollectorStatement = async function (req, res, next) {
 
 const finishPending = async function (req, res, next) {
     try {
-        console.log('Enterred finishPending Controller')
         const { emitEvent } = require(".././../index");
 
         const { finishedPending, trafficGroceries } = await PendingService.finishPending(req.params.id, req.user);

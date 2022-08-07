@@ -61,10 +61,8 @@ const getPostsByUser = async (publisherId, user, page, limit) => {
         let userId;
         if (publisherId == 'current' && user) {
             userId = user._id;
-            //console.log("Post Service byUser from user._id userId:", userId);
         } else {
             userId = publisherId;
-            //console.log("Post Service byUser from params userId:", userId);
         }
         const posts = await PostRepository.getPostsByUser(userId, options);
         return posts;
@@ -90,10 +88,8 @@ const getPublisherOpenPosts = async (publisherId, user, page, limit) => {
         let userId;
         if (publisherId == 'current' && user) {
             userId = user._id;
-            //console.log("Post Service getPublisherOpenPosts from user._id userId:", userId);
         } else {
             userId = publisherId;
-            //console.log("Post Service getPublisherOpenPosts from params userId:", userId);
         }
         const posts = await PostRepository.getPublisherOpenPosts(userId, options);
         return posts;
@@ -161,10 +157,8 @@ const getPostsByCollector = async (collectorId, user, page, limit) => {
         let userId;
         if (userId == 'current' && user) {
             userId = user._id;
-            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
             userId = collectorId;
-            //console.log("Service bypublisher from params userId:", userId)
         }
         const posts = await PostRepository.getPostsByCollector(userId, options);
         return posts;
@@ -217,14 +211,16 @@ const addPost = async (postDetails, user) => {
             description: postDetails.description,  
         };
         for (i in postDetails.groceriesToSend) {
-            let grocery = await GroceryRepository.getGroceryById(postDetails.groceriesToSend[i].id);
-            let amount = postDetails.groceriesToSend[i].amount;
-            delete grocery['_id'];
-            grocery.amount = amount;
-            newPost.content.push({
-                original: grocery,
-                left: amount
-            });
+            if (postDetails.groceriesToSend[i]){
+                let grocery = await GroceryRepository.getGroceryById(postDetails.groceriesToSend[i].id);
+                let amount = postDetails.groceriesToSend[i].amount;
+                delete grocery['_id'];
+                grocery.amount = amount;
+                newPost.content.push({
+                    original: grocery,
+                    left: amount
+                });
+            }
         }
         
         let coordinates = await getCoordinates(postDetails.address);
@@ -273,11 +269,8 @@ const pendPost = async (postId, collectorId, groceries) => {
         const post = await PostRepository.getPostById(postId);
         const updatedContent = [];
         const content = post.content;
-        if (post.status == PostStatus.CANCELLED || post.status == PostStatus.COLLECTED) {
-            console.log('This post is not open for new orders, status:', post.status);
-
+        if (post.status == PostStatus.CANCELLED || post.status == PostStatus.COLLECTED) 
             throw Error('This post is not open for new orders, status:', post.status);
-        }
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
             let isThere = false;
@@ -357,10 +350,8 @@ const getSuggestedPosts = async (id, currentUser, page, limit) => {
         let userId;
         if (id == 'current' && currentUser) {
             userId = currentUser._id;
-            //console.log("Service bypublisher from user._id userId:", userId)
         } else {
             userId = id;
-            //console.log("Service bypublisher from params userId:", userId)
         }
         var posts = await PostRepository.getRelevantPosts(options);
         const user = await UserService.getUserById(userId);

@@ -1,50 +1,58 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../App";
 import axios from "axios";
-import { Button, Container, Typography, Box, Tooltip, Stack } from "@mui/material";
+import { Button, Typography, Box, Tooltip, Stack } from "@mui/material";
 import { UserImage } from "../common/Images";
 import { Input } from "@material-ui/core";
 import StarIcon from "@mui/icons-material/Star";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
-import AddBoxIcon from "@mui/icons-material/AddBox";
 import CheckIcon from "@mui/icons-material/Check";
 import Icon from '@mui/material/Icon';
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 
-
 const MySwal = withReactContent(Swal);
+const toBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = error => reject(error);
+});
+
 const Profile = () => {
   const { userData, setUserData } = useContext(AppContext);
+  const [tempImage, setTempImage] = useState("");
   const [edit, setEdit] = useState(false);
   const [editedUser, setEditedUser] = useState({});
   const [EditedUserImage, setEditeduserImage] = useState();
   const [passwordError, setPasswordError] = useState(false)
   let navigate = useNavigate();
 
+  useEffect(() => {
+    if (userData.profileImage)
+      setTempImage(userData.profileImage);
+  }, [userData]);
+
   const EditUser = () => {
-    console.log(JSON.stringify(editedUser));
     const userEditedData = {}
-    if (passwordError)
-      return
+    if (passwordError) return;
+
     for (const key of Object.keys(editedUser)) {
-      console.log(editedUser[key])
       if (editedUser[key])
-        userEditedData[key] = editedUser[key]
+        userEditedData[key] = editedUser[key];
     }
-    console.log(userData)
-    if (!Object.keys(userEditedData).length) {
-      MySwal.fire({ title: "Nothing to update", icon: "info", timer: 1000 })
-      return
+
+    if (Object.keys(userEditedData).length === 0 && !EditedUserImage) {
+      MySwal.fire({ title: "Nothing to update", icon: "info", timer: 1000 });
+      return;
     }
-    console.log("req sendx")
+
     axios
       .put("api/users/current", userEditedData)
       .then((res) => {
         if (EditedUserImage) {
-          console.log('uploading image');
           const reader = new FileReader();
           reader.onload = function (evt) {
             const contents = evt.target.result;
@@ -56,23 +64,26 @@ const Profile = () => {
               })
               .then((res) => {
                 setEdit(false);
-                setUserData(res.data.newUser)
+                setUserData(res.data.newUser);
+                MySwal.fire({ title: "Updated successfully!", icon: "success", timer: 1000, showConfirmButton: false });
               });
           };
           reader.readAsArrayBuffer(EditedUserImage);
-
-          return
+          return;
         }
-        setEdit(false);
-        setUserData(res.newUser)
+        else {
+          setEdit(false);
+          setUserData(res.data.newUser);
+          MySwal.fire({ title: "Updated successfully!", icon: "success", timer: 1000, showConfirmButton: false });
+        }
       })
-      .catch((err) => { });
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
-  // <Container sx={{ alignItems: "center", display: "flex", flexDirection: "column", marginTop: "5%", }}    >
   return (
     <Stack direction="column" alignItems="center" flexWrap="wrap" spacing={{ xs: 2, sm: 2, md: 3, lg: 3 }}>
-
       {/* Card */}
       <Box sx={{ border: "1px solid", padding: "5%", borderRadius: "30px", display: "flex", flexDirection: "column", alignItems: "center", position: "relative", flexWrap: "wrap" }}>
 
@@ -103,7 +114,11 @@ const Profile = () => {
           <input
             type="file"
             style={{ display: "none" }}
-            onChange={(e) => { setEditeduserImage(e.target.files[0]); }}
+            onChange={async (e) => {
+              setEditeduserImage(e.target.files[0]);
+              const base64Img = await toBase64(e.target.files[0])
+              setTempImage(base64Img.split(",")[1]);
+            }}
           />
           <Tooltip title="Upload Files">
             <Icon
@@ -116,8 +131,7 @@ const Profile = () => {
             >add_circle</Icon>
           </Tooltip>
         </label>
-
-        <UserImage src={"data:image/jpg;base64, " + userData.profileImage} width="200px" height="200px" />
+        <UserImage src={"data:image/jpg;base64, " + tempImage} key={tempImage} width="200px" height="200px" />
 
         <Typography variant="h4" align="center" sx={{ visibility: !edit ? "visible" : "hidden", marginTop: "2%", fontWeight: "bold", }}>
           {userData.firstName} {userData.lastName}{" "}
@@ -132,10 +146,9 @@ const Profile = () => {
               let isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
                 e.target.value
               );
-              console.log(e.target.value)
               if (!e.target.value) {
                 setPasswordError(false)
-                return
+                return;
               }
               if (!isPasswordValid) {
                 setPasswordError(true);

@@ -23,7 +23,7 @@ const Map = ({
     >
       <GoogleMapReact
         //TODO: remove api key
-        bootstrapURLKeys={{ key: "AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc" }}
+        bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY }}
         defaultZoom={zoom}
         defaultCenter={{ lat: 35, lng: 35 }}
         center={center}

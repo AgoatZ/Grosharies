@@ -13,7 +13,7 @@ const UserImage = (props) => {
         onError={setDefaultSrc}
         src={src}
         loading={props.loading}
-        alt="User Image" />
+        alt="UserImage" />
 }
 
 const UserImageThumbnail = (props) => {
@@ -30,7 +30,7 @@ const UserImageThumbnail = (props) => {
         onError={setDefaultSrc}
         src={src}
         loading={props.loading}
-        alt="User Image" />
+        alt="UserImage" />
 }
 
 const PostImage = (props) => {
@@ -43,7 +43,7 @@ const PostImage = (props) => {
         onError={setDefaultSrc}
         src={src}
         loading={props.loading}
-        alt="Post Image" />
+        alt="PostImage" />
 }
 
 const PostImageThumbnail = (props) => {
@@ -60,7 +60,7 @@ const PostImageThumbnail = (props) => {
         onError={setDefaultSrc}
         src={src}
         loading={props.loading}
-        alt="Post Image" />
+        alt="PostImage" />
 }
 
 export {

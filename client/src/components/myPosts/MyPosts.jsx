@@ -14,7 +14,6 @@ const MyPosts = () => {
   const loadMyPosts = () => {
     //Get user's open posts
     axios.get("posts/openPosts/current").then((res) => {
-      console.log("User Posts", res.data.posts);
       setPosts(res.data.posts);
     });
   }
@@ -51,6 +50,7 @@ const MyPosts = () => {
           })
           .catch(e => console.log("Error getting a pending post"));
       })
+      // eslint-disable-next-line
     }, []);
 
     return (

@@ -1,40 +1,25 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import { SearchOutlined } from "@material-ui/icons";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Link from "@mui/material/Link";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "../../utils/axios";
 import serverRoutes from "../../utils/server-routes";
-import validator from "validator";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import CommentIcon from "@mui/icons-material/Comment";
 import CardMedia from "@mui/material/CardMedia";
 import Input from "@mui/material/Input";
-import GoogleMapReact from "google-map-react";
 import Geocode from "react-geocode";
 
 const alertStyle = {
@@ -54,9 +39,9 @@ export default function AddPost() {
   const [allGroceries, setAllGroceries] = React.useState([]);
   const [groceries, setGroceries] = React.useState([]);
   const [checked, setChecked] = React.useState([]);
-  const [headline, setHeadline] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [description, setDescription] = React.useState("");
+  const [setHeadline] = React.useState("");
+  const [setAddress] = React.useState("");
+  const [setDescription] = React.useState("");
   const [fromDate, setFromDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
   const [images, setImages] = React.useState();
@@ -74,7 +59,6 @@ export default function AddPost() {
     }
 
     setChecked(newChecked);
-    console.log(checked);
   };
 
   const handleToggleAmount = (e, value) => {
@@ -82,8 +66,7 @@ export default function AddPost() {
       return i.grocery === value;
     });
     checked[currentIndex].amount =
-      e.target.value == "" ? 0 : parseInt(e.target.value);
-    console.log(checked);
+      e.target.value === "" ? 0 : parseInt(e.target.value);
   };
 
   React.useEffect(() => {
@@ -120,7 +103,7 @@ export default function AddPost() {
       });
     });
 
-    if (checkedGroceries.length == 0 && searchValue === "") {
+    if (checkedGroceries.length === 0 && searchValue === "") {
       setGroceries([]);
       return;
     } else if (checkedGroceries.length > 0 && searchValue === "") {
@@ -141,7 +124,7 @@ export default function AddPost() {
     const until = endDate;
     const repeated = data.get("repeat");
     event.preventDefault();
-    if (headline == "") {
+    if (headline === "") {
       setIsHeadlineError(
         "headline is empty"
       );
@@ -153,13 +136,13 @@ export default function AddPost() {
       );
       return;
     }
-    if (description == "") {
+    if (description === "") {
       setIsDescriptionError(
         "description is empty"
       );
       return
     }
-    if (address == "") {
+    if (address === "") {
       setIsAddressError(
         "address is empty"
       );
@@ -168,7 +151,7 @@ export default function AddPost() {
     if (
       isHeadlineError !== "" ||
       isDescriptionError !== "" ||
-      isAddressError != "" ||
+      isAddressError !== "" ||
       isFromDateError !== "" ||
       isEndDateError !== "" ||
       isQuantityError !== ""
@@ -178,13 +161,13 @@ export default function AddPost() {
       }
       return;
     }
-
+    // eslint-disable-next-line
     const groceries = checked.map((grocery) => {
       if (grocery.isChecked) {
         return { id: grocery.grocery._id, amount: grocery.amount };
       }
     });
-    const groceriesToSend = groceries.filter(grocery => grocery != null);
+    const groceriesToSend = groceries.filter(grocery => grocery !== null);
     axios
       .post(serverRoutes.AddPost, {
         headline,
@@ -194,14 +177,10 @@ export default function AddPost() {
         groceriesToSend,
       })
       .then((res) => {
-        console.log(res);
         if (images) {
-          console.log('uploading image');
           const reader = new FileReader();
           reader.onload = function (evt) {
-            const metadata = `name: ${images.name}, type: ${images.type}, size: ${images.size}, contents:`;
             const contents = evt.target.result;
-            console.log(metadata, contents);
             axios
               .post("/posts/updateImage/" + res.data.post._id, contents, {
                 headers: {
@@ -235,7 +214,6 @@ export default function AddPost() {
   };
 
   const onChangeImages = (event) => {
-    console.log('=============', event.target.files[0]);
     setImages(event.target.files[0]);
   };
 
@@ -289,7 +267,7 @@ export default function AddPost() {
                   }
 
                   try {
-                    Geocode.setApiKey('AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc');
+                    Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
                     const response = await Geocode.fromAddress(e.target.value);
                     if (!response.results[0].geometry.location) {
                       setIsAddressError(
@@ -450,7 +428,7 @@ export default function AddPost() {
                         checked={
                           checked.findIndex(
                             (i) =>
-                              i.grocery._id == value._id &&
+                              i.grocery._id === value._id &&
                               i.isChecked === true
                           ) !== -1
                         }

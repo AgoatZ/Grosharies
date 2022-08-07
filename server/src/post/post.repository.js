@@ -142,7 +142,6 @@ const deletePost = async (postId) => {
 
 const updatePost = async (postId, postDetails) => {
     try {
-        //console.log('repo update post: ', JSON.stringify(postDetails));
         let post = await Post.findByIdAndUpdate(postId, postDetails);
         post = await Post.findById(postId);
         return post;
@@ -165,7 +164,6 @@ const updateContent = async (postId, content) => {
 };
 
 const searchPosts = async (searchValue, options) => {
-    console.log('searching');
     const regex = new RegExp(searchValue, 'i');
     const filteredPosts = await Post.paginate({
         $or: [
@@ -173,7 +171,6 @@ const searchPosts = async (searchValue, options) => {
             { 'content.original.name': { "$regex": regex } }
         ]
     }, options);
-    console.log(regex);
     return filteredPosts.docs;
 };
   
