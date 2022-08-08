@@ -434,7 +434,7 @@ router.get("/suggested/:userid", authJwt, PostController.getSuggestedPosts);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.post("/nearby", authJwt, PostController.getNearbyPosts);
+router.post("/nearby", PostController.getNearbyPosts);
 
 /**
 * @swagger

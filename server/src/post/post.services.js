@@ -382,18 +382,13 @@ const getSuggestedPosts = async (id, currentUser, page, limit) => {
     }
 };
 
-const getNearbyPosts = async (currentUser, coordinates, page, limit) => {
+const getNearbyPosts = async (coordinates, page, limit) => {
     try {
         let options;
         if (page && limit) {
             options = { page: page, limit: limit };
         } else {
             options = { pagination: false }
-        }
-        //TODO: remove user from here and up
-        let userId;
-        if (currentUser) {
-            userId = currentUser._id;
         }
         const posts = await PostRepository.getRelevantPosts(options);
         let nearbyPosts = [];

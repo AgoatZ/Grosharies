@@ -144,7 +144,7 @@ const getNearbyPosts = async function (req, res, next) {
     const page = req.query.page ? req.query.page : 1;
     const limit = req.query.limit ? req.query.limit : 30;
     try {
-        const posts = await PostService.getNearbyPosts(req.user, req.body.coordinates, page, limit);
+        const posts = await PostService.getNearbyPosts(req.body.coordinates, page, limit);
         return res.status(200).json({ posts: posts, message: "Succesfully Nearby Posts Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
