@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { Typography, Box, Button, Slider, CardMedia, Stack, Paper, useMediaQuery, Badge, Divider } from "@mui/material";
+import { AppContext } from "../../App";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "../../utils/axios";
@@ -15,12 +16,15 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 const MySwal = withReactContent(Swal);
 
 const Post = () => {
+  const { loggedIn } = useContext(AppContext);
   let navigate = useNavigate();
   const sourcePostId = useParams().id;
   const [post, setPost] = useState(PostDummy);
   const [isEdit, setEdit] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const { handleSubmit, control } = useForm();
+  const [publisherName, setPublisherName] = useState("");
+
   const mobileScreen = useMediaQuery('(max-width:480px)');
   // eslint-disable-next-line
   useEffect(() => loadPost(), []);
@@ -31,12 +35,13 @@ const Post = () => {
     axios.get('posts/' + sourcePostId).then((res) => {
       post = res.data.post;
 
+      loadPublisher(post);
+
       if (post.status === "cancelled") setIsDeleted(true);
 
       //Add and Init user's order amount for each grocery item
       post.content.forEach((grocery) => grocery.currentOrder = 0);
 
-      //TODO: Add to API getPendingByPostAndByCollector ?
       //Get user's active order for this post and add it to main post object if exists
       axios.get("pendings/collector/current").then((res) => {
         const userPendingPost = res.data.pendingPosts.find((order) => order.sourcePost === post._id);
@@ -110,12 +115,16 @@ const Post = () => {
   };
 
   const onSubmit = (data) => {
+    if (!loggedIn)
+      navigate("/login");
+
     const orderGroceries = post.content
       .filter((grocery) => data[grocery.original.name] > 0)
       .map((grocery) => {
         grocery.original.amount = data[grocery.original.name];
         return grocery.original;
-      })
+      });
+
     if (!isEdit) {
       //Create Pending Post
       axios.post("posts/pend", { postId: sourcePostId, groceries: orderGroceries }).then((res) => {
@@ -146,6 +155,12 @@ const Post = () => {
 
   };
 
+  const loadPublisher = (post) => {
+    axios.get("users/profile/" + post.userId)
+      .then((res) => setPublisherName(res.data.user.firstName + ' ' + res.data.user.lastName))
+      .catch(e => console.log("Error getting publisher profile"));
+  };
+
   return (
     <Stack direction="column" flexWrap="wrap" spacing={{ xs: 1, sm: 1, md: 2, lg: 4 }} >
 
@@ -154,6 +169,7 @@ const Post = () => {
           badgeContent={<Typography variant="overline" sx={{ fontSize: "20px" }}>{post.status}</Typography>} >
           <Typography variant="h3" mb="2%" >{post.headline}</Typography>
         </Badge>
+        <Typography variant="h5" color="text.secondary">Posted by <i>{publisherName}</i></Typography>
         <Typography variant="h6" color="text.secondary">{post.description}</Typography>
       </Stack>
 
