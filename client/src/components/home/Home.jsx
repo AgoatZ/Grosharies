@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Stack, Box, Tabs, Tab, Typography, Switch, Fab, styled, Drawer, useMediaQuery } from "@mui/material";
+import { AppContext } from "../../App";
+import { useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import Posts from "../posts/Posts";
 import SuggestedPosts from "./SuggestedPosts";
@@ -11,6 +13,8 @@ import CloseIcon from '@mui/icons-material/Close';
 const tabs = ["Near By", "Recently Added"];
 
 const Home = () => {
+  const { loggedIn } = useContext(AppContext);
+  let navigate = useNavigate();
   const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
   const [activeTabNumber, setActiveTabNumber] = useState(0);
   const [nearbyPosts, setNearbyPosts] = useState([]);
@@ -54,7 +58,11 @@ const Home = () => {
 
   const AddPostDrawer = () => {
     const [open, setOpen] = useState(false);
-    const toggle = (open) => (event) => { setOpen(open); };
+    const toggle = (open) => (event) => {
+      if (!loggedIn)
+        navigate("/login");
+      setOpen(open);
+    };
 
     return (
       <>
@@ -102,9 +110,7 @@ const Home = () => {
           </Tabs>
 
           <TabPanel value={activeTabNumber} index={0} >
-            {nearbyPosts.length > 0 ?
-              <Posts data={nearbyPosts} showMap={showAsMap} /> :
-              <Typography>No posts near by</Typography>}
+            <Posts data={nearbyPosts} showMap={showAsMap} />
           </TabPanel>
 
           <TabPanel value={activeTabNumber} index={1}>
