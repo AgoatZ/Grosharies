@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { s3Client } = require('../utils/s3-client');
-const { PutObjectCommand } = require('@aws-sdk/client-s3');
+const { Upload } = require('@aws-sdk/lib-storage');
 const { path } = require("path");
 
 const uploadImage = async (req, res, next) => {
@@ -39,19 +39,15 @@ const uploadImage = async (req, res, next) => {
                 ContentLength: data.length
             };
             const imageLocation = bucketParams.Bucket + "/" + bucketParams.Key;
-            const run = async () => {
-                try {
-                    const response = await s3Client.send(new PutObjectCommand(bucketParams));
-                    return response; // For unit tests.
-                    console.log("Successfully uploaded object:", imageLocation);
-                } catch (err) {
-                    console.log("Error", err);
-                }
-            };
-            const s3Answer = await run();
-            console.log("S3 Answer is:", s3Answer);
-            
-            req.body = { image: imageLocation };
+            const upload = new Upload({
+                client: s3Client,
+                params: bucketParams
+            });
+            upload.on("httpUploadProgress", (progress) => {
+                console.log(progress);
+            });
+            const result = await upload.done();
+            req.body = { image: result.Location };
             next();
         });
     } catch (err) {

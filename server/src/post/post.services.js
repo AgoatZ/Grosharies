@@ -208,10 +208,10 @@ const addPost = async (postDetails, user) => {
             }],
             status: PostStatus.STILL_THERE,
             content: [],
-            description: postDetails.description,  
+            description: postDetails.description,
         };
         for (i in postDetails.groceriesToSend) {
-            if (postDetails.groceriesToSend[i]){
+            if (postDetails.groceriesToSend[i]) {
                 let grocery = await GroceryRepository.getGroceryById(postDetails.groceriesToSend[i].id);
                 let amount = postDetails.groceriesToSend[i].amount;
                 delete grocery['_id'];
@@ -222,7 +222,7 @@ const addPost = async (postDetails, user) => {
                 });
             }
         }
-        
+
         let coordinates = await getCoordinates(postDetails.address);
         newPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
         const post = await PostRepository.addPost(newPost);
@@ -269,7 +269,7 @@ const pendPost = async (postId, collectorId, groceries) => {
         const post = await PostRepository.getPostById(postId);
         const updatedContent = [];
         const content = post.content;
-        if (post.status == PostStatus.CANCELLED || post.status == PostStatus.COLLECTED) 
+        if (post.status == PostStatus.CANCELLED || post.status == PostStatus.COLLECTED)
             throw Error('This post is not open for new orders, status:', post.status);
         for (groceryIndex in content) {
             let grocery = content[groceryIndex];
@@ -308,8 +308,15 @@ const pendPost = async (postId, collectorId, groceries) => {
                 until: Date.now() + oneHour
             }
         });
-
-        post.repliers.push({ user: collectorId, reply: pendingPost._id });
+        let exists = false;
+        for (i in post.repliers) {
+            if (post.repliers[i] == collectorId) {
+                exists = true;
+            }
+        }
+        if (!exists) {
+            post.repliers.push({ user: collectorId, reply: pendingPost._id });
+        }
         await PostRepository.updatePost(postId, { content: updatedContent, repliers: post.repliers });
 
         const collector = await UserService.addToHistory(collectorId, pendingPost._id);

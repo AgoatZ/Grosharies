@@ -191,9 +191,9 @@ const updatePending = async function (req, res, next) {
             postId: oldPost.sourcePost
         };
         const collectorNotification = {
-            text: pendingPost.headline,
+            text: oldPost.headline,
             title: "Your order has been changed",
-            postId: pendingPost.sourcePost
+            postId: oldPost.sourcePost
         };
         const publisherNote = {
             pendingPostId: oldPost._id,
