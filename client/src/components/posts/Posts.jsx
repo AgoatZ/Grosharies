@@ -32,7 +32,7 @@ const Posts = ({ data, showMap }) => {
 
   if (showMap) {
     return (
-      !nearbyPostsLocations.length === 0 && !userLocation ?
+      nearbyPostsLocations.length === 0 ?
         (<Skeleton variant="rectangular" sx={mapSize} />) :
         (<Map
           sx={mapSize}

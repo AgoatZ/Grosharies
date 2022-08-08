@@ -44,7 +44,7 @@ const App = () => {
       let userData = res.data.user;
       setLoggedIn(true);
       setUserData(userData);
-      setUserNotifications(userData.notifications);
+      setUserNotifications(userData.notifications.reverse());
       socketSetup(userData);
       sessionStorage.setItem('userId', userData._id);
     }).catch(e => { console.log("Error getting user data"); });
