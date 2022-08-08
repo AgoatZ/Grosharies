@@ -18,7 +18,7 @@ const getPendings = async function (query, page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -39,7 +39,7 @@ const getGroupedPendings = async function (page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -73,7 +73,7 @@ const getPendingsByPublisher = async function (publisherId, user, page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -100,7 +100,7 @@ const getPendingsByCollector = async function (collectorId, user, page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -127,7 +127,7 @@ const getPendingsByCategory = async function (categoryId, page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -148,7 +148,7 @@ const getPendingsByTag = async function (tagId, page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -169,7 +169,7 @@ const getPendingsByPost = async function (postId, page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -214,7 +214,7 @@ const getAllPendingPosts = async function (page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -235,7 +235,7 @@ const getAllFinishedPosts = async function (page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -256,7 +256,7 @@ const getAllCancelledPosts = async function (page, limit) {
             options = {
                 page: page,
                 limit: limit,
-                sort: { 'pendingTime.from' : -1}
+                sort: { 'pendingTime.from': -1 }
             };
         } else {
             options = { pagination: false }
@@ -475,10 +475,12 @@ const interrestedUserReminder = async (userId, pendingId) => {
 
         const remind = async (recieverNumber, publisherNumber) => {
             console.log("TAKEN???"); //SEND TO CELLULAR/PUSH NOTIFICATION
-            const collectorSMS = sendSMSToNumber(`Hey from Grosharies! Have you picked up the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${publisher.firstName} ${publisher.lastName}? Tell us what you feel!`, recieverNumber);
-            const publisherSMS = sendSMSToNumber(`Hey from Grosharies! Have you delivered the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${user.firstName} ${user.lastName}? Tell us what you feel!`, publisherNumber);
-            const delayedUpdate = delayUpdate(pendingId);
-            delayedUpdate.catch(err => console.log('AWS delayUpdate failed', err));
+            if (process.env.NODE_ENV == "production") {
+                const collectorSMS = sendSMSToNumber(`Hey from Grosharies! Have you picked up the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${publisher.firstName} ${publisher.lastName}? Tell us what you feel!`, recieverNumber);
+                const publisherSMS = sendSMSToNumber(`Hey from Grosharies! Have you delivered the ${content}? Let us know!`, `Hey from Grosharies! How was your experience at ${pending.address} with ${user.firstName} ${user.lastName}? Tell us what you feel!`, publisherNumber);
+                const delayedUpdate = delayUpdate(pendingId);
+                delayedUpdate.catch(err => console.log('AWS delayUpdate failed', err));
+            }
             return;
         };
         if (user && publisher) {
@@ -530,10 +532,10 @@ const delayUpdate = async (id) => {
         try {
             const command = new StartExecutionCommand(params);
             const response = await sfnClient.send(command);
-            console.log("Success sending SMS.", response);
+            console.log("Success delaying.", response);
             return response; // For unit tests.
         } catch (err) {
-            console.log("Error sending SMS", err.stack);
+            console.log("Error delaying.", err.stack);
         }
     };
     return run();
@@ -545,7 +547,7 @@ const evaluatePostStatus = async (postId) => {
         const pendings = await getPendingsByPost(postId);
         let empty = true;
         let full = true;
-        
+
         for (groceryIndex in post.content) {
             let grocery = post.content[groceryIndex];
             if (grocery.left != grocery.original.amount) {

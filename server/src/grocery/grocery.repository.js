@@ -71,19 +71,6 @@ const updateGrocery = async function(groceryId, groceryDetails) {
   }
 };
 
-const updateAmount = async function(groceryId, amount) {
-  try {
-    const oldGrocery = await Grocery.findByIdAndUpdate(groceryId, {
-      amount: amount,
-    });
-    return oldGrocery;
-  } catch (e) {
-    console.log("Grocery repository error from updateAmount: ", e.message);
-
-    throw Error("Error while Updating Grocery");
-  }
-};
-
 const searchGrocery = async (searchValue, options) => {
     const regex = new RegExp(searchValue, 'i');
     const filteredGroceries = await Grocery.paginate({
@@ -102,6 +89,5 @@ module.exports = {
   addGrocery,
   deleteGrocery,
   updateGrocery,
-  updateAmount,
-  searchGrocery,
+  searchGrocery
 };
