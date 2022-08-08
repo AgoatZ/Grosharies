@@ -14,6 +14,8 @@ const SuggestedPosts = () => {
     useEffect(() => { loadPosts(1) }, []);
 
     const loadPosts = (page) => {
+        if (!loggedIn)
+            return [];
         axios
             .get("posts/suggested/current/?page=" + page + "&limit=" + limitPerPage)
             .then((res) => setSuggestedPosts(res.data.posts))
