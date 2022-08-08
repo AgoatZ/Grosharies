@@ -88,7 +88,7 @@ const Header = () => {
                 </ListItemIcon>
                 <ListItemText primary={pages[1].name} />
               </MenuItem>
-              <MenuItem key={pages[2].name} onClick={navigateToPage.bind(this, pages[1].path)}>
+              <MenuItem key={pages[2].name} onClick={navigateToPage.bind(this, pages[2].path)}>
                 <ListItemIcon>
                   <FontAwesomeIcon icon="fa-solid fa-ranking-star" size="lg" />
                 </ListItemIcon>
@@ -109,7 +109,7 @@ const Header = () => {
     const removeNotification = (notification) => {
       const index = userData.notifications.indexOf(notification);
       userData.notifications.splice(index, 1);
-      axios.put('users/' + userData._id, { notifications: userData.notifications }).catch(e => console.log("Error updating user"));
+      axios.put("users/current", { notifications: userData.notifications }).catch(e => console.log("Error updating user"));
       setUserNotificationsAnchorEl(null);
     };
 
