@@ -8,7 +8,7 @@ const getPendings = async function (req, res, next) {
     const limit = req.query.limit ? req.query.limit : 10;
     try {
         const posts = await PendingService.getPendings({}, page, limit);
-        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ posts: posts, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendings: ' + e.message);
 
@@ -22,7 +22,7 @@ const getGroupedPendings = async function (req, res, next) {
     const limit = req.query.limit ? req.query.limit : 10;
     try {
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getGroupedPendings(page, limit);
-        return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getGroupedPendings: ' + e.message);
 
@@ -34,7 +34,7 @@ const getPendingById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const post = await PendingService.getPendingById(req.params.id);
-        return res.status(200).json({ post: post, message: "Succesfully Post Retrieved" });
+        return res.status(200).json({ post: post, message: "Successfully Post Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingById: ' + e.message);
 
@@ -48,7 +48,7 @@ const getPendingsByCategory = async function (req, res, next) {
         const page = req.query.page ? req.query.page : 1;
         const limit = req.query.limit ? req.query.limit : 10;
         const posts = await PendingService.getPendingsByCategory(req.params.id, page, limit);
-        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ posts: posts, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByCategory: ' + e.message);
 
@@ -62,7 +62,7 @@ const getPendingsByTag = async function (req, res, next) {
         const page = req.query.page ? req.query.page : 1;
         const limit = req.query.limit ? req.query.limit : 10;
         const posts = await PendingService.getPendingsByTag(req.params.id, page, limit);
-        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ posts: posts, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByTag: ' + e.message);
 
@@ -76,7 +76,7 @@ const getPendingsByCollector = async function (req, res, next) {
         const page = req.query.page ? req.query.page : 1;
         const limit = req.query.limit ? req.query.limit : 10;
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getPendingsByCollector(req.params.id, req.user, page, limit);
-        return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByCollector: ' + e.message);
 
@@ -90,7 +90,7 @@ const getPendingsByPublisher = async function (req, res, next) {
         const page = req.query.page ? req.query.page : 1;
         const limit = req.query.limit ? req.query.limit : 10;
         const { pendingPosts, finishedPendings, cancelledPendings } = await PendingService.getPendingsByPublisher(req.params.id, req.user, page, limit);
-        return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ pendingPosts: pendingPosts, finishedPendings: finishedPendings, cancelledPendings: cancelledPendings, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getPendingsByUser: ' + e.message);
 
@@ -104,7 +104,7 @@ const getAllPendingPosts = async function (req, res, next) {
         const page = req.query.page ? req.query.page : 1;
         const limit = req.query.limit ? req.query.limit : 10;
         const posts = await PendingService.getAllPendingPosts(page, limit);
-        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ posts: posts, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getAllPendingPosts: ' + e.message);
 
@@ -118,7 +118,7 @@ const getAllFinishedPosts = async function (req, res, next) {
         const page = req.query.page ? req.query.page : 1;
         const limit = req.query.limit ? req.query.limit : 10;
         const posts = await PendingService.getAllFinishedPosts(page, limit);
-        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ posts: posts, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getAllFinishedPosts: ' + e.message);
 
@@ -132,7 +132,7 @@ const getAllCancelledPosts = async function (req, res, next) {
         const page = req.query.page ? req.query.page : 1;
         const limit = req.query.limit ? req.query.limit : 10;
         const posts = await PendingService.getAllCancelledPosts(page, limit);
-        return res.status(200).json({ posts: posts, message: "Succesfully Posts Retrieved" });
+        return res.status(200).json({ posts: posts, message: "Successfully Posts Retrieved" });
     } catch (e) {
         console.log('Pending controller error from getAllCancelledPosts: ' + e.message);
 
@@ -157,7 +157,7 @@ const addPending = async function (req, res, next) {
         emitEvent('New Notification', publisher._id, newNotification);
         publisher.notifications.push(newNotification);
         await UserService.updateUser(publisher._id, { notifications: publisher.notifications });
-        return res.status(200).json({ post: pendingPost, message: "Succesfully Pending Added" });
+        return res.status(200).json({ post: pendingPost, message: "Successfully Pending Added" });
     } catch (e) {
         console.log('Pending controller error from addPending: ' + e.message);
 
@@ -168,7 +168,7 @@ const addPending = async function (req, res, next) {
 const deletePending = async function (req, res, next) {
     try {
         const post = await PendingService.deletePending(req.params.id);
-        return res.status(200).json({ post: post, message: "Succesfully Posts Deleted" });
+        return res.status(200).json({ post: post, message: "Successfully Posts Deleted" });
     } catch (e) {
         console.log('Pending controller error from deletePending: ' + e.message);
 
@@ -207,7 +207,7 @@ const updatePending = async function (req, res, next) {
         emitEvent("New Notification", collector._id, collectorNotification);
         await UserService.addToNotifications(collector._id, collectorNotification);
         await UserService.addToNotifications(publisher._id, newNotification);
-        return res.status(200).json({ oldPost: oldPost, message: "Succesfully Post Updated" });
+        return res.status(200).json({ oldPost: oldPost, message: "Successfully Post Updated" });
     } catch (e) {
         console.log('Pending controller error from updatePending: ' + e.message);
 
@@ -230,7 +230,7 @@ const setCollectorStatement = async function (req, res, next) {
         };
         const noteToCollector = {
             text: oldPending.headline,
-            title: "Your order is completed, and waiting for the publisher's approval",     //TOFIX: Not emitted for some reason and not added to notifications array
+            title: "Your order is completed, and waiting for the publisher's approval",
             postId: oldPending.sourcePost
         };
         emitEvent('New Notification', publisher._id, noteToPublisher);
@@ -244,13 +244,12 @@ const setCollectorStatement = async function (req, res, next) {
         emitEvent("Pending Status Changed", publisher._id, statusChanged);
         emitEvent("Pending Status Changed", collector._id, statusChanged);
 
-        return res.status(200).json({ oldPending: oldPending, message: "Succesfully Post Updated" });
+        return res.status(200).json({ oldPending: oldPending, message: "Successfully Post Updated" });
     } catch (e) {
         console.log('Pending service error from setCollectorStatement: ', e.message);
 
         throw Error('Error while changing statement Posts');
     }
-    //TODO: Add relevant notification
 };
 
 const finishPending = async function (req, res, next) {
@@ -291,7 +290,7 @@ const finishPending = async function (req, res, next) {
         emitEvent("Pending Status Changed", publisher._id, statusChanged);
         emitEvent("Pending Status Changed", collector._id, statusChanged);
 
-        return res.status(200).json({ post: finishedPending, groceries: trafficGroceries, message: "Succesfully Pending Post Finished" });
+        return res.status(200).json({ post: finishedPending, groceries: trafficGroceries, message: "Successfully Pending Post Finished" });
     } catch (e) {
         console.log('Pending controller error from finishPending: ' + e.message);
 
@@ -331,7 +330,7 @@ const cancelPending = async function (req, res, next) {
         }
         const orderComplete = {
             text: cancelledPost.headline,
-            title: "Your order is cancelled",
+            title: "Your order was cancelled by " + publisher.firstName + " " + publisher.lastName,
             postId: cancelledPost.sourcePost
         };
         emitEvent('New Notification', cancelledPost.collectorId, orderComplete);
@@ -348,7 +347,7 @@ const cancelPending = async function (req, res, next) {
         emitEvent("Pending Status Changed", publisher._id, statusChanged);
         emitEvent("Pending Status Changed", collector._id, statusChanged);
 
-        return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Succesfully Pending Post Cancelled" });
+        return res.status(200).json({ cancelledPost: cancelledPost, updatedPost: updatedPost, message: "Successfully Pending Post Cancelled" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
 
@@ -361,7 +360,7 @@ const getPendingsByPost = async (req, res, next) => {
         const page = req.query.page ? req.query.page : 1;
         const limit = req.query.limit ? req.query.limit : 10;
         const pendings = await PendingService.getPendingsByPost(req.params.id, page, limit);
-        return res.status(200).json({ pendings: pendings, message: "Succesfully retrieved pendings" });
+        return res.status(200).json({ pendings: pendings, message: "Successfully retrieved pendings" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
 
@@ -405,7 +404,7 @@ const decide = async (req, res, next) => {
             emitEvent("Pending Status Changed", pendingPost.publisherId, statusChanged);
             emitEvent("Pending Status Changed", pendingPost.collectorId, statusChanged);
         }
-        return res.status(200).json({ pending: pendingPost, message: "Succesfully decided PendingPost status" });
+        return res.status(200).json({ pending: pendingPost, message: "Successfully decided PendingPost status" });
     } catch (e) {
         console.log('Pending controller error from cancelPending: ' + e.message);
         return res.status(400).json({ message: e.message });

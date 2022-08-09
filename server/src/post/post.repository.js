@@ -20,7 +20,8 @@ const getRelevantPosts = async (options) => {
         const posts = await Post.paginate({
             $and: [
                 { 'pickUpDates.from': { $lt: Date.now() } },
-                { 'pickUpDates.until': { $gt: Date.now() } }
+                { 'pickUpDates.until': { $gt: Date.now() } },
+                { status: { $ne: postStatus.CANCELLED } }
             ]
         }, options);
         return posts.docs;

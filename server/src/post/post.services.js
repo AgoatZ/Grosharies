@@ -192,7 +192,6 @@ const getPostsByGroceries = async (groceries, page, limit) => {
 
 const addPost = async (postDetails, user) => {
     try {
-        //#TODO GETTING ONLY GROCERY ID AND CREATING HERE THE FULL OBJECT
         let repeated = false;
         if (postDetails.pickUpDates[0].repeated == 'on') {
             repeated = true;

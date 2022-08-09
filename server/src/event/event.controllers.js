@@ -7,7 +7,7 @@ getEvents = async function (req, res, next) {
     var limit = req.params.limit ? req.params.limit : 30;
     try {
         var events = await EventService.getEvents({}, page, limit)
-        return res.status(200).json({ events: events, message: "Succesfully Events Retrieved" });
+        return res.status(200).json({ events: events, message: "Successfully Events Retrieved" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
@@ -17,7 +17,7 @@ getEventById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         var event = await EventService.getEventById(req.params.id)
-        return res.status(200).json({ event: event, message: "Succesfully Event Retrieved" });
+        return res.status(200).json({ event: event, message: "Successfully Event Retrieved" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
@@ -27,7 +27,7 @@ getEventsByUser = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const events = await EventService.getEventsByUser(req.params.id);
-        return res.status(200).json({ events: events, message: "Succesfully Events Retrieved" });
+        return res.status(200).json({ events: events, message: "Successfully Events Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
 
@@ -39,7 +39,7 @@ getEventsByTag = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const events = await EventService.getEventsByTag(req.params.id);
-        return res.status(200).json({ events: events, message: "Succesfully Events Retrieved" });
+        return res.status(200).json({ events: events, message: "Successfully Events Retrieved" });
     } catch (e) {
         console.log('controller error: ' + e.message);
 
@@ -53,7 +53,7 @@ addEvent = async function (req, res, next) {
 
     try {
         var event = await EventService.addEvent(req.body);
-        return res.status(200).json({ event: event, message: "Succesfully Event Added" });
+        return res.status(200).json({ event: event, message: "Successfully Event Added" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
@@ -62,7 +62,7 @@ addEvent = async function (req, res, next) {
 deleteEvent = async function (req, res, next) {
     try {
         var event = await EventService.deleteEvent(req.params.id);
-        return res.status(200).json({ event: event, message: "Succesfully Events Deleted" });
+        return res.status(200).json({ event: event, message: "Successfully Events Deleted" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
@@ -73,7 +73,7 @@ updateEvent = async function (req, res, next) {
 
     try {
         var oldEvent = await EventService.updateEvent(req.params.id, req.body);
-        return res.status(200).json({ oldEvent: oldEvent, message: "Succesfully Event Updated" });
+        return res.status(200).json({ oldEvent: oldEvent, message: "Successfully Event Updated" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
