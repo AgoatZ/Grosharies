@@ -309,7 +309,7 @@ const pendPost = async (postId, collectorId, groceries) => {
         });
         let exists = false;
         for (i in post.repliers) {
-            if (post.repliers[i] == collectorId) {
+            if (post.repliers[i].user.equals(collectorId)) {
                 exists = true;
             }
         }

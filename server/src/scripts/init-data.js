@@ -308,38 +308,39 @@ const init = async () => {
                 post5 = await post5.save();
                 await useress.updateOne({ posts: [post1._id, post2._id, post3._id, post4._id, post5._id] });
             }
-            else {
-                let post1 = new Post(userPost);
+                let post6 = new Post(userPost);
                 userPost.headline = "Come and take some " + gross[getRandomInt(11)];
                 userPost.address = getRandomInt(60) + " Sderot Rothschild, Tel Aviv";
                 coordinates = await getCoordinates(userPost.address);
                 userPost.addressCoordinates = { lat: coordinates.lat, lng: coordinates.lng };
-                let post2 = new Post(userPost);
-                post1 = await post1.save();
-                post2 = await post2.save();
-                await user.updateOne({ posts: [post1._id, post2._id] });
-            }
+                let post7 = new Post(userPost);
+                post6 = await post6.save();
+                post7 = await post7.save();
+                await user.updateOne({ posts: [post6._id, post7._id] });
 
             let publisherId;
             let collectorId;
+            let pendFromPost;
             if (i < 3) {
                 publisherId = useress._id;
                 collectorId = user._id;
+                pendFromPost = post1;
             } else {
                 publisherId = user._id;
                 collectorId = useress._id;
+                pendFromPost = post6;
             }
             let pending = new Pending({
-                "headline": post1.headline,
-                "address": post1.address,
+                "headline": pendFromPost.headline,
+                "address": pendFromPost.address,
                 "content": {
-                    "name": gross[i % 11],
+                    "name": pendFromPost.content[i % 5].original.name,
                     "amount": i + 3,
                     "scale": "kg",
-                    "packing": packs[i % 10],
-                    "category": cats[i % 11]._id
+                    "packing": pendFromPost.content[i % 5].original.packing,
+                    "category": pendFromPost.content[i % 5].original.category
                 },
-                "sourcePost": post1._id,
+                "sourcePost": pendFromPost._id,
                 "publisherId": publisherId,
                 "collectorId": collectorId,
                 "status": "pending",

@@ -172,7 +172,7 @@ const addPost = async function (req, res, next) {
         const { emitEvent } = require(".././../index");
         const post = await PostService.addPost(req.body, req.user);
         const newNotification = {
-            text: pendingPost.headline,
+            text: post.headline,
             title: "Your post has been successfully created",
             postId: post._id
         };

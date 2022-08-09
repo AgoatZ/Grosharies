@@ -39,9 +39,9 @@ export default function AddPost() {
   const [allGroceries, setAllGroceries] = React.useState([]);
   const [groceries, setGroceries] = React.useState([]);
   const [checked, setChecked] = React.useState([]);
-  const [setHeadline] = React.useState("");
-  const [setAddress] = React.useState("");
-  const [setDescription] = React.useState("");
+  const [headline, setHeadline] = React.useState("");
+  const [address, setAddress] = React.useState("");
+  const [description, setDescription] = React.useState("");
   const [fromDate, setFromDate] = React.useState();
   const [endDate, setEndDate] = React.useState();
   const [images, setImages] = React.useState();
