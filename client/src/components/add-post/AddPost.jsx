@@ -125,28 +125,20 @@ export default function AddPost() {
     const repeated = data.get("repeat");
     event.preventDefault();
     if (headline === "") {
-      setIsHeadlineError(
-        "headline is empty"
-      );
-      return
+      setIsHeadlineError("headline is empty");
+      return;
     }
     if (until <= fromDate) {
-      setIsEndDateError(
-        "end date must be greater from fromDate"
-      );
+      setIsEndDateError("end date must be greater from fromDate");
       return;
     }
     if (description === "") {
-      setIsDescriptionError(
-        "description is empty"
-      );
-      return
+      setIsDescriptionError("description is empty");
+      return;
     }
     if (address === "") {
-      setIsAddressError(
-        "address is empty"
-      );
-      return
+      setIsAddressError("address is empty");
+      return;
     }
     if (
       isHeadlineError !== "" ||
@@ -157,7 +149,6 @@ export default function AddPost() {
       isQuantityError !== ""
     ) {
       if (isFromDateError !== "") {
-
       }
       return;
     }
@@ -167,7 +158,7 @@ export default function AddPost() {
         return { id: grocery.grocery._id, amount: grocery.amount };
       }
     });
-    const groceriesToSend = groceries.filter(grocery => grocery !== null);
+    const groceriesToSend = groceries.filter((grocery) => grocery !== null);
     axios
       .post(serverRoutes.AddPost, {
         headline,
@@ -184,8 +175,8 @@ export default function AddPost() {
             axios
               .post("/posts/updateImage/" + res.data.post._id, contents, {
                 headers: {
-                  'Content-Type': 'image/*'
-                }
+                  "Content-Type": "image/*",
+                },
               })
               .then((res) => {
                 MySwal.fire({
@@ -201,6 +192,17 @@ export default function AddPost() {
               });
           };
           reader.readAsArrayBuffer(images);
+        } else {
+          MySwal.fire({
+            title: <strong>Post created Successfully!</strong>,
+            icon: "success",
+            timer: 1000,
+            showConfirmButton: false,
+            backdrop: false,
+          });
+          setTimeout(() => {
+            navigate("/my-posts", {});
+          }, 1000);
         }
       })
       .catch((e) => {
@@ -219,10 +221,11 @@ export default function AddPost() {
 
   return (
     <Container maxWidth="xs">
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
         <Typography variant="h5">New Post</Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-
           {/* headline */}
           <Grid container spacing={4}>
             <Grid item xs={12}>
@@ -259,30 +262,24 @@ export default function AddPost() {
                 fullWidth
                 error={isAddressError !== ""}
                 onChange={async (e) => {
-
                   if (e.target.value.length < 2) {
-                    setIsAddressError(
-                      "address must be at least 2 characters"
-                    )
+                    setIsAddressError("address must be at least 2 characters");
                   }
 
                   try {
-                    Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
+                    Geocode.setApiKey(
+                      process.env.REACT_APP_GOOGLE_MAPS_API_KEY
+                    );
                     const response = await Geocode.fromAddress(e.target.value);
                     if (!response.results[0].geometry.location) {
-                      setIsAddressError(
-                        "The address is not valid"
-                      );
+                      setIsAddressError("The address is not valid");
                     } else {
                       setIsAddressError("");
                     }
                   } catch (e) {
-                    setIsAddressError(
-                      "The address is not valid"
-                    );
+                    setIsAddressError("The address is not valid");
                   }
                   setAddress(e.target.value);
-
                 }}
                 placeholder="18 King George, Tel Aviv"
                 type="text"
@@ -417,11 +414,7 @@ export default function AddPost() {
                   const labelId = `checkbox-list-label-${value._id}`;
 
                   return (
-                    <ListItem
-                      key={value._id}
-                      disablePadding
-                      sx={{ mb: "5px" }}
-                    >
+                    <ListItem key={value._id} disablePadding sx={{ mb: "5px" }}>
                       <Checkbox
                         edge="start"
                         onClick={handleToggle(value)}
@@ -440,27 +433,20 @@ export default function AddPost() {
                         fullWidth
                         error={isQuantityError !== ""}
                         InputProps={{
-                          inputProps: { min: 0 }
+                          inputProps: { min: 0 },
                         }}
                         type="number"
                         id={`${value.name}`}
                         label={`${value.name}`}
                         name={`${value.name}`}
                         onChange={(e) => {
-
                           if (e.target.value < 0) {
-                            setIsQuantityError(
-                              "must be positive"
-                            );
-
+                            setIsQuantityError("must be positive");
                           } else {
-                            setIsQuantityError(
-                              ""
-                            );
-                            handleToggleAmount(e, value)
+                            setIsQuantityError("");
+                            handleToggleAmount(e, value);
                           }
                         }}
-
                       />
                       <CardMedia
                         component="img"
@@ -491,7 +477,6 @@ export default function AddPost() {
               </Button>
             </Grid>
           </Grid>
-
         </Box>
       </Box>
     </Container>
