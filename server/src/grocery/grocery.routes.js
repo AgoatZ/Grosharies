@@ -86,7 +86,7 @@ router.get('/', GroceryController.getGroceries);
 *             schema:
 *               $ref: '#/components/schemas/Grocery'
 */
-router.get('/:id', authJwt, GroceryController.getGroceryById);
+router.get('/:id', GroceryController.getGroceryById);
 
 /**
 * @swagger
@@ -109,7 +109,7 @@ router.get('/:id', authJwt, GroceryController.getGroceryById);
 *             schema:
 *               $ref: '#/components/schemas/Grocery'
 */
-router.get('/name/:name', authJwt, GroceryController.getGroceryByName);
+router.get('/name/:name', GroceryController.getGroceryByName);
 
 /**
 * @swagger
@@ -179,7 +179,7 @@ router.post('/', authJwt, GroceryController.addGrocery);
 *             schema:
 *               $ref: '#/components/schemas/Grocery'
 */
-router.delete('/:id', authJwt,GroceryController.deleteGrocery);
+router.delete('/:id', authJwt, GroceryController.deleteGrocery);
 
 /**
 * @swagger

@@ -59,8 +59,8 @@ const deleteUser = async function (userId) {
 
 const updateUser = async function (userId, userDetails) {
     try {
-        const oldUser = await User.findByIdAndUpdate(userId, userDetails);
-        return oldUser;
+        const newUser = await User.findByIdAndUpdate(userId, {$set: userDetails},{new:true});
+        return newUser;
     } catch (e) {
         console.log('repository error: ' + e.message);
 

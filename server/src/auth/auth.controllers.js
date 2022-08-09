@@ -10,7 +10,7 @@ const sendError = (res, code, message) => {
 const register = async (req, res) => {
     try {
         const newUser = await AuthService.register(req.body);
-        return res.status(200).json({ user: newUser, message: "Succesfully user registered" });
+        return res.status(200).json({ user: newUser, message: "Successfully user registered" });
     } catch (err) {
         return sendError(res, 400, err.message);
     }

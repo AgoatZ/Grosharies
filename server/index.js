@@ -103,8 +103,6 @@ app.get('*', (req, res) => {
 });
 
 const socketIO = require('socket.io');
-const { randomUUID } = require('crypto');
-const sessionStore = mongoose.connection.collection('sessions');
 
 const io = socketIO(http, {
   cors: {
@@ -125,15 +123,12 @@ const broadcastEvent = function (event, data) {
 };
 
 io.on("connection", socket => {
-  console.log("new socket connection", socket.id, "with data", socket.handshake.auth);
   const socketID = socket.id;
   const userID = socket.handshake.auth.userId;
   const sessionID = socket.request.sessionID;
   const session = socket.request.session;
 
   socket.join(String(userID));
-  //setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
-
   socket.on("disconnect", () => console.log("socket disconnected"));
 });
 

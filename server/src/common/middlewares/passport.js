@@ -38,9 +38,7 @@ passport.use(new GoogleStrategy({
 }, async function verify(issuer, profile, cb) {
     try {
         var credentials = await FederatedCredential.getFederatedCredentialByProviderAndSubject(issuer, profile.id);
-        console.log('credentials:', credentials);
         if (!credentials) {
-            console.log('if not credentials, profile:', profile);
             var newUser = {
                 firstName: profile.name.givenName,
                 lastName: profile.name.familyName,

@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { AppContext } from "../../App";
+import React from "react";
 import { Outlet } from "react-router-dom";
 import { Grid } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";

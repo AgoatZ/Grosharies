@@ -35,16 +35,16 @@ const App = () => {
   useEffect(() => {
     axios.get("auth/isLoggedIn").then(() => { userSetup(); })
       .catch(e => { console.log("Error getting isLoggedIn"); setLoggedIn(false); });
+    // eslint-disable-next-line
   }, []);
 
   //User's info from API        
   const userSetup = () => {
     axios.get('/users/profile/current').then(res => {
       let userData = res.data.user;
-      console.log("UserData", userData);
       setLoggedIn(true);
       setUserData(userData);
-      setUserNotifications(userData.notifications);
+      setUserNotifications(userData.notifications.reverse());
       socketSetup(userData);
       sessionStorage.setItem('userId', userData._id);
     }).catch(e => { console.log("Error getting user data"); });
@@ -62,7 +62,9 @@ const App = () => {
 
   const loginUser = () => {
     setLoggedIn(true);
-    axios.get('/users/profile/current').then(res => setUserData(res.data.user));
+    axios.get('/users/profile/current').then(res => {
+      setUserData(res.data.user)
+    });
     window.location.replace("/");
   };
 
@@ -73,7 +75,7 @@ const App = () => {
 
   //All Routes Componentes are nested under Layout->Outlet
   return (
-    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser, }}>
+    <AppContext.Provider value={{ loggedIn, userData, userNotifications, logoutUser, setUserData, }}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>

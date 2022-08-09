@@ -2,6 +2,7 @@ const express = require("express");
 const { status } = require("express/lib/response");
 const PostController = require("./post.controllers");
 const imageUtil = require("../common/middlewares/image-upload");
+const s3Util = require("../common/middlewares/s3-upload");
 const router = express.Router();
 const { authJwt } = require("../common/middlewares/passport");
 
@@ -240,7 +241,7 @@ router.get("/:id", PostController.getPostById);
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.get("/user/:id", PostController.getPostsByUser);
+router.get("/user/:id", authJwt, PostController.getPostsByUser);
 
 /**
 * @swagger
@@ -290,7 +291,7 @@ router.get("/openPosts/:id", authJwt, PostController.getPublisherOpenPosts);
 *               items:
 *                 type: string
 */
-router.get("/images/:id", authJwt, PostController.getPostImages);
+router.get("/images/:id", PostController.getPostImages);
 
 /**
 * @swagger
@@ -591,5 +592,12 @@ router.delete("/:id", authJwt, PostController.deletePost);
 *               $ref: '#/components/schemas/Post'
 */
 router.put("/:id", authJwt, PostController.updatePost);
+
+router.post(
+  "/s3Upload/:id",
+  authJwt,
+  s3Util.uploadImage,
+  PostController.updatePost
+);
 
 module.exports = router;

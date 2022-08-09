@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useContext } from "react";
-import { Stack, Grid, Box, Tabs, Tab, Typography, Divider, Switch, Fab, styled, Drawer, useMediaQuery, Pagination, Paper, Skeleton } from "@mui/material";
+import { Box, Typography, Divider, useMediaQuery, Pagination, Skeleton } from "@mui/material";
 import { AppContext } from "../../App";
 import Posts from "../posts/Posts";
 import axios from "../../utils/axios";
@@ -10,12 +10,14 @@ const SuggestedPosts = () => {
     const [suggestedPosts, setSuggestedPosts] = useState([]);
     const mobileScreen = useMediaQuery('(max-width:480px)');
     const limitPerPage = mobileScreen ? 3 : 5;
-
+    // eslint-disable-next-line
     useEffect(() => { loadPosts(1) }, []);
 
     const loadPosts = (page) => {
+        if (!loggedIn)
+            return [];
         axios
-            .get("posts/suggested/current/" + "?page=" + page + "&limit=" + limitPerPage)
+            .get("posts/suggested/current/?page=" + page + "&limit=" + limitPerPage)
             .then((res) => setSuggestedPosts(res.data.posts))
             .catch((e) => console.log("Error getting suggested posts"));
     }

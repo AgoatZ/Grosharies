@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
+import { Stack, Box, Tabs, Tab, Typography, Switch, Fab, styled, Drawer, useMediaQuery } from "@mui/material";
 import { AppContext } from "../../App";
-import { Stack, Grid, Box, Tabs, Tab, Typography, Divider, Switch, Fab, styled, Drawer, useMediaQuery, Pagination, Paper, Skeleton } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import Posts from "../posts/Posts";
 import SuggestedPosts from "./SuggestedPosts";
@@ -12,6 +13,8 @@ import CloseIcon from '@mui/icons-material/Close';
 const tabs = ["Near By", "Recently Added"];
 
 const Home = () => {
+  const { loggedIn } = useContext(AppContext);
+  let navigate = useNavigate();
   const handleTabChange = (event, newTabNumber) => setActiveTabNumber(newTabNumber);
   const [activeTabNumber, setActiveTabNumber] = useState(1);
   const [nearbyPosts, setNearbyPosts] = useState([]);
@@ -25,16 +28,12 @@ const Home = () => {
   const loadPosts = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        //console.log("Latitude is :", position.coords.latitude);
-        //console.log("Longitude is :", position.coords.longitude);
-        //TODO: add route to exept the user location to server
         axios
-          .post("/posts/nearby/" + "?page=1&limit=10", { coordinates: { lat: position.coords.latitude, lng: position.coords.longitude, }, })
+          .post("/posts/nearby/?page=1&limit=10", { coordinates: { lat: position.coords.latitude, lng: position.coords.longitude, }, })
           .then((res) => { setNearbyPosts(res.data.posts); });
       });
     }
-    axios.get("/posts/" + "?page=1&limit=10").then((res) => {
-      res.data.posts.forEach((post) => {/*console.log("address: ", post.address, " coordinates: ", post.addressCoordinates);*/ });
+    axios.get("/posts/?page=1&limit=10").then((res) => {
       setRecentPosts(res.data.posts);
     });
   };
@@ -42,8 +41,8 @@ const Home = () => {
   const Logo = () => {
     return (
       mobileScreen ?
-        (<img src={"assets/logo.svg"} height="150px" width="150px" />) :
-        (<img src={"assets/logo.svg"} height="300px" width="300px" />)
+        (<img src={"assets/logo.svg"} alt="" height="150px" width="150px" />) :
+        (<img src={"assets/logo.svg"} alt="" height="300px" width="300px" />)
     );
   };
 
@@ -59,7 +58,11 @@ const Home = () => {
 
   const AddPostDrawer = () => {
     const [open, setOpen] = useState(false);
-    const toggle = (open) => (event) => { setOpen(open); };
+    const toggle = (open) => (event) => {
+      if (!loggedIn)
+        navigate("/login");
+      setOpen(open);
+    };
 
     return (
       <>
@@ -107,9 +110,7 @@ const Home = () => {
           </Tabs>
 
           <TabPanel value={activeTabNumber} index={0} >
-            {nearbyPosts.length > 0 ?
-              <Posts data={nearbyPosts} showMap={showAsMap} /> :
-              <Typography>No posts near by</Typography>}
+            <Posts data={nearbyPosts} showMap={showAsMap} />
           </TabPanel>
 
           <TabPanel value={activeTabNumber} index={1}>

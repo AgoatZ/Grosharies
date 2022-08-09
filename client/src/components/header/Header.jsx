@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { AppContext } from "../../App";
 import axios from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, IconButton, Menu, MenuList, MenuItem, Container, Button, Tooltip, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider, Popper, Typography, Badge, ListItemSecondaryAction, ListItemButton, Icon } from "@mui/material";
+import { AppBar, Box, Toolbar, IconButton, Menu, MenuItem, Container, Button, Tooltip, Drawer, List, ListItem, ListItemText, ListItemIcon, Divider, Typography, Badge, ListItemButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { UserImageThumbnail } from "../common/Images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -109,9 +109,7 @@ const Header = () => {
     const removeNotification = (notification) => {
       const index = userData.notifications.indexOf(notification);
       userData.notifications.splice(index, 1);
-      //TODO: Fix Rout on server - router.put('/:id', authJwt, UserController.updateUser);
-      //axios.put('users/current', { ..... }).then((res) => {
-      axios.put('users/' + userData._id, { notifications: userData.notifications }).catch(e => console.log("Error updating user"));
+      axios.put("users/current", { notifications: userData.notifications }).catch(e => console.log("Error updating user"));
       setUserNotificationsAnchorEl(null);
     };
 
@@ -123,7 +121,7 @@ const Header = () => {
         {/* User Notifications Area*/}
         <Tooltip title="Open Notifications">
           <IconButton onClick={handleOpenNotifications}>
-            <Badge badgeContent={userNotifications.length} color="error" invisible={userNotifications == 0}>
+            <Badge badgeContent={userNotifications.length} color="error" invisible={userNotifications === 0}>
               <NotificationsIcon htmlColor="white" fontSize="large" />
             </Badge>
           </IconButton>
@@ -138,7 +136,7 @@ const Header = () => {
           open={Boolean(userNotificationsAnchorEl)}
           onClose={handleCloseNotifications}
         >
-          {userNotifications.length == 0 ?
+          {userNotifications.length === 0 ?
             <Typography sx={{ margin: 1 }}>No Notifications</Typography> :
             userNotifications.map((notification, index) => (
               <ListItem disablePadding key={index}
@@ -167,7 +165,7 @@ const Header = () => {
         {/* User Options Menu */}
         <Tooltip title={userData.firstName + ' ' + userData.lastName}>
           <IconButton onClick={handleOpenUserMenu}>
-            <UserImageThumbnail src={userData.profileImage} />
+            <UserImageThumbnail src={"data:image/jpg;base64, " + userData.profileImage} />
           </IconButton>
         </Tooltip>
         <Menu
@@ -224,7 +222,7 @@ const Header = () => {
 
   const Logo = () => {
     return (
-      <img src={"/assets/logo_label_white.png"} height="30px" width="100px" />
+      <img src={"/assets/logo_label_white.png"} height="30px" alt="logo" width="100px" />
     );
   };
   const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);

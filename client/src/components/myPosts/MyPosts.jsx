@@ -11,11 +11,9 @@ const MyPosts = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => { loadMyPosts(); }, []);
 
-  //TODO: fix open orders wont render and collector's name undefined
   const loadMyPosts = () => {
     //Get user's open posts
     axios.get("posts/openPosts/current").then((res) => {
-      console.log("User Posts", res.data.posts);
       setPosts(res.data.posts);
     });
   }
@@ -46,13 +44,13 @@ const MyPosts = () => {
       repliers.forEach(replier => {
         //Get pending post object
         axios.get("pendings/" + replier.reply)
-          .then((res) => { 
+          .then((res) => {
             if (res.data.post.status.finalStatus === "pending")
-              pendingPosts.push(res.data.post); 
-            setPendings(pendingPosts); 
+              pendingPosts.push(res.data.post); setPendings(pendingPosts);
           })
           .catch(e => console.log("Error getting a pending post"));
       })
+      // eslint-disable-next-line
     }, []);
 
     return (

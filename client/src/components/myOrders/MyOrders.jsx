@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import OrderCard from "../myOrders/OrderCard";
 import ProductsList from "../myOrders/ProductsList";
-import { Typography, Box, CardMedia, Divider, Button, ButtonGroup, Stack, Accordion, AccordionDetails, AccordionSummary, List, ListItemButton, ListItemText, Collapse, ListSubheader, Fab } from "@mui/material";
+import { Typography, Divider, Stack, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 //Icons
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -15,7 +15,6 @@ const MyOrders = () => {
   //Pendings from API according to their FINAL status
   const loadPendingPosts = () => {
     axios.get("pendings/collector/current").then((res) => {
-      console.log("All Pendings(Orders) Of User", res.data);
       setPendingsPosts(res.data.pendingPosts);
       setFinishedPendings(res.data.finishedPendings);
       setCancelledPendings(res.data.cancelledPendings);

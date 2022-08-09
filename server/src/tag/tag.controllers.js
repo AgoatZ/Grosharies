@@ -7,7 +7,7 @@ getTags = async function (req, res, next) {
     const limit = req.params.limit ? req.params.limit : 30;
     try {
         const tags = await TagService.getTags({}, page, limit)
-        return res.status(200).json({ tags: tags, message: "Succesfully Tags Retrieved" });
+        return res.status(200).json({ tags: tags, message: "Successfully Tags Retrieved" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
@@ -17,7 +17,7 @@ getTagById = async function (req, res, next) {
     // Validate request parameters, queries using express-validator
     try {
         const tag = await TagService.getTagById(req.params.id)
-        return res.status(200).json({ tag: tag, message: "Succesfully Tag Retrieved" });
+        return res.status(200).json({ tag: tag, message: "Successfully Tag Retrieved" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
@@ -28,7 +28,7 @@ addTag = async function (req, res, next) {
 
     try {
         const tag = await TagService.addTag(req.body);
-        return res.status(200).json({ tag: tag, message: "Succesfully Tag Added" });
+        return res.status(200).json({ tag: tag, message: "Successfully Tag Added" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
@@ -37,7 +37,7 @@ addTag = async function (req, res, next) {
 deleteTag = async function (req, res, next) {
     try {
         const tag = await TagService.deleteTag(req.params.id);
-        return res.status(200).json({ tag: tag, message: "Succesfully Tag Deleted" });
+        return res.status(200).json({ tag: tag, message: "Successfully Tag Deleted" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }
@@ -48,7 +48,7 @@ updateTag = async function (req, res, next) {
 
     try {
         const oldTag = await TagService.updateTag(req.params.id, req.body);
-        return res.status(200).json({ oldTag: oldTag, message: "Succesfully Tag Updated" });
+        return res.status(200).json({ oldTag: oldTag, message: "Successfully Tag Updated" });
     } catch (e) {
         return res.status(400).json({ message: e.message });
     }

@@ -1,40 +1,25 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import { SearchOutlined } from "@material-ui/icons";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Link from "@mui/material/Link";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "../../utils/axios";
 import serverRoutes from "../../utils/server-routes";
-import validator from "validator";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import CommentIcon from "@mui/icons-material/Comment";
 import CardMedia from "@mui/material/CardMedia";
 import Input from "@mui/material/Input";
-import GoogleMapReact from "google-map-react";
 import Geocode from "react-geocode";
 
 const alertStyle = {
@@ -74,7 +59,6 @@ export default function AddPost() {
     }
 
     setChecked(newChecked);
-    console.log(checked);
   };
 
   const handleToggleAmount = (e, value) => {
@@ -82,8 +66,7 @@ export default function AddPost() {
       return i.grocery === value;
     });
     checked[currentIndex].amount =
-      e.target.value == "" ? 0 : parseInt(e.target.value);
-    console.log(checked);
+      e.target.value === "" ? 0 : parseInt(e.target.value);
   };
 
   React.useEffect(() => {
@@ -120,7 +103,7 @@ export default function AddPost() {
       });
     });
 
-    if (checkedGroceries.length == 0 && searchValue === "") {
+    if (checkedGroceries.length === 0 && searchValue === "") {
       setGroceries([]);
       return;
     } else if (checkedGroceries.length > 0 && searchValue === "") {
@@ -141,50 +124,41 @@ export default function AddPost() {
     const until = endDate;
     const repeated = data.get("repeat");
     event.preventDefault();
-    if (headline == "") {
-      setIsHeadlineError(
-        "headline is empty"
-      );
-      return
-    }
-    if (until <= fromDate) {
-      setIsEndDateError(
-        "end date must be greater from fromDate"
-      );
+    if (headline === "") {
+      setIsHeadlineError("headline is empty");
       return;
     }
-    if (description == "") {
-      setIsDescriptionError(
-        "description is empty"
-      );
-      return
+    if (until <= fromDate) {
+      setIsEndDateError("end date must be greater from fromDate");
+      return;
     }
-    if (address == "") {
-      setIsAddressError(
-        "address is empty"
-      );
-      return
+    if (description === "") {
+      setIsDescriptionError("description is empty");
+      return;
+    }
+    if (address === "") {
+      setIsAddressError("address is empty");
+      return;
     }
     if (
       isHeadlineError !== "" ||
       isDescriptionError !== "" ||
-      isAddressError != "" ||
+      isAddressError !== "" ||
       isFromDateError !== "" ||
       isEndDateError !== "" ||
       isQuantityError !== ""
     ) {
       if (isFromDateError !== "") {
-
       }
       return;
     }
-
+    // eslint-disable-next-line
     const groceries = checked.map((grocery) => {
       if (grocery.isChecked) {
         return { id: grocery.grocery._id, amount: grocery.amount };
       }
     });
-    const groceriesToSend = groceries.filter(grocery => grocery != null);
+    const groceriesToSend = groceries.filter((grocery) => grocery !== null);
     axios
       .post(serverRoutes.AddPost, {
         headline,
@@ -194,19 +168,15 @@ export default function AddPost() {
         groceriesToSend,
       })
       .then((res) => {
-        console.log(res);
         if (images) {
-          console.log('uploading image');
           const reader = new FileReader();
           reader.onload = function (evt) {
-            const metadata = `name: ${images.name}, type: ${images.type}, size: ${images.size}, contents:`;
             const contents = evt.target.result;
-            console.log(metadata, contents);
             axios
               .post("/posts/updateImage/" + res.data.post._id, contents, {
                 headers: {
-                  'Content-Type': 'image/*'
-                }
+                  "Content-Type": "image/*",
+                },
               })
               .then((res) => {
                 MySwal.fire({
@@ -222,6 +192,17 @@ export default function AddPost() {
               });
           };
           reader.readAsArrayBuffer(images);
+        } else {
+          MySwal.fire({
+            title: <strong>Post created Successfully!</strong>,
+            icon: "success",
+            timer: 1000,
+            showConfirmButton: false,
+            backdrop: false,
+          });
+          setTimeout(() => {
+            navigate("/my-posts", {});
+          }, 1000);
         }
       })
       .catch((e) => {
@@ -235,16 +216,16 @@ export default function AddPost() {
   };
 
   const onChangeImages = (event) => {
-    console.log('=============', event.target.files[0]);
     setImages(event.target.files[0]);
   };
 
   return (
     <Container maxWidth="xs">
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
         <Typography variant="h5">New Post</Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-
           {/* headline */}
           <Grid container spacing={4}>
             <Grid item xs={12}>
@@ -281,30 +262,24 @@ export default function AddPost() {
                 fullWidth
                 error={isAddressError !== ""}
                 onChange={async (e) => {
-
                   if (e.target.value.length < 2) {
-                    setIsAddressError(
-                      "address must be at least 2 characters"
-                    )
+                    setIsAddressError("address must be at least 2 characters");
                   }
 
                   try {
-                    Geocode.setApiKey('AIzaSyCikGIFVg1fGrX4ka60a35awP_27npk0tc');
+                    Geocode.setApiKey(
+                      process.env.REACT_APP_GOOGLE_MAPS_API_KEY
+                    );
                     const response = await Geocode.fromAddress(e.target.value);
                     if (!response.results[0].geometry.location) {
-                      setIsAddressError(
-                        "The address is not valid"
-                      );
+                      setIsAddressError("The address is not valid");
                     } else {
                       setIsAddressError("");
                     }
                   } catch (e) {
-                    setIsAddressError(
-                      "The address is not valid"
-                    );
+                    setIsAddressError("The address is not valid");
                   }
                   setAddress(e.target.value);
-
                 }}
                 placeholder="18 King George, Tel Aviv"
                 type="text"
@@ -439,18 +414,14 @@ export default function AddPost() {
                   const labelId = `checkbox-list-label-${value._id}`;
 
                   return (
-                    <ListItem
-                      key={value._id}
-                      disablePadding
-                      sx={{ mb: "5px" }}
-                    >
+                    <ListItem key={value._id} disablePadding sx={{ mb: "5px" }}>
                       <Checkbox
                         edge="start"
                         onClick={handleToggle(value)}
                         checked={
                           checked.findIndex(
                             (i) =>
-                              i.grocery._id == value._id &&
+                              i.grocery._id === value._id &&
                               i.isChecked === true
                           ) !== -1
                         }
@@ -462,27 +433,20 @@ export default function AddPost() {
                         fullWidth
                         error={isQuantityError !== ""}
                         InputProps={{
-                          inputProps: { min: 0 }
+                          inputProps: { min: 0 },
                         }}
                         type="number"
                         id={`${value.name}`}
                         label={`${value.name}`}
                         name={`${value.name}`}
                         onChange={(e) => {
-
                           if (e.target.value < 0) {
-                            setIsQuantityError(
-                              "must be positive"
-                            );
-
+                            setIsQuantityError("must be positive");
                           } else {
-                            setIsQuantityError(
-                              ""
-                            );
-                            handleToggleAmount(e, value)
+                            setIsQuantityError("");
+                            handleToggleAmount(e, value);
                           }
                         }}
-
                       />
                       <CardMedia
                         component="img"
@@ -513,7 +477,6 @@ export default function AddPost() {
               </Button>
             </Grid>
           </Grid>
-
         </Box>
       </Box>
     </Container>

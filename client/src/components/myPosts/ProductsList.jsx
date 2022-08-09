@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { List, ListItemButton, ListItemText, ListSubheader } from "@mui/material";
+import React from "react";
+import { List, ListItemText, ListSubheader } from "@mui/material";
 
 const ProductsList = ({ content }) => {
     return (
