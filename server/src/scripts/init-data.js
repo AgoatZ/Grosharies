@@ -29,7 +29,7 @@ const getRandomInt = (max) => {
 }
 
 //mongoose.connect('mongodb://127.0.0.1:27017/grosharies', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connect('mongodb+srv://Grosharies:FyWfIJSz5Bt9hnmi@grosharies.glcd8.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_ATLAS_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.once('connected', () => console.log('Database connected successfully for db:init'));
     // .then(() => init())
     // .finally(() => mongoose.disconnect()
@@ -347,7 +347,7 @@ const init = async () => {
                 "status": "pending",
                 "pendingTime": {
                     "from": Date.now(),
-                    "until": Date.now() + oneHour
+                    "until": Date.now() + oneHour*4
                 }
             });
             pending = await pending.save();
